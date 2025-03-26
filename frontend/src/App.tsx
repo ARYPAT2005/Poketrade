@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -19,11 +19,12 @@ import "./App.css";
 
 const App: React.FC = () => {
   const [isLogged] = useAtom(isLoggedAtom);
+  const [navbarExpanded, setNavbarExpanded] = useState(false);
 
   return (
     <div className="app-container">
-      <CustomNavbar isLogged={isLogged} />
-      <div className="content">
+      <CustomNavbar isLogged={isLogged} setNavbarExpanded={setNavbarExpanded} />
+      <div className={`content ${navbarExpanded ? "navbar-expanded" : ""}`}>
         <Routes>
           <Route path="/" element={<About />} />
           <Route path="/login" element={<Login />} />
