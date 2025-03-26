@@ -13,8 +13,10 @@ Pokemon card trading app
 
 # Setup
 
-1. Clone the repository
-git clone <https://github.com/05jwang/Poketrade.git>
+1. Clone the repository:
+```bash
+git clone https://github.com/05jwang/Poketrade.git
+```
 
 2. Run the backend server
 
@@ -26,9 +28,9 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
-The backend server will be running on <http://localhost:8000>
+Check that the backend server is running at <http://localhost:8000>
 
-3. Run the frontend server
+3. In a separate terminal, run the frontend server
 
 ```bash
 cd frontend
@@ -36,4 +38,4 @@ npm install
 npm run dev
 ```
 
-4. Open the browser and go to <http://localhost:5173>
+4. Open a browser and go to <http://localhost:5173>
