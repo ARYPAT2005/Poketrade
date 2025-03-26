@@ -4,14 +4,12 @@
   min-height: 100vh;
 }
 
-/* Default padding when navbar is collapsed */
 .content {
   flex: 1;
   padding-top: 60px;
-  transition: padding-top 0.3s ease-in-out; /* Smooth transition */
+  transition: padding-top 0.3s ease-in-out;
 }
 
-/* Increase padding when navbar is expanded */
 .navbar-expanded {
-  padding-top: 230px; /* Adjust based on actual navbar height */
+  padding-top: 230px; 
 }

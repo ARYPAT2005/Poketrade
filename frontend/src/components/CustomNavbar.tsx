@@ -17,7 +17,13 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ isLogged, setNavbarExpanded
   }, []);
 
   return (
-    <Navbar className="shadow-sm" expand="lg" fixed="top" onToggle={(expanded) => setNavbarExpanded(expanded)}>
+    <Navbar
+      bg="light"
+      className="shadow-sm"
+      expand="lg"
+      fixed="top"
+      onToggle={(expanded) => setNavbarExpanded(expanded)}
+    >
       <Navbar.Brand style={{ paddingLeft: "20px" }} href="/">
         Pokétrade
       </Navbar.Brand>
