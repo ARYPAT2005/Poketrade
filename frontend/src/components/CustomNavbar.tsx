@@ -18,7 +18,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ isLogged, setNavbarExpanded
 
   return (
     <Navbar
-      bg="light"
+      bg="transparent"
       className="shadow-sm"
       expand="lg"
       fixed="top"

@@ -1,5 +1,5 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Luckiest Guy", sans-serif, system-ui, Avenir, Helvetica;
   line-height: 1.5;
   font-weight: 400;
 
@@ -23,14 +23,16 @@ a:hover {
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  font-family: "Luckiest Guy";
+  background-image: url('./assets/pokeball.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center;
+  background-size: cover;
 }
 
 h1 {
+  text-align: center;
   font-size: 3.2em;
   line-height: 1.1;
 }
@@ -65,4 +67,24 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.navbar-brand,
+.navbar-brand:hover {
+  color: white !important;
+  text-shadow: 2px 2px 0px black;
+}
+
+
+
+.navbar #dropdown-basic,
+.navbar #dropdown-basic:hover {
+    color: white !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+     text-shadow: 1px 1px 0px #000000;
+}
+
+.navbar-toggler {
+    filter: invert(1) brightness(2);
+    border-color: rgba(255, 255, 255, 0.5) !important;
 }
