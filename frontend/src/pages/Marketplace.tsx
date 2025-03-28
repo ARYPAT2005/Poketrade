@@ -16,10 +16,15 @@ const Marketplace = () => {
       [cardId]: !prevState[cardId],
     }));
   };
-
-  useEffect(() => {
-    
-  }, []); 
+  
+  const [cards, setCards] = useState<any[]>([]);
+  
+   useEffect(() => {
+     fetch("https://api.pokemontcg.io/v2/cards")
+       .then((response) => response.json())
+       .then(data => setCards(data.results))
+       .catch((error) => console.error("Error fetching card:", error));
+   }, []);
   
   const minValue = 500;
   const isLogged = useAtomValue(isLoggedAtom);
@@ -31,21 +36,22 @@ const Marketplace = () => {
             <p style={{textAlign: "center", color: "#DADADA"}}>Buy and sell items here!</p> 
             <div className = "container">
               <div className = "marketplace-container">
-                {[...Array(5)].map((_, cardId) => (
-                  /* insert for loop here when trades have ids*/
-                  <a href="#" onClick={(e) => e.preventDefault()} key = {cardId}>
-                    <div className="card" onClick={() => handleCardClick(cardId)}>
-                      <img src={pokemonImage} className="card-img-top" alt="..."/>
-                      <div className="card-body">
-                        <h5 className="card-title">Charizard</h5>
-                        <p> Buy: $1000 </p>
-                        <p> Auction: {minValue}</p>
+                  {/* insert for loop here when trades have ids*/}
+                  {cards.map((card) =>(
+                    <a href="#" onClick={(e) => e.preventDefault()} key = {card.id}>
+                      <div className="card" onClick={() => handleCardClick(card.id)}>
+                        <img src={pokemonImage} className="card-img-top" alt="..."/>
+                        <div className="card-body">
+                          <h5 className="card-title">Charizard</h5>
+                          <p> Buy: $1000 </p>
+                          <p> Auction: {minValue}</p>
+                        </div>
+                        {/* Show overlay when card is clicked */}
+                        {overlayIsVisible[card.id] && <div className="overlay">Overlay Content</div>}
                       </div>
-                      {/* Show overlay when card is clicked */}
-                      {overlayIsVisible[cardId] && <div className="overlay">Overlay Content</div>}
-                    </div>
-                  </a>
-                ))}
+                    </a>
+                  ))}
+                  
               </div>
             </div>
           </> 
