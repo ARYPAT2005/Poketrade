@@ -20,7 +20,7 @@ const About = () => {
    </div>
    <div className = "card-Container">
      {cardImage.map((card) => (
-     <img src={card.images.small} alt={card.name} width="300" />
+     <img key={`${card.id}-${card.set.id}-${card.name}`} src={card.images.small} alt={card.name} width="300" />
      ))}
    </div>
    </>
