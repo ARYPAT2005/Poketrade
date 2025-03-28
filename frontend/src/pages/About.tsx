@@ -6,7 +6,7 @@ const About = () => {
   useEffect(() => {
     fetch("http://localhost:8000/api/cards/?page=1")
       .then((response) => response.json())
-      .then((data) => setCards(data.data))
+      .then((data) => setCards(data.results))
       .catch((error) => console.error("Error fetching card:", error));
   }, []);
 
@@ -22,7 +22,7 @@ const About = () => {
       </div>
       <div className="card-Container">
         {cardImage.map((card) => (
-          <img key={`${card.id}-${card.set.id}-${card.name}`} src={card.images.small} alt={card.name} width="300" />
+          <img key={`${card.id}-${card.name}`} src={card.image_url} alt={card.name} width="300" />
         ))}
       </div>
     </>
