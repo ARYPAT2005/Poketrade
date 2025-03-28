@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import About from "./pages/About";
 import Store from "./pages/Store";
 import Trade from "./pages/Trade";
+import Cards from "./pages/Cards";
 
 import CustomNavbar from "./components/CustomNavbar";
 import Footer from "./components/Footer";
@@ -33,6 +34,7 @@ const App: React.FC = () => {
           <Route path="/store" element={<Store />} />
           <Route path="/trade" element={<Trade />} />
           <Route path="/about" element={<About />} />
+          <Route path="/cards" element={<Cards />} />
         </Routes>
       </div>
       <Footer />
