@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 
 import './Marketplace.css';
 import pokemonImage from "../assets/pokemon.png";
@@ -6,7 +6,22 @@ import { isLoggedAtom } from "../atoms/isLoggedAtom";
 import { useAtomValue } from "jotai";
 
 import LoginPrompt from "./LoginPrompt";
+
 const Marketplace = () => {
+  const [overlayIsVisible, setOverlayVisibility] = useState<{ [key:number]: boolean}>({});
+  
+  const handleCardClick = (cardId: number) => {
+    setOverlayVisibility((prevState) => ({
+      ...prevState,
+      [cardId]: !prevState[cardId],
+    }));
+  };
+
+  useEffect(() => {
+    
+  }, []); 
+  
+  const minValue = 500;
   const isLogged = useAtomValue(isLoggedAtom);
   return (
     <div>
@@ -16,19 +31,23 @@ const Marketplace = () => {
             <p style={{textAlign: "center", color: "#DADADA"}}>Buy and sell items here!</p> 
             <div className = "container">
               <div className = "marketplace-container">
-                {/* insert for loop here when trades have ids*/}
-                <div className="card" style={{ width: "18rem" }}>
-                  <img src={pokemonImage} className="card-img-top" alt="..."/>
-                  <div className="card-body">
-                    <h5 className="card-title">Trade</h5>
-                    <p className="card-text">Trade for this pokemon.</p>
-                    <a href="#" className="btn btn-primary">Trade</a>
-                  </div>
-                </div>
+                {[...Array(5)].map((_, cardId) => (
+                  /* insert for loop here when trades have ids*/
+                  <a href="#" onClick={(e) => e.preventDefault()} key = {cardId}>
+                    <div className="card" onClick={() => handleCardClick(cardId)}>
+                      <img src={pokemonImage} className="card-img-top" alt="..."/>
+                      <div className="card-body">
+                        <h5 className="card-title">Charizard</h5>
+                        <p> Buy: $1000 </p>
+                        <p> Auction: {minValue}</p>
+                      </div>
+                      {/* Show overlay when card is clicked */}
+                      {overlayIsVisible[cardId] && <div className="overlay">Overlay Content</div>}
+                    </div>
+                  </a>
+                ))}
               </div>
             </div>
-
-
           </> 
         ) : <LoginPrompt />}
     </div>

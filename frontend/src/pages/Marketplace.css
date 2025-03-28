@@ -1,13 +1,23 @@
 .marketplace-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 6rem;
-    padding: 2rem;
+    gap: 10px;
+    padding: 1rem;
     max-width: 1500px;
     margin: 0 auto;
-  }
-  .card {
-    background: #e3a9a9;
-    border-radius: 20px;
-    box-shadow: 5px 5px 5px hsla(0, 0%, 0%, 0.1);
-  }
+}
+.card {
+  background: #e3a9a9;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 250px;
+}
+.card-img-top {
+  border-radius: 20px 20px 0 0;
+}
+.overlay{
+  position: fixed;
+  width:25%;
+  height: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
