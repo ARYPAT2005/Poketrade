@@ -5,7 +5,7 @@ const About = () => {
 
 
  useEffect(() => {
-   fetch("https://api.pokemontcg.io/v2/cards")
+   fetch("http://localhost:8000/api/cards/?page=1")
      .then((response) => response.json())
      .then(data => setCards(data.data))
      .catch((error) => console.error("Error fetching card:", error));
