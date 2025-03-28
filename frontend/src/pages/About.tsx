@@ -7,7 +7,7 @@ const About = () => {
  useEffect(() => {
    fetch("http://localhost:8000/api/cards/?page=1")
      .then((response) => response.json())
-     .then(data => setCards(data.data))
+     .then(data => setCards(data.results))
      .catch((error) => console.error("Error fetching card:", error));
  }, []);
 
