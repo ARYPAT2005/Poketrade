@@ -57,19 +57,7 @@ button:focus-visible {
 
 .container {
   background: #e3a9a9;
-}
-.marketplace-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 6rem;
-  padding: 2rem;
-  max-width: 1500px;
-  margin: 0 auto;
-}
-.card {
-  background: #e3a9a9;
-  border-radius: 20px;
-  box-shadow: 5px 5px 5px hsla(0, 0%, 0%, 0.1);
+  border-radius:20px;
 }
 
 @media (prefers-color-scheme: light) {

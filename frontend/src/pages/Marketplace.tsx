@@ -1,5 +1,6 @@
 import React from "react";
 
+import './Marketplace.css';
 import pokemonImage from "../assets/pokemon.png";
 import { isLoggedAtom } from "../atoms/isLoggedAtom";
 import { useAtomValue } from "jotai";
