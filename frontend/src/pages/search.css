@@ -1,9 +1,19 @@
-.card-Container {
+.card-Containers {
     position: relative;
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
     justify-content: center;
-    top: 65vh;
+    top: 2vh;
 }
+/* Styling for the navbar */
+.navbar.navbar-light.bg-red {
+    display: flex;            /* Makes the navbar a flex container */
+    flex-wrap: wrap;          /* Allows content to wrap within the navbar */
+    justify-content: left;  /* Centers the content horizontally */
+    margin-left: 18px;
+  
+}
+
+
   

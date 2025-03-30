@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import "./About.css";
+import "./search.css";
 
 const Search = () => {
     const [allCards, setAllCards] = useState<any[]>([]); 
@@ -41,7 +41,7 @@ const Search = () => {
 
     return (
         <>
-            <nav className="navbar navbar-light bg-light">
+            <nav  className="navbar navbar-light bg-red">
                 <form className="form-inline">
                     <input
                         ref={searchRef}
@@ -50,19 +50,14 @@ const Search = () => {
                         placeholder="Search"
                         aria-label="Search"
                     />
-                    <button className="btn btn-outline-success my-2 my-sm-0" type="submit">
-                        Search
-                    </button>
                 </form>
             </nav>
-            <div className="card-Container">
-                {filteredCards.length > 0 ? (
+            <div className="card-Containers">
+                {
                     filteredCards.map((card) => (
                         <img key={card.id} src={card.images.small} alt={card.name} width="300" />
                     ))
-                ) : (
-                    <p>No matching cards found</p>
-                )}
+               }
             </div>
         </>
     );
