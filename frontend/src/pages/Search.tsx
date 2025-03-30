@@ -7,12 +7,12 @@ const Search = () => {
     const searchRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        fetch("https://api.pokemontcg.io/v2/cards")
+        fetch("http://localhost:8000/api/cards/?page=1")
             .then((response) => response.json())
             .then((data) => {
                 console.log("Fetched Data:", data);
-                setAllCards(data.data); 
-                setFilteredCards(data.data);
+                setAllCards(data.results); 
+                setFilteredCards(data.results);
             })
             .catch((error) => console.error("Error fetching cards:", error));
     }, []);
@@ -55,7 +55,7 @@ const Search = () => {
             <div className="card-Containers">
                 {
                     filteredCards.map((card) => (
-                        <img key={card.id} src={card.images.small} alt={card.name} width="300" />
+                        <img key={card.id} src={card.image_url} alt={card.name} width="300" />
                     ))
                }
             </div>
