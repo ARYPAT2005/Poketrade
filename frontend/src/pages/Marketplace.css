@@ -9,8 +9,11 @@
 .card {
   background: #e3a9a9;
   border-radius: 20px;
+  border-width: thick;
+  height: 100%;
   width: 100%;
   max-width: 250px;
+  border-style: black solid;
 }
 .card-img-top {
   border-radius: 20px 20px 0 0;

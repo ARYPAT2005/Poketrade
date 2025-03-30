@@ -10,21 +10,22 @@ import LoginPrompt from "./LoginPrompt";
 const Marketplace = () => {
   const [overlayIsVisible, setOverlayVisibility] = useState<{ [key:number]: boolean}>({});
   
-  const handleCardClick = (cardId: number) => {
+  const handleCardClick = (tradeId: number) => {
     setOverlayVisibility((prevState) => ({
       ...prevState,
-      [cardId]: !prevState[cardId],
+      [tradeId]: !prevState[tradeId],
     }));
   };
   
   const [cards, setCards] = useState<any[]>([]);
   
-   useEffect(() => {
-     fetch("https://api.pokemontcg.io/v2/cards")
-       .then((response) => response.json())
-       .then(data => setCards(data.results))
-       .catch((error) => console.error("Error fetching card:", error));
-   }, []);
+  useEffect(() => {
+    // Replace URL with page containing list of trades.
+    fetch("http://localhost:8000/api/cards/?page=1")
+      .then((response) => response.json())
+      .then(data => setCards(data.results))
+      .catch((error) => console.error("Error fetching card:", error));
+  }, []);
   
   const minValue = 500;
   const isLogged = useAtomValue(isLoggedAtom);
@@ -40,9 +41,9 @@ const Marketplace = () => {
                   {cards.map((card) =>(
                     <a href="#" onClick={(e) => e.preventDefault()} key = {card.id}>
                       <div className="card" onClick={() => handleCardClick(card.id)}>
-                        <img src={pokemonImage} className="card-img-top" alt="..."/>
+                        <img src={card.image_url} className="card-img-top" alt="..."/>
                         <div className="card-body">
-                          <h5 className="card-title">Charizard</h5>
+                          <h5 className="card-title">{card.name}</h5>
                           <p> Buy: $1000 </p>
                           <p> Auction: {minValue}</p>
                         </div>
