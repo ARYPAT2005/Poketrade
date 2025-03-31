@@ -1,0 +1,19 @@
+.card-Containers {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    top: 2vh;
+}
+
+.navbar.navbar-light.bg-red {
+    display: flex;           
+    flex-wrap: wrap;
+    justify-content: left;
+    margin-left: 18px;
+  
+}
+
+
+  
