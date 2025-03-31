@@ -45,7 +45,7 @@ const Search = () => {
     return (
         <>
             <nav  className="navbar navbar-light bg-red">
-                <form className="form-inline">
+                <form className="form-inline" onSubmit={(e) => e.preventDefault()}>
                     <input
                         ref={searchRef}
                         className="form-control mr-sm-2"
