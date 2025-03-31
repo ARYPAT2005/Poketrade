@@ -25,8 +25,11 @@ const Search = () => {
                 const searchText = (e.target as HTMLInputElement).value.toLowerCase();
                 
                 const filtered = allCards.filter((card) => 
-                    card.name.toLowerCase().includes(searchText)
+                    searchText.trim() === "" || card.name.toLowerCase().startsWith(searchText.toLowerCase())
                 );
+                
+                
+                
 
                 setFilteredCards(filtered);
             };
