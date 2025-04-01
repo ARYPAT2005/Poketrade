@@ -3,11 +3,11 @@ import { Navbar, Nav, Dropdown } from "react-bootstrap";
 import { PersonCircle } from "react-bootstrap-icons";
 
 interface CustomNavbarProps {
-  isLogged: boolean;
+  userId: string | null;
   setNavbarExpanded: (expanded: boolean) => void;
 }
 
-const CustomNavbar: React.FC<CustomNavbarProps> = ({ isLogged, setNavbarExpanded }) => {
+const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setNavbarExpanded }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
   useEffect(() => {
@@ -17,13 +17,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ isLogged, setNavbarExpanded
   }, []);
 
   return (
-    <Navbar
-      bg="transparent"
-      className="shadow-sm"
-      expand="lg"
-      fixed="top"
-      onToggle={(expanded) => setNavbarExpanded(expanded)}
-    >
+    <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
       <Navbar.Brand style={{ paddingLeft: "20px" }} href="/">
         Pokétrade
       </Navbar.Brand>
@@ -35,9 +29,16 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ isLogged, setNavbarExpanded
           <Nav.Link href="/store">Store</Nav.Link>
         </Nav>
         <div style={{ marginRight: "12px" }}>
-          <a href ="./Search">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" className="bi bi-search" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+          <a href="./Search">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="black"
+              className="bi bi-search"
+              viewBox="0 0 16 16"
+            >
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
             </svg>
           </a>
         </div>
@@ -46,7 +47,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ isLogged, setNavbarExpanded
             <PersonCircle />
           </Dropdown.Toggle>
           <Dropdown.Menu align={isMobile ? "start" : "end"}>
-            {isLogged ? (
+            {userId ? (
               <>
                 <Dropdown.Item href="#">Profile</Dropdown.Item>
                 <Dropdown.Item href="#">Settings</Dropdown.Item>

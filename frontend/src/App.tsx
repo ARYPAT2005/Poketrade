@@ -15,17 +15,17 @@ import CustomNavbar from "./components/CustomNavbar";
 import Footer from "./components/Footer";
 
 import { useAtom } from "jotai";
-import { isLoggedAtom } from "./atoms/isLoggedAtom";
+import { userIdAtom } from "./atoms/userIdAtom";
 
 import "./App.css";
 
 const App: React.FC = () => {
-  const [isLogged] = useAtom(isLoggedAtom);
+  const [userId] = useAtom(userIdAtom);
   const [navbarExpanded, setNavbarExpanded] = useState(false);
 
   return (
     <div className="app-container">
-      <CustomNavbar isLogged={isLogged} setNavbarExpanded={setNavbarExpanded} />
+      <CustomNavbar userId={userId} setNavbarExpanded={setNavbarExpanded} />
       <div className={`content ${navbarExpanded ? "navbar-expanded" : ""}`}>
         <Routes>
           <Route path="/" element={<About />} />

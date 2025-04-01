@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import "./Marketplace.css";
-import pokemonImage from "../assets/pokemon.png";
-import { isLoggedAtom } from "../atoms/isLoggedAtom";
+import { userIdAtom } from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
 import Card from "../types/Card";
 import LoginPrompt from "./LoginPrompt";
@@ -28,11 +27,11 @@ const Marketplace = () => {
   }, []);
 
   const minValue = 500;
-  const isLogged = useAtomValue(isLoggedAtom);
+  const userId = useAtomValue(userIdAtom);
   return (
     <div>
       <h1>Marketplace</h1>
-      {isLogged ? (
+      {userId ? (
         <>
           <p style={{ textAlign: "center", color: "#DADADA" }}>Buy and sell items here!</p>
           <div className="container">

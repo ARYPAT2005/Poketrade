@@ -8,3 +8,4 @@ class CardViewSet(viewsets.ModelViewSet):
     serializer_class = CardSerializer
     pagination_class = CustomPageNumberPagination
     http_method_names = ['get', 'put', 'patch']
+    
