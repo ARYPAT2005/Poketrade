@@ -19,4 +19,4 @@ class PackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Pack
-        fields = ['id', 'name', 'description', 'items']
+        fields = ['id', 'name', 'description', 'color', 'cost', 'items']

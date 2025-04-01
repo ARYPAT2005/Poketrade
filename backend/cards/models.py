@@ -36,6 +36,12 @@ class Pack(models.Model):
     id = models.SlugField(primary_key=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
+    color = models.CharField(
+        max_length=7,
+        default='#4A5568',  # Default gray color
+        help_text="Hex color code for UI display"
+    )
+    cost = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name

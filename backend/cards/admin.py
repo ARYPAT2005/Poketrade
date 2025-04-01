@@ -40,9 +40,12 @@ class PackItemInline(admin.TabularInline):
 
 @admin.register(Pack)
 class PackAdmin(admin.ModelAdmin):
-    inlines = [PackItemInline]
-    list_display = ('id', 'name', 'description')
+    list_display = ('id', 'name', 'color', 'cost', 'description')
     search_fields = ('id', 'name')
+    fieldsets = (
+        (None, {'fields': ('id', 'name', 'color')}),
+        ('Description', {'fields': ('description',)}),
+    )
 
 @admin.register(PackItem)
 class PackItemAdmin(admin.ModelAdmin):

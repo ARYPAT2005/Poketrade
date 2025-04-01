@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use, useEffect } from "react";
 import "./Store.css"; // Import your CSS file for styling
 
 import { userIdAtom } from "../atoms/userIdAtom";
@@ -9,6 +9,7 @@ import { Carousel } from "react-bootstrap";
 import LoginPrompt from "./LoginPrompt";
 
 import Pack from "../types/Pack";
+import Card from "../types/Card";
 
 import pokeball from "../assets/individual_pokeball.svg";
 
@@ -18,38 +19,7 @@ const Store: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
   const [selectedPack, setSelectedPack] = React.useState<Pack | null>(null);
 
-  const packs: Pack[] = [
-    {
-      id: "rare_ultra",
-      name: "Rare Ultra",
-      color: "#ffcc00", // Gold
-      desc: `This pack has the following drop rates: \n
-             65% chance to return a random card with rarity Common \n
-             25% chance to return a random card with rarity Uncommon \n
-             10% chance to return a random card with rarity Rare Ultra \n`,
-      cost: 100,
-    },
-    {
-      id: "rare_shiny",
-      name: "Rare Shiny",
-      color: "#ff6666", // Red
-      desc: `This pack has the following drop rates: \n
-             65% chance to return a random card with rarity Common \n
-             25% chance to return a random card with rarity Uncommon \n
-             10% chance to return a random card with rarity Rare Shiny \n`,
-      cost: 150,
-    },
-    {
-      id: "rare_holo",
-      name: "Rare Holo",
-      color: "#3399ff", // Blue
-      desc: `This pack has the following drop rates: \n
-             65% chance to return a random card with rarity Common \n
-             25% chance to return a random card with rarity Uncommon \n
-             10% chance to return a random card with rarity Rare Holo \n`,
-      cost: 200,
-    },
-  ];
+  const [packs, setPacks] = React.useState<Pack[]>([]);
 
   const handlePackSelect = (pack: Pack) => {
     setSelectedPack(pack);
@@ -58,6 +28,23 @@ const Store: React.FC = () => {
   const handleCloseOverlay = () => {
     setSelectedPack(null);
   };
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/packs/")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data) {
+          // console.log(data);
+          setPacks(data);
+        }
+      })
+      .catch((error) => console.error("Error fetching card:", error));
+  }, []);
 
   return (
     <div>
