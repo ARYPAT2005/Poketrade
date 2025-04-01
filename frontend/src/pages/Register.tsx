@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Button, Form, Card, Alert, InputGroup } from "react-bootstrap";
-import { useAtomValue } from "jotai";
-import { isLoggedAtom } from "../atoms/isLoggedAtom";
+import React, { useEffect, useState } from "react"
+import { Button, Form, Card, Alert, InputGroup } from "react-bootstrap"
+import { useAtomValue } from "jotai"
+import { isLoggedAtom } from "../atoms/isLoggedAtom"
+import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
+
+  const navigate = useNavigate();
+
   const isLogged = useAtomValue(isLoggedAtom);
   const [validated, setValidated] = useState(false);
 
@@ -16,15 +20,18 @@ const Register = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [registerFailed, setRegisterFailed] = useState(false);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   // Regular expressions for validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email validation
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
-
+    setValidated(true);
     let valid = true;
 
     // Validate Username (Ensure it's not empty)
@@ -63,9 +70,80 @@ const Register = () => {
 
     // If all fields are valid, proceed with submission
     if (valid) {
-      setValidated(true);
-      console.log("Attempting to register...");
+      event.preventDefault();
       // Proceed with form submission (e.g., API call)
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/register/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password,
+            confirm_password: confirmPassword
+          }),
+        });
+        if (response.status === 400) {
+          try {
+              const errorData = await response.json();
+              if (errorData.email) {
+                  setError("Email already exists. Please use a different email.");
+              } else if (errorData.username) {
+                  setError("Username already taken. Try another one.");
+              } else {
+                  setError("Registration failed. Please check your details.");
+              }
+          } catch (error) {
+              setError("An unexpected error occurred.");
+          }
+          return; // Exit function to prevent further execution
+      }
+        let data;
+        try {
+            data = await response.json(); // Read JSON once
+        } catch (error) {
+            console.error("Failed to parse JSON response:", error);
+            data = null; // Handle cases where response isn't JSON
+        }
+  
+        if (response.ok) {
+          setRegisterSuccess(true);
+          setRegisterFailed(false);
+          // Clear form
+          setUsername("");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          navigate("http://127.0.0.1:5173/login");
+        } else {
+          const data = await response.json();
+          handleBackendErrors(data);
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+        setRegisterFailed(true);
+        setRegisterSuccess(false);
+        setPasswordError("Server error. Please try again later.");
+      }
+    }
+  };
+
+  const handleBackendErrors = (errorData: any) => {
+    if (errorData.errors) {
+      // Handle serializer errors
+      if (errorData.errors.email) {
+        setEmailError(errorData.errors.email[0]);
+      }
+      if (errorData.errors.password) {
+        setPasswordError(errorData.errors.password[0]);
+      }
+    } else if (errorData.error) {
+      // Handle server errors
+      setPasswordError(errorData.error);
+    } else {
+      setPasswordError("Unknown error occurred");
     }
   };
 
@@ -151,7 +229,19 @@ const Register = () => {
               <Button variant="primary" type="submit">
                 Register
               </Button>
-            </Form>
+              </Form>
+              {registerFailed && (
+              <Alert variant="danger" style={{ marginTop: "10px" }}>
+                {emailError || passwordError || "Registration failed. Please try again."}
+              </Alert>
+            )}
+            {registerSuccess && (
+              <Alert variant="success">
+                Registration successful! Please log in.
+              </Alert>
+            )}
+            {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
+
           </Card.Body>
         )}
       </Card>
