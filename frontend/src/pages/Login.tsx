@@ -3,10 +3,10 @@ import React from "react";
 import { Button, Form, Card, Alert } from "react-bootstrap";
 
 import { useAtom } from "jotai";
-import { isLoggedAtom } from "../atoms/isLoggedAtom";
+import { userIdAtom } from "../atoms/userIdAtom";
 
 const Login = () => {
-  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
+  const [userId, setUserId] = useAtom(userIdAtom);
   const [loginFailed, setLoginFailed] = React.useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -66,18 +66,23 @@ const Login = () => {
 
       <p style={{ marginTop: "50px" }}>
         DEBUGGING:&nbsp;
-        {isLogged
-          ? "You are logged in. Click the button below to logout."
-          : "You are not logged in. Click the button below to login."}
+        {userId
+          ? "You are logged in with userId: " + userId
+          : "You are not logged in. Enter a userId below to simulate login."}
       </p>
-      <Button
-        onClick={() => {
-          setIsLogged(!isLogged);
+      <input
+        type="text"
+        placeholder="Enter userId to simulate login"
+        style={{ width: "300px", padding: "5px", margin: "10px" }}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value) {
+            setUserId(value);
+          } else {
+            setUserId("");
+          }
         }}
-        variant={isLogged ? "danger" : "success"}
-      >
-        {isLogged ? "Logout" : "Login"}
-      </Button>
+      />
     </div>
   );
 };

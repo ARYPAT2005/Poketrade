@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Card, Alert, InputGroup } from "react-bootstrap";
 import { useAtomValue } from "jotai";
-import { isLoggedAtom } from "../atoms/isLoggedAtom";
+import { userIdAtom } from "../atoms/userIdAtom";
 
 const Register = () => {
-  const isLogged = useAtomValue(isLoggedAtom);
+  const userId = useAtomValue(userIdAtom);
   const [validated, setValidated] = useState(false);
 
   const [username, setUsername] = useState("");
@@ -69,15 +69,11 @@ const Register = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("isLogged:", isLogged);
-  }, [isLogged]);
-
   return (
     <div>
       <h1>Register</h1>
       <Card style={{ maxWidth: "min(500px, 90%)", margin: "auto", marginTop: "50px" }}>
-        {isLogged ? (
+        {userId ? (
           <Card.Body>
             <Alert variant="success">You are already logged in.</Alert>
           </Card.Body>
