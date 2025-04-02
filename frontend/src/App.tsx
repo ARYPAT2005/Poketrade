@@ -10,6 +10,7 @@ import Store from "./pages/Store";
 import Trade from "./pages/Trade";
 import Search from "./pages/Search";
 import Cards from "./pages/Cards";
+import Messages from "./pages/Messages";
 
 import CustomNavbar from "./components/CustomNavbar";
 import Footer from "./components/Footer";
@@ -37,6 +38,7 @@ const App: React.FC = () => {
           <Route path="/about" element={<About />} />
           <Route path="/search" element={<Search />} />
           <Route path="/cards" element={<Cards />} />
+          <Route path="/messages" element={<Messages />} />
         </Routes>
       </div>
       <Footer />
