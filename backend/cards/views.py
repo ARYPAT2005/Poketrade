@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from cards.models import Card, Pack, PackItem
 from cards.serializers import CardSerializer, PackSerializer
+from django.http import JsonResponse
 from .pagination import CustomPageNumberPagination
 import random
 
@@ -53,3 +54,11 @@ class PackListView(APIView):
         packs = Pack.objects.prefetch_related('items').all()
         serializer = PackSerializer(packs, many=True)
         return Response(serializer.data)
+
+def search(request):
+    query = request.GET.get('q', '')
+    results = []
+    if query:
+        cards = Card.objects.filter(name__icontains=query)[:20]
+        results = [{'id': card.id, 'name': card.name, 'image': card.image_url} for card in cards]
+    return JsonResponse({'results': results})

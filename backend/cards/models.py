@@ -2,7 +2,7 @@ from django.db import models
 
 class Card(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, db_index=True)
     supertype = models.CharField(max_length=255)
     subtypes = models.JSONField()
     hp = models.CharField(max_length=10, null=True, blank=True)
