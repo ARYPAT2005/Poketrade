@@ -1,0 +1,5 @@
+.form-control.is-valid, .was-validated .form-control:valid {
+  background-image: none; /* Removes the check mark */
+  border-color: initial; /* Resets the green border */
+  padding-right: initial; /* Resets the padding */
+}

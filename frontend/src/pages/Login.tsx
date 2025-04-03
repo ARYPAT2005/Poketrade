@@ -46,6 +46,7 @@ const Login = () => {
       }
       const responseData: LoginResponse = await response.json();
       setUsername(responseData.user);
+
       console.log("Login successful!", responseData);
       setIsLogged(true);
       setLoginFailed(false);
@@ -100,7 +101,8 @@ const Login = () => {
         </Card.Footer>
       </Card>
 
-      <p style={{ marginTop: "50px" }}>
+{/* DO NOT DELETE (debugging purposes): */}
+      {/* <p style={{ marginTop: "50px" }}>
         DEBUGGING:&nbsp;
         {isLogged
           ? "You are logged in. Click the button below to logout."
@@ -113,7 +115,7 @@ const Login = () => {
         variant={isLogged ? "danger" : "success"}
       >
         {isLogged ? "Logout" : "Login"}
-      </Button>
+      </Button> */}
     </div>
   );
 };

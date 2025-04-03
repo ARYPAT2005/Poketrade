@@ -1,23 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { Navbar, Nav, Dropdown } from "react-bootstrap";
 import { PersonCircle } from "react-bootstrap-icons";
-import { usernameAtom, isLoggedAtom } from "../atoms/isLoggedAtom"; 
+import { usernameAtom, isLoggedAtom, isRegisteredAtom } from "../atoms/isLoggedAtom"; 
 import { useAtom } from "jotai";
+import { useNavigate } from "react-router-dom";
+
 
 interface CustomNavbarProps {
   isLogged: boolean;
+  isRegistered: boolean;
   setNavbarExpanded: (expanded: boolean) => void;
 }
 
-const CustomNavbar: React.FC<CustomNavbarProps> = ({ isLogged, setNavbarExpanded }) => {
-  const [username] = useAtom(usernameAtom); 
+const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
+  const [username, setUsername] = useAtom(usernameAtom); 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
+  const [isRegistered, setisRegistered] = useAtom(isRegisteredAtom);
+
+  const navigate = useNavigate();
+  console.log("Username from atom:", username);
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+  
+  const handleLogout = () => {
+    setIsLogged(false);
+    setisRegistered(false);
+    setUsername(""); 
+    navigate("/");
+  };
   return (
     <Navbar
       bg="transparent"
@@ -60,7 +74,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ isLogged, setNavbarExpanded
               <>
                 <Dropdown.Item href="#">Profile</Dropdown.Item>
                 <Dropdown.Item href="#">Settings</Dropdown.Item>
-                <Dropdown.Item href="#">Logout</Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
               </>
             ) : (
               <>

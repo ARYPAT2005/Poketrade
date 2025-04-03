@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react"
 import { Button, Form, Card, Alert, InputGroup } from "react-bootstrap"
-import { useAtomValue } from "jotai"
-import { isLoggedAtom } from "../atoms/isLoggedAtom"
+import { useAtomValue, useAtom } from "jotai"
+import { isLoggedAtom, isRegisteredAtom, usernameAtom} from "../atoms/isLoggedAtom"
 import { useNavigate } from 'react-router-dom'
+import "./Register.module.css";
 
 const Register = () => {
 
   const navigate = useNavigate();
+  const [isRegistered, setisRegistered] = useAtom(isRegisteredAtom);
 
-  const isLogged = useAtomValue(isLoggedAtom);
+  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
   const [validated, setValidated] = useState(false);
 
   const [username, setUsername] = useState("");
+  const [username1, setUsername1] = useAtom(usernameAtom);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -73,7 +76,7 @@ const Register = () => {
       event.preventDefault();
       // Proceed with form submission (e.g., API call)
       try {
-        const response = await fetch("http://127.0.0.1:8000/register/", {
+        const response: Response = await fetch("http://127.0.0.1:8000/register/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -85,50 +88,36 @@ const Register = () => {
             confirm_password: confirmPassword
           }),
         });
-        if (response.status === 400) {
-          try {
-              const errorData = await response.json();
-              if (errorData.email) {
-                  setError("Email already exists. Please use a different email.");
-              } else if (errorData.username) {
-                  setError("Username already taken. Try another one.");
-              } else {
-                  setError("Registration failed. Please check your details.");
-              }
-          } catch (error) {
-              setError("An unexpected error occurred.");
-          }
-          return; // Exit function to prevent further execution
-      }
-        let data;
-        try {
-            data = await response.json(); // Read JSON once
-        } catch (error) {
-            console.error("Failed to parse JSON response:", error);
-            data = null; // Handle cases where response isn't JSON
+      const data = await response.json();
+
+      if (response.ok) {
+        setRegisterSuccess(true);
+        setRegisterFailed(false);
+        setisRegistered(true);
+        setIsLogged(true);
+        setUsername1(username);
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        navigate("/"); 
+      } else {
+        if (data.email) {
+          setEmailError(data.email[0]);
         }
-  
-        if (response.ok) {
-          setRegisterSuccess(true);
-          setRegisterFailed(false);
-          // Clear form
-          setUsername("");
-          setEmail("");
-          setPassword("");
-          setConfirmPassword("");
-          navigate("http://127.0.0.1:5173/login");
-        } else {
-          const data = await response.json();
-          handleBackendErrors(data);
+        if (data.username) {
+          setUsernameError(data.username[0]);
         }
-      } catch (error) {
-        console.error("Registration error:", error);
-        setRegisterFailed(true);
         setRegisterSuccess(false);
-        setPasswordError("Server error. Please try again later.");
+        setRegisterFailed(true);
       }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setRegisterFailed(true);
+      setRegisterSuccess(false);
+      setError("An unexpected server error occurred. Please try again later.");
     }
-  };
+  }
+};
 
   const handleBackendErrors = (errorData: any) => {
     if (errorData.errors) {
@@ -161,20 +150,19 @@ const Register = () => {
           </Card.Body>
         ) : (
           <Card.Body>
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Form noValidate onSubmit={handleSubmit}>
               {/* Username Field */}
               <Form.Group className="mb-3" controlId="formBasicName">
                 <Form.Label>Username</Form.Label>
-                <InputGroup hasValidation>
+                <InputGroup >
                   <Form.Control
                     required
                     type="text"
                     placeholder="Enter username"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    isInvalid={!!usernameError}
+                    onChange={(e) => setUsername(e.target.value)}               
                   />
-                  <Form.Control.Feedback type="invalid">{usernameError}</Form.Control.Feedback>
+                  {registerSuccess && <span style={{ color: "green", marginLeft: "10px" }}>✔</span>}
                 </InputGroup>
               </Form.Group>
 
@@ -188,9 +176,11 @@ const Register = () => {
                     placeholder="Enter email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    isInvalid={!!emailError}
+                    isValid={registerSuccess}
+                    isInvalid={!registerSuccess && !!emailError}        
                   />
                   <Form.Control.Feedback type="invalid">{emailError}</Form.Control.Feedback>
+                  {registerSuccess && <span style={{ color: "green", marginLeft: "10px" }}>✔</span>}
                 </InputGroup>
               </Form.Group>
 
@@ -204,9 +194,11 @@ const Register = () => {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    isInvalid={!!passwordError}
+                    isValid={registerSuccess}
+                    isInvalid={!registerSuccess && !!passwordError}
                   />
                   <Form.Control.Feedback type="invalid">{passwordError}</Form.Control.Feedback>
+                  {registerSuccess && <span style={{ color: "green", marginLeft: "10px" }}>✔</span>}
                 </InputGroup>
               </Form.Group>
 
@@ -220,9 +212,11 @@ const Register = () => {
                     placeholder="Confirm Password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    isInvalid={!!confirmPasswordError}
+                    isValid={registerSuccess}
+                    isInvalid={!registerSuccess && !!confirmPasswordError}
                   />
                   <Form.Control.Feedback type="invalid">{confirmPasswordError}</Form.Control.Feedback>
+                  {registerSuccess && <span style={{ color: "green", marginLeft: "10px" }}>✔</span>}
                 </InputGroup>
               </Form.Group>
 
