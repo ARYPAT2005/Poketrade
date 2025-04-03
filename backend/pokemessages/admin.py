@@ -7,7 +7,7 @@ class TradeItemInline(admin.TabularInline):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'sender', 'recipient', 'timestamp', 'is_read')
+    list_display = ( 'id', 'subject', 'sender', 'recipient', 'timestamp', 'is_read')
     list_filter = ('is_read', 'timestamp')
     search_fields = ('subject', 'body')
 
