@@ -10,16 +10,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
     def create(self, validated_data):
-        validated_data.pop('confirm_password')
+        # validated_data.pop('confirm_password')
         user = User.objects.create_user(**validated_data)
         user.is_superuser = True
         user.is_staff = True
         user.save()
         return user
-    def validate(self, data):
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
-        return data
+    # def validate(self, data):
+    #     if data['password'] != data['confirm_password']:
+    #         raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
+    #     return data
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()

@@ -21,7 +21,8 @@ class RegisterView(viewsets.ViewSet):
             user = serializer.save()
             user.is_superuser = True
             user.is_staff = True
-            user.set_password(user.password)
+            user.is_active = True
+            user.set_password(request.data['password'])
             user.save()
             return Response({"message": "User registered successfully!", "user": serializer.data},
                             status=status.HTTP_201_CREATED)
