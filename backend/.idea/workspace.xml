@@ -5,11 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63a4d28a-8c9e-42cc-93e9-ef0985c1a2de" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/atoms/isLoggedAtom.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/atoms/isLoggedAtom.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/components/CustomNavbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/CustomNavbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Login.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Register.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Register.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -159,7 +160,7 @@
       <workItem from="1743563760554" duration="156000" />
       <workItem from="1743608794789" duration="2083000" />
       <workItem from="1743642183658" duration="1397000" />
-      <workItem from="1743651602555" duration="3813000" />
+      <workItem from="1743651602555" duration="6161000" />
     </task>
     <servers />
   </component>

@@ -46,3 +46,7 @@ class LoginView(viewsets.ViewSet):
             return Response({"message": "Login successful", "user": user.username, "email": user.email}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+def logout(request):
+    logout(request)
+    return Response({'message': 'Logged out successfully.'})
+

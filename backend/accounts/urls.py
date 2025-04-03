@@ -10,6 +10,7 @@ router.register(r'register', RegisterView, basename='register')
 
 urlpatterns = [
     path('login/', LoginView.as_view({'post': 'post'}), name='login'),
+    path('logout/', views.logout, name='logout'),
 ] +     router.urls
 from django.conf import settings
 
