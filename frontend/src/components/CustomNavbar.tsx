@@ -4,17 +4,42 @@ import { PersonCircle } from "react-bootstrap-icons";
 
 interface CustomNavbarProps {
   userId: string | null;
+  setUserId: (user: string | null) => void;
   setNavbarExpanded: (expanded: boolean) => void;
 }
 
-const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setNavbarExpanded }) => {
+const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavbarExpanded }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+  const [messageCount, setMessageCount] = useState(0);
+
+  const handleLogout = () => {
+    setUserId(null);
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      fetch(`http://localhost:8000/api/messages/${userId}/count`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setMessageCount(data.unread_count);
+        })
+        .catch((error) => {
+          console.error("Error fetching message count:", error);
+        });
+    }
+  }),
+    [userId];
 
   return (
     <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
@@ -49,9 +74,17 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setNavbarExpanded }
           <Dropdown.Menu align={isMobile ? "start" : "end"}>
             {userId ? (
               <>
+                <Dropdown.Item href="/messages">
+                  Messages
+                  {messageCount > 0 && (
+                    <span style={{ float: "right", paddingBottom: "2px" }} className="badge bg-danger">
+                      {messageCount >= 100 ? "99+" : messageCount}
+                    </span>
+                  )}
+                </Dropdown.Item>
                 <Dropdown.Item href="#">Profile</Dropdown.Item>
                 <Dropdown.Item href="#">Settings</Dropdown.Item>
-                <Dropdown.Item href="#">Logout</Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
               </>
             ) : (
               <>

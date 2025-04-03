@@ -1,0 +1,126 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import get_user_model
+from .models import Message, Trade
+from .serializers import MessageSerializer, TradeSerializer
+
+from django.utils import timezone
+
+User = get_user_model()
+
+# Use request.user to get the current user if we need to authenticate
+
+class MessageList(APIView):
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        messages = Message.objects.filter(recipient=user).order_by('-timestamp')
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+
+class MessageSend(APIView):
+    def post(self, request, sender, recipient):
+        try:
+            sender_user = User.objects.get(username=sender)
+            recipient_user = User.objects.get(username=recipient)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        data = request.data.copy()
+
+        serializer = MessageSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(
+                sender=sender_user,
+                recipient=recipient_user,
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class MessageCount(APIView):
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        unread_count = Message.objects.filter(recipient=user, is_read=False).count()
+        return Response({'unread_count': unread_count}, status=status.HTTP_200_OK)
+
+class MessageSent(APIView):
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        messages = Message.objects.filter(sender=user).order_by('-timestamp')
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+class MessageDetail(APIView):
+    def get(self, request, pk):
+        try:
+            message = Message.objects.get(pk=pk)
+        except Message.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = MessageSerializer(message)
+        return Response(serializer.data)
+    def patch(self, request, pk):
+        print("patch called for message with id:", pk)
+        # print all columns of the Message model for debugging
+        messages = Message._meta.get_fields()
+        print("messages", messages)
+        message = Message.objects.get(pk=pk)
+        if not message:
+            print( "Message not found")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        message.is_read = True
+        message.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def delete(self, request, pk):
+        message = Message.objects.get(pk=pk)
+        message.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TradeList(APIView):
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        trades = Trade.objects.filter(recipient=user).order_by('-timestamp')
+        serializer = TradeSerializer(trades, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, username):
+        data = request.data.copy()
+        data['sender'] = request.user.id
+        data['recipient'] = User.objects.get(username=username).id
+
+        serializer = TradeSerializer(data=data)
+        if serializer.is_valid():
+            trade = serializer.save()
+            # Handle trade items
+            for item in data.get('items', []):
+                TradeItem.objects.create(
+                    trade=trade,
+                    card_id=item['card'],
+                    quantity=item['quantity']
+                )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TradeDetail(APIView):
+    def patch(self, request, pk):
+        trade = Trade.objects.get(pk=pk)
+        trade.is_read = True
+        if 'accepted' in request.data:
+            trade.accepted = request.data['accepted']
+        trade.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def delete(self, request, pk):
+        trade = Trade.objects.get(pk=pk)
+        trade.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

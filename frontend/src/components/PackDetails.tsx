@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Card from "../types/Card";
 
 import pokeball from "../assets/individual_pokeball.svg";
@@ -10,7 +10,19 @@ interface CardDetailProps {
 
 const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
   const [cardWon, setCardWon] = useState<Card | null>(null);
+  const cardDetailRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cardDetailRef.current && !cardDetailRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
 
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
   useEffect(() => {
     console.log("PackDetails mounted with pack:", pack);
   }, [pack]);
@@ -42,6 +54,7 @@ const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
         style={{
           backgroundColor: pack.color || "#fff",
         }}
+        ref={cardDetailRef}
       >
         <button onClick={onClose}>Close</button>
         <h2>{pack.name}</h2>
