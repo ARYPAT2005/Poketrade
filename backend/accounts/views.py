@@ -1,6 +1,7 @@
 from django.contrib.auth import login
 import logging
 from rest_framework import status, permissions
+from rest_framework.permissions import AllowAny
 
 logger = logging.getLogger(__name__)
 from rest_framework import viewsets
@@ -34,8 +35,11 @@ class RegisterView(viewsets.ViewSet):
 
 # for login web request/response
 class LoginView(viewsets.ViewSet):
+    permission_classes = [AllowAny]
+    queryset = User.objects.all()
+
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+        serializer = LoginSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = serializer.validated_data["user"]
             login(request, user)
