@@ -17,5 +17,5 @@ urlpatterns = [
     path('api/packs/', PackListView.as_view(), name='pack-list'),
     path('api/packs/<slug:pack_id>/', PackView.as_view(), name='pack-detail'),
     path('search/', card_views.search, name='search'),
-    path('api/messages/', include('pokemessages.urls')),
+    path('api/', include('pokemessages.urls')),
 ]

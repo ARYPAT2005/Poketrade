@@ -7,10 +7,13 @@ from .serializers import MessageSerializer, TradeSerializer
 
 User = get_user_model()
 
+# Use request.user to get the current user if we need to authenticate
 
 class MessageList(APIView):
     def get(self, request, username):
-        user = request.user
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         messages = Message.objects.filter(recipient=user).order_by('-timestamp')
         serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
@@ -38,7 +41,10 @@ class MessageDetail(APIView):
 
 class TradeList(APIView):
     def get(self, request, username):
-        trades = Trade.objects.filter(recipient=request.user).order_by('-timestamp')
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        trades = Trade.objects.filter(recipient=user).order_by('-timestamp')
         serializer = TradeSerializer(trades, many=True)
         return Response(serializer.data)
 

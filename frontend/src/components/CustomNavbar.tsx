@@ -4,10 +4,11 @@ import { PersonCircle } from "react-bootstrap-icons";
 
 interface CustomNavbarProps {
   userId: string | null;
+  setUserId: (user: string | null) => void;
   setNavbarExpanded: (expanded: boolean) => void;
 }
 
-const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setNavbarExpanded }) => {
+const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavbarExpanded }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
   useEffect(() => {
@@ -15,6 +16,10 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setNavbarExpanded }
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleLogout = () => {
+    setUserId(null);
+  };
 
   return (
     <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
@@ -50,8 +55,9 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setNavbarExpanded }
             {userId ? (
               <>
                 <Dropdown.Item href="#">Profile</Dropdown.Item>
+                <Dropdown.Item href="/messages">Messages</Dropdown.Item>
                 <Dropdown.Item href="#">Settings</Dropdown.Item>
-                <Dropdown.Item href="#">Logout</Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
               </>
             ) : (
               <>

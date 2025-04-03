@@ -21,12 +21,12 @@ import { userIdAtom } from "./atoms/userIdAtom";
 import "./App.css";
 
 const App: React.FC = () => {
-  const [userId] = useAtom(userIdAtom);
+  const [userId, setUserId] = useAtom(userIdAtom);
   const [navbarExpanded, setNavbarExpanded] = useState(false);
 
   return (
     <div className="app-container">
-      <CustomNavbar userId={userId} setNavbarExpanded={setNavbarExpanded} />
+      <CustomNavbar userId={userId} setUserId={setUserId} setNavbarExpanded={setNavbarExpanded} />
       <div className={`content ${navbarExpanded ? "navbar-expanded" : ""}`}>
         <Routes>
           <Route path="/" element={<About />} />
