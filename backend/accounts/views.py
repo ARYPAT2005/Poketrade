@@ -5,9 +5,12 @@ from rest_framework.permissions import AllowAny
 
 logger = logging.getLogger(__name__)
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from accounts.serializers import (RegisterSerializer, LoginSerializer)
+
+from django.utils import timezone
 
 User = get_user_model()
 class RegisterView(viewsets.ViewSet):
@@ -49,4 +52,82 @@ class LoginView(viewsets.ViewSet):
 def logout(request):
     logout(request)
     return Response({'message': 'Logged out successfully.'})
+
+def canClaim(user):
+    now = timezone.now()
+    last_claim_date = user.last_claim_date
+    if last_claim_date and (now - last_claim_date).total_seconds() < 86400:
+        return False  # Cannot claim yet
+    return True  # Can claim
+
+class UserView(APIView):
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response({
+            'username': user.username,
+            'email': user.email,
+            'wallet_balance': user.wallet_balance,
+            'last_claim_date': user.last_claim_date,
+            'can_claim': canClaim(user),
+        }, status=status.HTTP_200_OK)
+
+class WalletDetail(APIView):
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        wallet_balance = user.wallet_balance  # Assuming you have a wallet_balance field in your User model
+        return Response({
+            'username': user.username,
+            'wallet_balance': wallet_balance
+                         }, status=status.HTTP_200_OK)
+
+class ClaimView(APIView):
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        last_claim_date = user.last_claim_date
+
+        return Response({
+            'username': user.username,
+            'last_claim_date': last_claim_date,
+            'can_claim': canClaim(user),
+        }, status=status.HTTP_200_OK)
+
+    # if last_claim_date is more than 24 hours ago, allow claim
+    def post(self, request, username):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        now = timezone.now()
+        last_claim_date = user.last_claim_date
+
+        if not canClaim(user):
+            return Response({
+                'username': user.username,
+                'success': False,
+                'message': 'You can only claim once every 24 hours.',
+                'last_claim_date': last_claim_date
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update the user's wallet balance and last claim date
+        user.wallet_balance += 100
+        user.last_claim_date = now
+        user.save()
+
+        return Response({
+            'username': user.username,
+            'success': True,
+            'message': 'Claim successful! Your wallet has been credited.',
+            'wallet_balance': user.wallet_balance,
+            'amount_claimed': 100,
+            'last_claim_date': user.last_claim_date
+        }, status=status.HTTP_200_OK)
 

@@ -37,6 +37,9 @@ class User(AbstractUser):
     password = models.CharField(max_length=128)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    wallet_balance = models.IntegerField(default=0)
+    # last_claim_date = models.DateField(null=True, blank=True)
+    last_claim_date = models.DateTimeField(null=True, blank=True)
 
     objects = UserManager()
 
