@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import "./Store.css"; // Import your CSS file for styling
+import "./Store.css";
+import "./OpenAnimation.css";
 
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";

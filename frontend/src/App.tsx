@@ -11,6 +11,8 @@ import Trade from "./pages/Trade";
 import Search from "./pages/Search";
 import Cards from "./pages/Cards";
 import Messages from "./pages/Messages";
+import Profile from "./pages/Profile";
+import LoginRewards from "./pages/LoginRewards";
 
 import CustomNavbar from "./components/CustomNavbar";
 import Footer from "./components/Footer";
@@ -35,6 +37,8 @@ const App: React.FC = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/cards" element={<Cards />} />
           <Route path="/messages" element={<Messages />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/loginrewards" element={<LoginRewards />} />
         </Routes>
       </div>
       <Footer />

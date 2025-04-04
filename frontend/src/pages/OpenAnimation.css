@@ -1,0 +1,18 @@
+@keyframes blink {
+  0% {
+    filter: invert(0%);
+    opacity: 1;
+  }
+  50% {
+    filter: invert(100%);
+    opacity: 0.5;
+  }
+  100% {
+    filter: invert(0%);
+    opacity: 1;
+  }
+}
+
+.blinking-image {
+  animation: blink 3s infinite;
+}
