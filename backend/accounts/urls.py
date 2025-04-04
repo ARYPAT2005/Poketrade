@@ -11,6 +11,9 @@ router.register(r'register', RegisterView, basename='register')
 urlpatterns = [
     path('login/', LoginView.as_view({'post': 'post'}), name='login'),
     path('logout/', views.logout, name='logout'),
+    path('user/<str:username>/', views.UserView.as_view(), name='user-detail'),
+    path('wallet/<str:username>/', views.WalletDetail.as_view(), name='wallet-detail'),
+    path('claim/<str:username>/', views.ClaimView.as_view(), name='claim'),
 ] +     router.urls
 from django.conf import settings
 
