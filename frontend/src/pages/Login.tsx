@@ -3,15 +3,12 @@ import React from "react";
 import { Button, Form, Card, Alert } from "react-bootstrap";
 
 import { useAtom } from "jotai";
-import { userIdAtom } from "../atoms/userIdAtom";
-import { isLoggedAtom, usernameAtom} from "../atoms/isLoggedAtom";
-import { useNavigate } from 'react-router-dom'
+import userIdAtom from "../atoms/userIdAtom";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
   const [userId, setUserId] = useAtom(userIdAtom);
   const [loginFailed, setLoginFailed] = React.useState(false);
-  const [, setUsername] = useAtom(usernameAtom);
   const [error, setError] = React.useState("");
   const navigate = useNavigate();
   interface LoginResponse {
@@ -41,16 +38,15 @@ const Login = () => {
         },
         body: JSON.stringify(data),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Login failed.");
       }
       const responseData: LoginResponse = await response.json();
-      setUsername(responseData.user);
 
       console.log("Login successful!", responseData);
-      setIsLogged(true);
+      setUserId(responseData.user);
       setLoginFailed(false);
       setError("");
       navigate("/");
@@ -60,7 +56,7 @@ const Login = () => {
       console.error("Login error:", err);
     }
   };
-    
+
   return (
     <div>
       <h1>Login</h1>
@@ -103,21 +99,25 @@ const Login = () => {
         </Card.Footer>
       </Card>
 
-{/* DO NOT DELETE (debugging purposes): */}
       <p style={{ marginTop: "50px" }}>
         DEBUGGING:&nbsp;
-        {isLogged
+        {userId
           ? "You are logged in with userId: " + userId
           : "You are not logged in. Enter a userId below to simulate login."}
       </p>
-      <Button
-        onClick={() => {
-          setIsLogged(!isLogged);
+      <input
+        type="text"
+        placeholder="Enter userId to simulate login"
+        style={{ width: "300px", padding: "5px", margin: "10px" }}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value) {
+            setUserId(value);
+          } else {
+            setUserId("");
+          }
         }}
-        variant={isLogged ? "danger" : "success"}
-      >
-        {isLogged ? "Logout" : "Login"}
-      </Button> */
+      />
     </div>
   );
 };

@@ -25,6 +25,10 @@ cd backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py migrate
+python manage.py fetch_cards
+python manage.py seed_packs
 python manage.py runserver
 ```
 
@@ -35,6 +39,7 @@ Check that the backend server is running at <http://localhost:8000>
 ```bash
 cd frontend
 npm install
+npm fund
 npm run dev
 ```
 

@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Card, Alert, InputGroup } from "react-bootstrap";
-import { useAtomValue, useAtom } from "jotai";
-import { userIdAtom } from "../atoms/userIdAtom";
-import { isLoggedAtom, isRegisteredAtom, usernameAtom} from "../atoms/isLoggedAtom";
-import { useNavigate } from 'react-router-dom';
+import userIdAtom from "../atoms/userIdAtom";
+
+import { useAtom } from "jotai";
+
+import { useNavigate } from "react-router-dom";
 import "./Register.module.css";
 
 const Register = () => {
-
   const navigate = useNavigate();
-  const [isRegistered, setisRegistered] = useAtom(isRegisteredAtom);
-  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
-  const userId = useAtomValue(userIdAtom);
+  const [userId, setUserId] = useAtom(userIdAtom);
   const [validated, setValidated] = useState(false);
 
   const [username, setUsername] = useState("");
-  const [username1, setUsername1] = useAtom(usernameAtom);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,7 +28,7 @@ const Register = () => {
   // Regular expressions for validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email validation
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -86,39 +83,37 @@ const Register = () => {
             username: username,
             email: email,
             password: password,
-            confirm_password: confirmPassword
+            confirm_password: confirmPassword,
           }),
         });
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok) {
-        setRegisterSuccess(true);
-        setRegisterFailed(false);
-        setisRegistered(true);
-        setIsLogged(true);
-        setUsername1(username);
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        navigate("/"); 
-      } else {
-        if (data.email) {
-          setEmailError(data.email[0]);
+        if (response.ok) {
+          setRegisterSuccess(true);
+          setRegisterFailed(false);
+          setUserId(username);
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          navigate("/");
+        } else {
+          if (data.email) {
+            setEmailError(data.email[0]);
+          }
+          if (data.username) {
+            setUsernameError(data.username[0]);
+          }
+          setRegisterSuccess(false);
+          setRegisterFailed(true);
         }
-        if (data.username) {
-          setUsernameError(data.username[0]);
-        }
-        setRegisterSuccess(false);
+      } catch (error) {
+        console.error("Registration error:", error);
         setRegisterFailed(true);
+        setRegisterSuccess(false);
+        setError("An unexpected server error occurred. Please try again later.");
       }
-    } catch (error) {
-      console.error("Registration error:", error);
-      setRegisterFailed(true);
-      setRegisterSuccess(false);
-      setError("An unexpected server error occurred. Please try again later.");
     }
-  }
-};
+  };
 
   const handleBackendErrors = (errorData: any) => {
     if (errorData.errors) {
@@ -136,15 +131,12 @@ const Register = () => {
       setPasswordError("Unknown error occurred");
     }
   };
-  useEffect(() => {
-    console.log("isLogged:", isLogged);
-  }, [isLogged]);
 
   return (
     <div>
       <h1>Register</h1>
       <Card style={{ maxWidth: "min(500px, 90%)", margin: "auto", marginTop: "50px" }}>
-        {isLogged ? (
+        {userId ? (
           <Card.Body>
             <Alert variant="success">You are already logged in.</Alert>
           </Card.Body>
@@ -154,13 +146,13 @@ const Register = () => {
               {/* Username Field */}
               <Form.Group className="mb-3" controlId="formBasicName">
                 <Form.Label>Username</Form.Label>
-                <InputGroup >
+                <InputGroup>
                   <Form.Control
                     required
                     type="text"
                     placeholder="Enter username"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}               
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                   {registerSuccess && <span style={{ color: "green", marginLeft: "10px" }}>✔</span>}
                 </InputGroup>
@@ -177,7 +169,7 @@ const Register = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     isValid={registerSuccess}
-                    isInvalid={!registerSuccess && !!emailError}        
+                    isInvalid={!registerSuccess && !!emailError}
                   />
                   <Form.Control.Feedback type="invalid">{emailError}</Form.Control.Feedback>
                   {registerSuccess && <span style={{ color: "green", marginLeft: "10px" }}>✔</span>}
@@ -223,19 +215,14 @@ const Register = () => {
               <Button variant="primary" type="submit">
                 Register
               </Button>
-              </Form>
-              {registerFailed && (
+            </Form>
+            {registerFailed && (
               <Alert variant="danger" style={{ marginTop: "10px" }}>
                 {emailError || passwordError || "Registration failed. Please try again."}
               </Alert>
             )}
-            {registerSuccess && (
-              <Alert variant="success">
-                Registration successful! Please log in.
-              </Alert>
-            )}
+            {registerSuccess && <Alert variant="success">Registration successful! Please log in.</Alert>}
             {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
-
           </Card.Body>
         )}
       </Card>
