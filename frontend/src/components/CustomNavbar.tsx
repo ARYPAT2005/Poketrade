@@ -38,7 +38,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavba
   }, []);
 
   useEffect(() => {
-    if (userId) {
+    if (isLogged) {
       fetch(`http://localhost:8000/api/messages/${userId}/count`)
         .then((response) => {
           if (!response.ok) {
@@ -54,7 +54,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavba
         });
     }
   }),
-    [userId];
+    [isLogged];
   return (
     <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
       <Navbar.Brand style={{ paddingLeft: "20px" }} href="/">
@@ -87,7 +87,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavba
             <PersonCircle />
           </Dropdown.Toggle>
           <Dropdown.Menu align={isMobile ? "start" : "end"}>
-            {userId ? (
+            {isLogged ? (
               <>
                 <Dropdown.Item href="/messages">
                   Messages

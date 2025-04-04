@@ -106,7 +106,7 @@ const Login = () => {
 {/* DO NOT DELETE (debugging purposes): */}
       <p style={{ marginTop: "50px" }}>
         DEBUGGING:&nbsp;
-        {userId
+        {isLogged
           ? "You are logged in with userId: " + userId
           : "You are not logged in. Enter a userId below to simulate login."}
       </p>

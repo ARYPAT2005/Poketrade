@@ -144,7 +144,7 @@ const Register = () => {
     <div>
       <h1>Register</h1>
       <Card style={{ maxWidth: "min(500px, 90%)", margin: "auto", marginTop: "50px" }}>
-        {userId ? (
+        {isLogged ? (
           <Card.Body>
             <Alert variant="success">You are already logged in.</Alert>
           </Card.Body>

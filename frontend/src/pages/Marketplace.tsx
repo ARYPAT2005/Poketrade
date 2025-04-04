@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 
 import "./Marketplace.css";
 import { userIdAtom } from "../atoms/userIdAtom";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useAtom } from "jotai";
 import Card from "../types/Card";
 import LoginPrompt from "./LoginPrompt";
+import { isLoggedAtom, usernameAtom} from "../atoms/isLoggedAtom";
 
 const Marketplace = () => {
+  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
   const [overlayIsVisible, setOverlayVisibility] = useState<{ [key: number]: boolean }>({});
 
   const handleCardClick = (tradeId: number) => {
@@ -31,7 +33,7 @@ const Marketplace = () => {
   return (
     <div>
       <h1>Marketplace</h1>
-      {userId ? (
+      {isLogged ? (
         <>
           <p style={{ textAlign: "center", color: "#DADADA" }}>Buy and sell items here!</p>
           <div className="container">

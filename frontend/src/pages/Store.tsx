@@ -10,6 +10,8 @@ import LoginPrompt from "./LoginPrompt";
 
 import Pack from "../types/Pack";
 import Card from "../types/Card";
+import { isLoggedAtom, usernameAtom} from "../atoms/isLoggedAtom";
+import { useAtom } from "jotai";
 
 import pokeball from "../assets/individual_pokeball.svg";
 
@@ -17,6 +19,7 @@ import PackDetails from "../components/PackDetails";
 
 const Store: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
+  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
   const [selectedPack, setSelectedPack] = React.useState<Pack | null>(null);
 
   const [packs, setPacks] = React.useState<Pack[]>([]);
@@ -49,7 +52,7 @@ const Store: React.FC = () => {
   return (
     <div>
       <h1>Store</h1>
-      {userId ? (
+      {isLogged ? (
         <div>
           <Carousel
             interval={3000} // Change slide every 3 seconds

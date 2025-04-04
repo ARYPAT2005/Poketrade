@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./Messages.css";
 import { userIdAtom } from "../atoms/userIdAtom";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useAtom } from "jotai";
+import { isLoggedAtom, usernameAtom} from "../atoms/isLoggedAtom";
 
 import { Tabs, Tab, Card, ListGroup, Form, InputGroup, Button, Alert } from "react-bootstrap";
 import { CircleFill } from "react-bootstrap-icons";
@@ -19,6 +20,7 @@ interface Message {
 }
 
 const Messages: React.FC = () => {
+  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
   const userId = useAtomValue(userIdAtom);
   const [inboxMessages, setInboxMessages] = useState<Message[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
@@ -160,7 +162,7 @@ const Messages: React.FC = () => {
   };
 
   useEffect(() => {
-    if (userId) {
+    if (isLogged) {
       fetch(`http://127.0.0.1:8000/api/messages/${userId}`)
         .then((response) => response.json())
         .then((data) => {
@@ -170,10 +172,10 @@ const Messages: React.FC = () => {
           console.error("Error fetching messages:", error);
         });
     }
-  }, [userId]);
+  }, [isLogged]);
 
   useEffect(() => {
-    if (userId) {
+    if (isLogged) {
       // 127.0.0.1:8000/api/messages/admin/sent/
       fetch(`http://127.0.0.1:8000/api/messages/${userId}/sent`)
         .then((response) => response.json())
@@ -184,7 +186,7 @@ const Messages: React.FC = () => {
           console.error("Error fetching messages:", error);
         });
     }
-  }, [userId]);
+  }, [isLogged]);
 
   useEffect(() => {
     console.log("messages", inboxMessages);
@@ -192,7 +194,7 @@ const Messages: React.FC = () => {
   return (
     <div>
       <h1>Messages</h1>
-      {userId ? (
+      {isLogged ? (
         <Card
           style={{
             maxWidth: "min(1000px, 90%)",
