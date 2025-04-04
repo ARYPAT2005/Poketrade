@@ -3,25 +3,60 @@ import React from "react";
 import { Button, Form, Card, Alert } from "react-bootstrap";
 
 import { useAtom } from "jotai";
-import { userIdAtom } from "../atoms/userIdAtom";
+import userIdAtom from "../atoms/userIdAtom";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [userId, setUserId] = useAtom(userIdAtom);
   const [loginFailed, setLoginFailed] = React.useState(false);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [error, setError] = React.useState("");
+  const navigate = useNavigate();
+  interface LoginResponse {
+    message: string;
+    user: string;
+    email: string;
+  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
     const email = form.elements.namedItem("formBasicEmail") as HTMLInputElement;
     const password = form.elements.namedItem("formBasicPassword") as HTMLInputElement;
-
+    const data = {
+      email: email.value,
+      password: password.value,
+    };
     console.log("Attempting to login...");
-    console.log("Email:", email.value);
-    console.log("Password:", password.value);
+    console.log("Email:", data.email);
+    console.log("Password:", data.password);
 
     //TODO: Implement login logic here
-    setLoginFailed(true);
+    try {
+      const response: Response = await fetch("http://127.0.0.1:8000/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Login failed.");
+      }
+      const responseData: LoginResponse = await response.json();
+
+      console.log("Login successful!", responseData);
+      setUserId(responseData.user);
+      setLoginFailed(false);
+      setError("");
+      navigate("/");
+    } catch (err: any) {
+      setLoginFailed(true);
+      setError(err.message || "An unexpected error occurred.");
+      console.error("Login error:", err);
+    }
   };
+
   return (
     <div>
       <h1>Login</h1>

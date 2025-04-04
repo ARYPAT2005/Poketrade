@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Navbar, Nav, Dropdown } from "react-bootstrap";
 import { PersonCircle } from "react-bootstrap-icons";
+import userIdAtom from "../atoms/userIdAtom";
+import { useAtom } from "jotai";
+import { useNavigate } from "react-router-dom";
 
 interface CustomNavbarProps {
-  userId: string | null;
-  setUserId: (user: string | null) => void;
   setNavbarExpanded: (expanded: boolean) => void;
 }
 
-const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavbarExpanded }) => {
+const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
+  const [username, setUsername] = useAtom(userIdAtom);
+
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [messageCount, setMessageCount] = useState(0);
 
   const handleLogout = () => {
-    setUserId(null);
+    setUsername("");
+    navigate("/");
   };
 
+  const navigate = useNavigate();
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
     window.addEventListener("resize", handleResize);
@@ -23,8 +28,8 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavba
   }, []);
 
   useEffect(() => {
-    if (userId) {
-      fetch(`http://localhost:8000/api/messages/${userId}/count`)
+    if (username) {
+      fetch(`http://localhost:8000/api/messages/${username}/count`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -39,14 +44,15 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavba
         });
     }
   }),
-    [userId];
-
+    [username];
   return (
     <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
       <Navbar.Brand style={{ paddingLeft: "20px" }} href="/">
         Pokétrade
       </Navbar.Brand>
+
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
           <Nav.Link href="/marketplace">Marketplace</Nav.Link>
@@ -54,6 +60,11 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavba
           <Nav.Link href="/store">Store</Nav.Link>
         </Nav>
         <div style={{ marginRight: "12px" }}>
+          {username && (
+            <span className="welcome-message" style={{ marginRight: "15px", fontWeight: "bold" }}>
+              Welcome {username}!
+            </span>
+          )}
           <a href="./Search">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -72,7 +83,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavba
             <PersonCircle />
           </Dropdown.Toggle>
           <Dropdown.Menu align={isMobile ? "start" : "end"}>
-            {userId ? (
+            {username ? (
               <>
                 <Dropdown.Item href="/messages">
                   Messages

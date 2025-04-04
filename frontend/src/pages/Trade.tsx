@@ -1,7 +1,7 @@
 import React from "react";
 
-import { userIdAtom } from "../atoms/userIdAtom";
-import { useAtomValue } from "jotai";
+import userIdAtom from "../atoms/userIdAtom";
+import { useAtomValue, useAtom } from "jotai";
 
 import LoginPrompt from "./LoginPrompt";
 

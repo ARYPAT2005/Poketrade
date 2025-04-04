@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import User
 
 class Card(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
@@ -25,7 +26,7 @@ class Card(models.Model):
         return self.name
 
 class Owns(models.Model):
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    user = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
 

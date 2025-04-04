@@ -1,7 +1,7 @@
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import "./Store.css"; // Import your CSS file for styling
 
-import { userIdAtom } from "../atoms/userIdAtom";
+import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
 
 import { Carousel } from "react-bootstrap";
@@ -10,6 +10,7 @@ import LoginPrompt from "./LoginPrompt";
 
 import Pack from "../types/Pack";
 import Card from "../types/Card";
+import { useAtom } from "jotai";
 
 import pokeball from "../assets/individual_pokeball.svg";
 

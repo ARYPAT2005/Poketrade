@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Messages.css";
-import { userIdAtom } from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
+import userIdAtom from "../atoms/userIdAtom";
 
 import { Tabs, Tab, Card, ListGroup, Form, InputGroup, Button, Alert } from "react-bootstrap";
 import { CircleFill } from "react-bootstrap-icons";
@@ -19,7 +19,7 @@ interface Message {
 }
 
 const Messages: React.FC = () => {
-  const userId = useAtomValue(userIdAtom);
+  const username = useAtomValue(userIdAtom);
   const [inboxMessages, setInboxMessages] = useState<Message[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
@@ -127,7 +127,7 @@ const Messages: React.FC = () => {
 
     if (valid) {
       setComposeValidated(true);
-      fetch(`http://127.0.0.1:8000/api/messages/send/${userId}/${composeRecipient}/`, {
+      fetch(`http://127.0.0.1:8000/api/messages/send/${username}/${composeRecipient}/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -160,8 +160,8 @@ const Messages: React.FC = () => {
   };
 
   useEffect(() => {
-    if (userId) {
-      fetch(`http://127.0.0.1:8000/api/messages/${userId}`)
+    if (username) {
+      fetch(`http://127.0.0.1:8000/api/messages/${username}/`)
         .then((response) => response.json())
         .then((data) => {
           setInboxMessages(data);
@@ -170,12 +170,12 @@ const Messages: React.FC = () => {
           console.error("Error fetching messages:", error);
         });
     }
-  }, [userId]);
+  }, [username, compositionSuccess]);
 
   useEffect(() => {
-    if (userId) {
+    if (username) {
       // 127.0.0.1:8000/api/messages/admin/sent/
-      fetch(`http://127.0.0.1:8000/api/messages/${userId}/sent`)
+      fetch(`http://127.0.0.1:8000/api/messages/${username}/sent/`)
         .then((response) => response.json())
         .then((data) => {
           setSentMessages(data);
@@ -184,15 +184,15 @@ const Messages: React.FC = () => {
           console.error("Error fetching messages:", error);
         });
     }
-  }, [userId]);
+  }, [username, compositionSuccess]);
 
   useEffect(() => {
-    console.log("messages", inboxMessages);
-  }, [inboxMessages]);
+    console.log("username", username);
+  }, [username]);
   return (
     <div>
       <h1>Messages</h1>
-      {userId ? (
+      {username ? (
         <Card
           style={{
             maxWidth: "min(1000px, 90%)",
@@ -224,13 +224,6 @@ const Messages: React.FC = () => {
                         }}
                         variant="flush"
                       >
-                        {/* <ListGroup.Item>
-                        {" "}
-                        <CircleFill className="text-primary" /> Message from John Doe
-                      </ListGroup.Item>
-                      <ListGroup.Item>
-                        <Badge bg="secondary">Read</Badge> Message from Jane Smith
-                      </ListGroup.Item> */}
                         {inboxMessages.map((message) => (
                           <ListGroup.Item
                             style={{ cursor: "pointer" }}
@@ -248,10 +241,10 @@ const Messages: React.FC = () => {
                             </div>
 
                             {!message.is_read ? (
-                              <CircleFill
-                                className="text-primary float-end"
-                                style={{ marginRight: "10px", fontSize: "20px", padding: "3px" }}
-                              />
+                              <>
+                                {" "}
+                                <CircleFill className="text-primary float-end" style={{ padding: "2px" }} />
+                              </>
                             ) : null}
                           </ListGroup.Item>
                         ))}
@@ -354,13 +347,6 @@ const Messages: React.FC = () => {
                         }}
                         variant="flush"
                       >
-                        {/* <ListGroup.Item>
-                        {" "}
-                        <CircleFill className="text-primary" /> Message from John Doe
-                      </ListGroup.Item>
-                      <ListGroup.Item>
-                        <Badge bg="secondary">Read</Badge> Message from Jane Smith
-                      </ListGroup.Item> */}
                         {inboxMessages.map((message) => (
                           <ListGroup.Item
                             style={{ cursor: "pointer" }}

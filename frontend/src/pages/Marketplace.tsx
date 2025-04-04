@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import "./Marketplace.css";
-import { userIdAtom } from "../atoms/userIdAtom";
-import { useAtomValue } from "jotai";
+import userIdAtom from "../atoms/userIdAtom";
+import { useAtomValue, useAtom } from "jotai";
 import Card from "../types/Card";
 import LoginPrompt from "./LoginPrompt";
 

@@ -5,6 +5,7 @@ from cards.models import Card, Pack, PackItem
 from cards.serializers import CardSerializer, PackSerializer
 from django.http import JsonResponse
 from .pagination import CustomPageNumberPagination
+from rest_framework.permissions import AllowAny
 import random
 
 class CardViewSet(viewsets.ModelViewSet):
@@ -12,6 +13,7 @@ class CardViewSet(viewsets.ModelViewSet):
     serializer_class = CardSerializer
     pagination_class = CustomPageNumberPagination
     http_method_names = ['get', 'put', 'patch']
+    permission_classes = [AllowAny]
 
 class PackView(APIView):
     def get(self, request, pack_id):
