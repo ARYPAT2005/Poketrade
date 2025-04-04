@@ -9,12 +9,23 @@ import { useNavigate } from "react-router-dom";
 interface CustomNavbarProps {
   isLogged: boolean;
   isRegistered: boolean;
+  userId: string | null;
+  setUserId: (user: string | null) => void;
   setNavbarExpanded: (expanded: boolean) => void;
 }
 
-const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
+const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavbarExpanded }) => {
   const [username, setUsername] = useAtom(usernameAtom); 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+  const [messageCount, setMessageCount] = useState(0);
+
+  const handleLogout = () => {
+    setUserId(null);
+    setIsLogged(false);
+    setisRegistered(false);
+    setUsername(""); 
+    navigate("/");
+  };
   const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
   const [isRegistered, setisRegistered] = useAtom(isRegisteredAtom);
 
@@ -25,21 +36,27 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  
-  const handleLogout = () => {
-    setIsLogged(false);
-    setisRegistered(false);
-    setUsername(""); 
-    navigate("/");
-  };
+
+  useEffect(() => {
+    if (userId) {
+      fetch(`http://localhost:8000/api/messages/${userId}/count`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setMessageCount(data.unread_count);
+        })
+        .catch((error) => {
+          console.error("Error fetching message count:", error);
+        });
+    }
+  }),
+    [userId];
   return (
-    <Navbar
-      bg="transparent"
-      className="shadow-sm"
-      expand="lg"
-      fixed="top"
-      onToggle={(expanded) => setNavbarExpanded(expanded)}
-    >
+    <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
       <Navbar.Brand style={{ paddingLeft: "20px" }} href="/">
         Pokétrade
       </Navbar.Brand>
@@ -70,8 +87,16 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
             <PersonCircle />
           </Dropdown.Toggle>
           <Dropdown.Menu align={isMobile ? "start" : "end"}>
-            {isLogged ? (
+            {userId ? (
               <>
+                <Dropdown.Item href="/messages">
+                  Messages
+                  {messageCount > 0 && (
+                    <span style={{ float: "right", paddingBottom: "2px" }} className="badge bg-danger">
+                      {messageCount >= 100 ? "99+" : messageCount}
+                    </span>
+                  )}
+                </Dropdown.Item>
                 <Dropdown.Item href="#">Profile</Dropdown.Item>
                 <Dropdown.Item href="#">Settings</Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>

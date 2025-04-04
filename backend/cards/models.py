@@ -3,7 +3,7 @@ from accounts.models import User
 
 class Card(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, db_index=True)
     supertype = models.CharField(max_length=255)
     subtypes = models.JSONField()
     hp = models.CharField(max_length=10, null=True, blank=True)
@@ -32,3 +32,29 @@ class Owns(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.card.name} ({self.quantity})"
+
+class Pack(models.Model):
+    id = models.SlugField(primary_key=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    color = models.CharField(
+        max_length=7,
+        default='#4A5568',  # Default gray color
+        help_text="Hex color code for UI display"
+    )
+    cost = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+class PackItem(models.Model):
+    pack = models.ForeignKey(Pack, related_name='items', on_delete=models.CASCADE)
+    tier = models.PositiveSmallIntegerField()
+    probability = models.FloatField()
+    filters = models.JSONField()
+
+    class Meta:
+        ordering = ['tier']
+
+    def __str__(self):
+        return f"{self.pack} - Tier {self.tier}"

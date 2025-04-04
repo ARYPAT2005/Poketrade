@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react"
-import { Button, Form, Card, Alert, InputGroup } from "react-bootstrap"
-import { useAtomValue, useAtom } from "jotai"
-import { isLoggedAtom, isRegisteredAtom, usernameAtom} from "../atoms/isLoggedAtom"
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { Button, Form, Card, Alert, InputGroup } from "react-bootstrap";
+import { useAtomValue, useAtom } from "jotai";
+import { userIdAtom } from "../atoms/userIdAtom";
+import { isLoggedAtom, isRegisteredAtom, usernameAtom} from "../atoms/isLoggedAtom";
+import { useNavigate } from 'react-router-dom';
 import "./Register.module.css";
 
 const Register = () => {
 
   const navigate = useNavigate();
   const [isRegistered, setisRegistered] = useAtom(isRegisteredAtom);
-
   const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
+  const userId = useAtomValue(userIdAtom);
   const [validated, setValidated] = useState(false);
 
   const [username, setUsername] = useState("");
@@ -135,7 +136,6 @@ const Register = () => {
       setPasswordError("Unknown error occurred");
     }
   };
-
   useEffect(() => {
     console.log("isLogged:", isLogged);
   }, [isLogged]);
@@ -144,7 +144,7 @@ const Register = () => {
     <div>
       <h1>Register</h1>
       <Card style={{ maxWidth: "min(500px, 90%)", margin: "auto", marginTop: "50px" }}>
-        {isLogged ? (
+        {userId ? (
           <Card.Body>
             <Alert variant="success">You are already logged in.</Alert>
           </Card.Body>

@@ -1,15 +1,56 @@
 import React, { useEffect, useState } from "react";
 import "./About.css";
-const About = () => {
-  const [cardImage, setCards] = useState<any[]>([]);
+import Card from "../types/Card";
+import CardDetail from "../components/CardDetails";
+const About: React.FC = () => {
+  const [cards, setCards] = useState<Card[]>([]);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:8000/api/cards/?page=1")
       .then((response) => response.json())
-      .then((data) => setCards(data.results))
+      .then((data) => {
+        if (data && data.results) {
+          console.log(data);
+          const card = data.results.map((cardData: any) => {
+            return {
+              id: cardData.id,
+              name: cardData.name,
+              image_url: cardData.image_url,
+              supertype: cardData.supertype || "",
+              subtypes: cardData.subtypes || [],
+              hp: cardData.hp || null,
+              types: cardData.types || null,
+              evolves_from: cardData.evolves_from || null,
+              abilities: cardData.abilities || null,
+              attacks: cardData.attacks || null,
+              weaknesses: cardData.weaknesses || null,
+              resistances: cardData.resistances || null,
+              set_data: cardData.set_data || {},
+              number: cardData.number || "",
+              rarity: cardData.rarity || null,
+              legalities: cardData.legalities || null,
+              artist: cardData.artist || null,
+              updated_at: cardData.updated_at || new Date().toISOString(),
+              tcgplayer_url: cardData.tcgplayer_url || null,
+            } as Card;
+          });
+
+          setCards(card);
+        } else {
+          console.error("No card data found in the response");
+        }
+      })
       .catch((error) => console.error("Error fetching card:", error));
   }, []);
 
+  const handleCardClick = (card: Card) => {
+    setSelectedCard(card);
+  };
+
+  const handleCloseOverlay = () => {
+    setSelectedCard(null);
+  };
   return (
     <>
       <div className="Visible">
@@ -21,11 +62,23 @@ const About = () => {
         </p>
       </div>
       <div className="card-Container">
-        {cardImage.map((card) => (
-          <img key={`${card.id}-${card.name}`} src={card.image_url} alt={card.name} width="300" />
+        {cards.map((card) => (
+          <img
+            key={`${card.id}-${card.name}`}
+            src={card.image_url}
+            alt={card.name}
+            width="300"
+            style={{
+              cursor: "pointer",
+              margin: "10px",
+            }}
+            onClick={() => handleCardClick(card)}
+          />
         ))}
       </div>
+      {selectedCard && <CardDetail card={selectedCard} onClose={handleCloseOverlay} />}
     </>
   );
 };
+
 export default About;

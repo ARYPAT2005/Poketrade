@@ -1,0 +1,26 @@
+.message-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-list {
+  width: 100%;
+}
+
+.message-inputs {
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .message-container {
+    flex-direction: row;
+  }
+
+  .message-list {
+    width: 25%;
+  }
+
+  .message-inputs {
+    width: 75%;
+  }
+}

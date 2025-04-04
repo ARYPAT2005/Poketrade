@@ -1,0 +1,39 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.card-detail {
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 500px;
+  width: 800px;
+}
+
+@keyframes blink {
+  0% {
+    filter: invert(0%);
+    opacity: 1;
+  }
+  50% {
+    filter: invert(100%);
+    opacity: 0.5;
+  }
+  100% {
+    filter: invert(0%);
+    opacity: 1;
+  }
+}
+
+.blinking-image {
+  animation: blink 3s infinite;
+}

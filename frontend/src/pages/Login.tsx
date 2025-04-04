@@ -3,11 +3,13 @@ import React from "react";
 import { Button, Form, Card, Alert } from "react-bootstrap";
 
 import { useAtom } from "jotai";
+import { userIdAtom } from "../atoms/userIdAtom";
 import { isLoggedAtom, usernameAtom} from "../atoms/isLoggedAtom";
 import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
   const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
+  const [userId, setUserId] = useAtom(userIdAtom);
   const [loginFailed, setLoginFailed] = React.useState(false);
   const [, setUsername] = useAtom(usernameAtom);
   const [error, setError] = React.useState("");
@@ -102,11 +104,11 @@ const Login = () => {
       </Card>
 
 {/* DO NOT DELETE (debugging purposes): */}
-      {/* <p style={{ marginTop: "50px" }}>
+      <p style={{ marginTop: "50px" }}>
         DEBUGGING:&nbsp;
-        {isLogged
-          ? "You are logged in. Click the button below to logout."
-          : "You are not logged in. Click the button below to login."}
+        {userId
+          ? "You are logged in with userId: " + userId
+          : "You are not logged in. Enter a userId below to simulate login."}
       </p>
       <Button
         onClick={() => {
@@ -115,7 +117,7 @@ const Login = () => {
         variant={isLogged ? "danger" : "success"}
       >
         {isLogged ? "Logout" : "Login"}
-      </Button> */}
+      </Button> */
     </div>
   );
 };
