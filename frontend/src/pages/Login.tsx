@@ -3,16 +3,14 @@ import React from "react";
 import { Button, Form, Card, Alert } from "react-bootstrap";
 
 import { useAtom } from "jotai";
-import { userIdAtom } from "../atoms/userIdAtom";
 import { isLoggedAtom, usernameAtom} from "../atoms/isLoggedAtom";
 import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
-  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
-  const [userId, setUserId] = useAtom(userIdAtom);
+  const [, setIsLogged] = useAtom(isLoggedAtom);
   const [loginFailed, setLoginFailed] = React.useState(false);
   const [, setUsername] = useAtom(usernameAtom);
-  const [error, setError] = React.useState("");
+  const [, setError] = React.useState("");
   const navigate = useNavigate();
   interface LoginResponse {
     message: string;
@@ -83,9 +81,10 @@ const Login = () => {
               <Form.Label>Password</Form.Label>
               <Form.Control type="password" placeholder="Password" />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicCheckbox">
+            {/* DO NOT DELETE - leave it commented (may/may not implement later): */}
+            {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="Remember me?" />
-            </Form.Group>
+            </Form.Group> */}
             <Button variant="primary" type="submit">
               Submit
             </Button>
@@ -100,11 +99,15 @@ const Login = () => {
           <small className="text-muted">
             Don't have an account? <a href="/register">Register here</a>
           </small>
+          <br></br>
+          <small className="text-muted">
+            Forgot your password? <a href="/forgot-password">Click here</a>
+          </small>
         </Card.Footer>
       </Card>
 
-{/* DO NOT DELETE (debugging purposes): */}
-      <p style={{ marginTop: "50px" }}>
+{/* DO NOT DELETE - leave it commented (debugging purposes): */}
+      {/* <p style={{ marginTop: "50px" }}>
         DEBUGGING:&nbsp;
         {isLogged
           ? "You are logged in with userId: " + userId
@@ -117,7 +120,7 @@ const Login = () => {
         variant={isLogged ? "danger" : "success"}
       >
         {isLogged ? "Logout" : "Login"}
-      </Button> */
+      </Button> */ }
     </div>
   );
 };

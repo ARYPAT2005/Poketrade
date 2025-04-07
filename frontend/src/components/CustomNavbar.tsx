@@ -27,7 +27,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ userId, setUserId, setNavba
     navigate("/");
   };
   const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
-  const [isRegistered, setisRegistered] = useAtom(isRegisteredAtom);
+  const [, setisRegistered] = useAtom(isRegisteredAtom);
 
   const navigate = useNavigate();
   console.log("Username from atom:", username);
