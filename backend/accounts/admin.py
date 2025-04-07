@@ -1,9 +1,11 @@
 # accounts/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from accounts.models import User
+from accounts.models import User, SecurityQuestion, UserSecurityQuestions
 
 admin.site.register(User, UserAdmin)
+admin.site.register(SecurityQuestion)
+admin.site.register(UserSecurityQuestions)
 
 # Custom UserAdmin to manage the user in the Django admin
 # class CustomUserAdmin(UserAdmin):
