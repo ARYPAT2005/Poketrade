@@ -1,8 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from django.contrib.auth import get_user_model
-from .models import Message, Trade
+from django.shortcuts import get_object_or_404
+from .models import Message, Trade, TradeCardDetail
 from .serializers import MessageSerializer, TradeSerializer
 
 from django.utils import timezone
@@ -85,42 +86,68 @@ class MessageDetail(APIView):
 
 class TradeList(APIView):
     def get(self, request, username):
-        user = User.objects.get(username=username)
-        if not user:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        trades = Trade.objects.filter(recipient=user).order_by('-timestamp')
-        serializer = TradeSerializer(trades, many=True)
+        recipient_user = get_object_or_404(User, username=username)
+        trades = Trade.objects.filter(recipient=recipient_user).prefetch_related('card_details__card').order_by('-timestamp')
+        serializer = TradeSerializer(trades, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def post(self, request, username):
-        data = request.data.copy()
-        data['sender'] = request.user.id
-        data['recipient'] = User.objects.get(username=username).id
 
-        serializer = TradeSerializer(data=data)
+    def post(self, request):
+        sender_username = request.data.get('sender_username')
+        if not sender_username:
+            return Response(
+                {"detail": "sender_username is required in the request body because authentication is disabled."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            sender_user = User.objects.get(username=sender_username)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": f"User with username '{sender_username}' not found."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer_data = request.data.copy()
+        serializer_data.pop('sender_username', None)
+        serializer = TradeSerializer(data=serializer_data, context={'request': request})
+
         if serializer.is_valid():
-            trade = serializer.save()
-            # Handle trade items
-            for item in data.get('items', []):
-                TradeItem.objects.create(
-                    trade=trade,
-                    card_id=item['card'],
-                    quantity=item['quantity']
-                )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            trade = serializer.save(sender=sender_user, status='pending')
+            return Response(TradeSerializer(trade, context={'request': request}).data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TradeDetail(APIView):
+    def get(self, request, pk):
+        trade = get_object_or_404(Trade.objects.prefetch_related('card_details__card'), pk=pk)
+        serializer = TradeSerializer(trade, context={'request': request})
+        return Response(serializer.data)
+
     def patch(self, request, pk):
-        trade = Trade.objects.get(pk=pk)
+        trade = get_object_or_404(Trade, pk=pk)
+        if trade.status != 'pending':
+             return Response({"detail": f"Trade is already {trade.status} and cannot be changed."}, status=status.HTTP_400_BAD_REQUEST)
+
+        accepted_status = request.data.get('accepted')
+
+        if accepted_status is None or not isinstance(accepted_status, bool):
+            return Response({"detail": "Invalid input. 'accepted' (boolean) is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        trade.accepted = accepted_status
+        trade.status = 'accepted' if accepted_status else 'rejected'
         trade.is_read = True
-        if 'accepted' in request.data:
-            trade.accepted = request.data['accepted']
-        trade.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        trade.save(update_fields=['accepted', 'status', 'is_read'])
+
+        if trade.status == 'accepted':
+            print(f"WARNING: Card transfer logic triggered publicly for Trade {trade.id}")
+            pass
+
+        return Response(TradeSerializer(trade, context={'request': request}).data, status=status.HTTP_200_OK)
+
 
     def delete(self, request, pk):
-        trade = Trade.objects.get(pk=pk)
+        trade = get_object_or_404(Trade, pk=pk)
+        trade_id = trade.id
         trade.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        return Response({"detail": f"Trade {trade_id} deleted successfully."}, status=status.HTTP_200_OK)
