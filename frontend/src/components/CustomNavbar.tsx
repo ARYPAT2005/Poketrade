@@ -111,7 +111,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
           >
             Store
           </Nav.Link>
-          {canClaim && location.pathname != "/loginrewards" && (
+          {canClaim && location.pathname != "/loginrewards" && username && (
             <img
               className="blinking-image"
               src={pokeball}
