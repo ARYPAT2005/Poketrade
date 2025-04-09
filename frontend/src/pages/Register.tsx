@@ -25,6 +25,26 @@ const Register = () => {
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [error, setError] = useState("");
 
+  const [answer1, setAnswer1] = useState<string>("");
+  const [selectedQuestion1Id, setSelectedQuestion1Id] = useState<number | null>(null);
+
+  const securityQuestions1 = [
+    { id: 1, text: "What is your mother's maiden name?" },
+    { id: 2, text: "What was the name of your first pet?" },
+    { id: 3, text: "What city were you born in?" },
+    { id: 4, text: "What is your favorite book?" },
+  ];
+
+  const [answer2, setAnswer2] = useState<string>("");
+  const [selectedQuestion2Id, setSelectedQuestion2Id] = useState<number | null>(null);
+
+  const securityQuestions2 = [
+    { id: 5, text: "What is your favorite food?" },
+    { id: 6, text: "What was the name of your elementary school?" },
+    { id: 7, text: "What was your dream job as a child?" },
+    { id: 8, text: "What is your favorite sports team?" },
+  ];
+
   // Regular expressions for validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email validation
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -84,6 +104,10 @@ const Register = () => {
             email: email,
             password: password,
             confirm_password: confirmPassword,
+            security_question_1: selectedQuestion1Id,
+            security_answer_1: answer1,
+            security_question_2: selectedQuestion2Id,
+            security_answer_2: answer2,
           }),
         });
         const data = await response.json();
@@ -117,6 +141,8 @@ const Register = () => {
 
   const handleBackendErrors = (errorData: any) => {
     if (errorData.errors) {
+      // FIXME: Delete this
+      return;
       // Handle serializer errors
       if (errorData.errors.email) {
         setEmailError(errorData.errors.email[0]);
@@ -211,7 +237,77 @@ const Register = () => {
                   {registerSuccess && <span style={{ color: "green", marginLeft: "10px" }}>✔</span>}
                 </InputGroup>
               </Form.Group>
+              {/* Security Question #1 */}
+              <div style={{ width: "350px" }}>
+                <Form.Group controlId="securityQuestion1">
+                  <Form.Label>Choose a security question:</Form.Label>
+                  <InputGroup>
+                    <Form.Control
+                      as="select"
+                      value={selectedQuestion1Id || ""}
+                      onChange={(e) => setSelectedQuestion1Id(Number(e.target.value))}
+                    >
+                      <option className="mt-5" value="">
+                        -- Select a question --
+                      </option>
+                      {securityQuestions1.map((question) => (
+                        <option key={question.id} value={question.id}>
+                          {question.text}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </InputGroup>
+                </Form.Group>
 
+                {selectedQuestion1Id && (
+                  <Form.Group controlId="answer">
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter your answer"
+                      value={answer1}
+                      onChange={(e) => setAnswer1(e.target.value)}
+                      className="mt-2"
+                    />
+                  </Form.Group>
+                )}
+              </div>
+
+              {/* Security Question #2 */}
+              <div style={{ width: "350px" }} className="mt-3">
+                <Form.Group controlId="securityQuestion2">
+                  <Form.Label>Choose a security question:</Form.Label>
+                  <InputGroup>
+                    <Form.Control
+                      as="select"
+                      value={selectedQuestion2Id || ""}
+                      onChange={(e) => setSelectedQuestion2Id(Number(e.target.value))}
+                    >
+                      <option className="mt-5" value="">
+                        -- Select a question --
+                      </option>
+                      {securityQuestions2.map((question) => (
+                        <option key={question.id} value={question.id}>
+                          {question.text}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </InputGroup>
+                </Form.Group>
+
+                {selectedQuestion2Id && (
+                  <Form.Group controlId="answer">
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter your answer"
+                      value={answer2}
+                      onChange={(e) => setAnswer2(e.target.value)}
+                      className="mt-2"
+                    />
+                  </Form.Group>
+                )}
+              </div>
+
+              <br></br>
               <Button variant="primary" type="submit">
                 Register
               </Button>
@@ -226,6 +322,7 @@ const Register = () => {
           </Card.Body>
         )}
       </Card>
+      <br />
     </div>
   );
 };

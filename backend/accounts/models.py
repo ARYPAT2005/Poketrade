@@ -1,8 +1,5 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, AbstractUser
 from django.db import models
-
-# Create a custom manager to handle user creation logic
-from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 from typing import Optional, Type, TypeVar
 
@@ -38,8 +35,11 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     wallet_balance = models.IntegerField(default=0)
-    # last_claim_date = models.DateField(null=True, blank=True)
     last_claim_date = models.DateTimeField(null=True, blank=True)
+    securityQuestion1 = models.CharField(max_length=255, null=True, blank=True)
+    securityAnswer1 = models.CharField(max_length=255, null=True, blank=True)
+    securityQuestion2 = models.CharField(max_length=255, null=True, blank=True)
+    securityAnswer2 = models.CharField(max_length=255, null=True, blank=True)
 
     objects = UserManager()
 
@@ -49,3 +49,27 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
+class SecurityQuestion(models.Model):
+    question = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.question
+
+    class Meta:
+        verbose_name = "Security Question"
+        verbose_name_plural = "Security Questions"
+
+
+class UserSecurityQuestions(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    question1 = models.ForeignKey(SecurityQuestion, related_name='question1', on_delete=models.CASCADE)
+    answer1= models.CharField(max_length=255)
+    question2 = models.ForeignKey(SecurityQuestion, related_name='question2', on_delete=models.CASCADE)
+    answer2 = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f'{self.user.username} Security Question'
+
+    class Meta:
+        verbose_name = "User Security Question"
+        verbose_name_plural = "User Security Questions"

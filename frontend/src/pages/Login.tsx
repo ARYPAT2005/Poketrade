@@ -96,6 +96,10 @@ const Login = () => {
           <small className="text-muted">
             Don't have an account? <a href="/register">Register here</a>
           </small>
+          <br></br>
+          <small className="text-muted">
+            Forgot your password? <a href="/forgot-password">Click here</a>
+          </small>
         </Card.Footer>
       </Card>
 

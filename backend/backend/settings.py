@@ -72,9 +72,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'backend.urls'
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
