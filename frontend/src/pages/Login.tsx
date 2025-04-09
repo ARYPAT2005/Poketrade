@@ -1,24 +1,14 @@
 import React from "react";
 
 import { Button, Form, Card, Alert } from "react-bootstrap";
-
 import { useAtom } from "jotai";
-import { isLoggedAtom, usernameAtom} from "../atoms/isLoggedAtom";
 import { useNavigate } from 'react-router-dom'
-
-const Login = () => {
-  const [, setIsLogged] = useAtom(isLoggedAtom);
-  const [loginFailed, setLoginFailed] = React.useState(false);
-  const [, setUsername] = useAtom(usernameAtom);
-  const [, setError] = React.useState("");
-
 import userIdAtom from "../atoms/userIdAtom";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [userId, setUserId] = useAtom(userIdAtom);
+  const [, setUserId] = useAtom(userIdAtom);
   const [loginFailed, setLoginFailed] = React.useState(false);
-  const [error, setError] = React.useState("");
+  const [, setError] = React.useState("");
   const navigate = useNavigate();
   interface LoginResponse {
     message: string;
@@ -139,7 +129,7 @@ const Login = () => {
         {isLogged ? "Logout" : "Login"}
       </Button> */ }
 
-      />
+
     </div>
   );
 };
