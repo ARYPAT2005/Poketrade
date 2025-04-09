@@ -1,4 +1,7 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, AbstractUser
+from django.core.validators import MinValueValidator
 from django.db import models
 from typing import Optional, TypeVar
 
@@ -40,7 +43,16 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    wallet_balance = models.IntegerField(default=0)
+    wallet_balance = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        null=False,
+        blank=False,
+        # Add these to ensure proper type handling
+        validators=[MinValueValidator(Decimal('0.00'))]
+    )
+
     last_claim_date = models.DateTimeField(null=True, blank=True)
     securityQuestion1 = models.CharField(max_length=255, null=True, blank=True)
     securityAnswer1 = models.CharField(max_length=255, null=True, blank=True)
