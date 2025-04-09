@@ -10,10 +10,11 @@ urlpatterns = [
     path('login/', LoginView.as_view({'post': 'post'}), name='login'),
     path('logout/', views.logout, name='logout'),
     path('check-email/', check_email, name='check-email'),
-    path('get-security-questions/', get_security_questions, name='get-security-questions'),
+    path('security-questions/', get_security_questions, name='get-security-questions'),
     path('verify-security-answers/', verify_security_answers, name='verify-security-answers'),
     path('reset-password/', reset_password, name='reset-password'),
     path('check-old-password/', check_old_password, name='check-old-password'),
+    path('user-security-questions/', get_user_security_questions, name='security-questions'),
 ]   +  router.urls
 
 from django.conf import settings

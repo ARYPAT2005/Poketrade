@@ -43,6 +43,7 @@ class User(AbstractUser):
     securityAnswer2 = models.CharField(max_length=255, null=True, blank=True)
     objects = UserManager()
 
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
@@ -73,3 +74,5 @@ class UserSecurityQuestions(models.Model):
     class Meta:
         verbose_name = "User Security Question"
         verbose_name_plural = "User Security Questions"
+
+

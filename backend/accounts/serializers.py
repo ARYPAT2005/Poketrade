@@ -4,6 +4,13 @@ from accounts.models import User, SecurityQuestion, UserSecurityQuestions
 from rest_framework.serializers import ModelSerializer
 
 
+
+class SecurityQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecurityQuestion
+        fields = ['id', 'question']
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     security_question_1 = serializers.PrimaryKeyRelatedField(
         queryset=SecurityQuestion.objects.filter(id__lte=4),  # Only questions with ID 1-4

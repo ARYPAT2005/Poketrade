@@ -3,9 +3,26 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from accounts.models import User, SecurityQuestion, UserSecurityQuestions
 
+
 admin.site.register(User, UserAdmin)
 admin.site.register(SecurityQuestion)
 admin.site.register(UserSecurityQuestions)
+
+
+# questions = [
+#     "What is your mother's maiden name?",
+#     "What was the name of your first pet?",
+#     "What city were you born in?",
+#     "What is your favorite book?",
+#     "What is your favorite food?",
+#     "What was the name of your elementary school?",
+#     "What was your dream job as a child?",
+#     "What is your favorite sports team?",
+# ]
+#
+# for question_text in questions:
+#     SecurityQuestion.objects.create(question=question_text)
+
 
 # Custom UserAdmin to manage the user in the Django admin
 # class CustomUserAdmin(UserAdmin):
