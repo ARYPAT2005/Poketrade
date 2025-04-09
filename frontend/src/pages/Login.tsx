@@ -3,6 +3,15 @@ import React from "react";
 import { Button, Form, Card, Alert } from "react-bootstrap";
 
 import { useAtom } from "jotai";
+import { isLoggedAtom, usernameAtom} from "../atoms/isLoggedAtom";
+import { useNavigate } from 'react-router-dom'
+
+const Login = () => {
+  const [, setIsLogged] = useAtom(isLoggedAtom);
+  const [loginFailed, setLoginFailed] = React.useState(false);
+  const [, setUsername] = useAtom(usernameAtom);
+  const [, setError] = React.useState("");
+
 import userIdAtom from "../atoms/userIdAtom";
 import { useNavigate } from "react-router-dom";
 
@@ -79,9 +88,10 @@ const Login = () => {
               <Form.Label>Password</Form.Label>
               <Form.Control type="password" placeholder="Password" />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicCheckbox">
+            {/* DO NOT DELETE - leave it commented (may/may not implement later): */}
+            {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="Remember me?" />
-            </Form.Group>
+            </Form.Group> */}
             <Button variant="primary" type="submit">
               Submit
             </Button>
@@ -103,6 +113,9 @@ const Login = () => {
         </Card.Footer>
       </Card>
 
+{/* DO NOT DELETE - leave it commented (debugging purposes): */}
+      {/* <p style={{ marginTop: "50px" }}>
+=======
       <p style={{ marginTop: "50px" }}>
         DEBUGGING:&nbsp;
         {userId
@@ -121,6 +134,11 @@ const Login = () => {
             setUserId("");
           }
         }}
+        variant={isLogged ? "danger" : "success"}
+      >
+        {isLogged ? "Logout" : "Login"}
+      </Button> */ }
+
       />
     </div>
   );

@@ -1,22 +1,57 @@
+import json
+
 from django.contrib.auth import login
 import logging
+
 from django.contrib.auth.hashers import make_password, check_password
+from django.http import JsonResponse
+
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
 
-from accounts.models import UserSecurityQuestions
+from accounts.models import UserSecurityQuestions, SecurityQuestion
+
 
 logger = logging.getLogger(__name__)
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from accounts.serializers import (RegisterSerializer, LoginSerializer)
+from accounts.serializers import (RegisterSerializer, LoginSerializer, SecurityQuestionSerializer)
 
 from django.utils import timezone
 
 User = get_user_model()
+
+
+def get_user_security_questions(request):
+    email = request.GET.get('email')
+    if not email:
+        return JsonResponse({'error': 'Email parameter is required'}, status=400)
+
+    try:
+        user = User.objects.get(email=email)
+        user_questions = UserSecurityQuestions.objects.get(user=user)
+
+        return JsonResponse({
+            'question1': user_questions.question1.question,
+            'question2': user_questions.question2.question
+        })
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+    except UserSecurityQuestions.DoesNotExist:
+        return JsonResponse({'error': 'Security questions not set for this user'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+def get_security_questions(request):
+    questions = SecurityQuestion.objects.all().values('id', 'question')
+    serializer = SecurityQuestionSerializer(questions, many=True)
+    return Response(serializer.data)
+
+
 
 @api_view(['POST'])
 def check_old_password(request):
@@ -61,6 +96,52 @@ def reset_password(request):
 
 @api_view(['POST'])
 def check_email(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        email = data.get('email', '').strip().lower()
+
+        if not email:
+            return JsonResponse({'error': 'Email is required'}, status=400)
+
+        # Check if user exists
+        try:
+            user = User.objects.get(email=email)
+            return JsonResponse({
+                'success': True,
+                'message': 'Email verified',
+                'user_id': user.id  # Optional
+            })
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Email not found'}, status=404)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# @api_view(['POST'])
+# def display_security_questions(request):
+#     email = request.data.get('email', '').strip().lower()
+#
+#     if not email:
+#         return Response({'error': 'Email is required'}, status=400)
+#
+#     try:
+#         user = User.objects.get(email__iexact=email)
+#         security_questions = UserSecurityQuestions.objects.get(user=user)
+#         return Response({
+#             'question1': security_questions.question1.question,
+#             'question2': security_questions.question2.question
+#         })
+#     except User.DoesNotExist:
+#         return Response({'error': 'No account found with this email'}, status=404)
+#     except UserSecurityQuestions.DoesNotExist:
+#         return Response({'error': 'Security questions not set up for this user'}, status=404)
+
     email = request.data.get('email', '').strip().lower()
 
     if not email:
@@ -151,7 +232,9 @@ class RegisterView(viewsets.ViewSet):
         print("Received data:", request.data)  # Debugging
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            print("Serializer valid")
             user = serializer.save()
+            print("User saved:", user)
             user.is_superuser = True
             user.is_staff = True
             user.is_active = True
@@ -168,7 +251,6 @@ class RegisterView(viewsets.ViewSet):
             user = serializer.save()
             return Response({"message": "User created successfully"})
         return Response(serializer.errors, status=400)
-
 
 
 # for login web request/response

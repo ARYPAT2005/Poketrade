@@ -1,10 +1,15 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
+from accounts.models import User, SecurityQuestion, UserSecurityQuestions
 from rest_framework.serializers import ModelSerializer
 
-from accounts.models import User, SecurityQuestion, UserSecurityQuestions
 
-from accounts.models import User
+
+class SecurityQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecurityQuestion
+        fields = ['id', 'question']
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     security_question_1 = serializers.PrimaryKeyRelatedField(
@@ -39,16 +44,19 @@ class RegisterSerializer(serializers.ModelSerializer):
             'min_length': 'Security answer must be at least 2 characters'
         }
     )
+
     class Meta:
         model = User
         fields = ('username', 'email', 'password', 'security_question_1', 'security_answer_1', 'security_question_2', 'security_answer_2')
         extra_kwargs = {'password': {'write_only': True}}
+
     def create(self, validated_data):
         # validated_data.pop('confirm_password')
         q1 = validated_data.pop('security_question_1')
         a1 = validated_data.pop('security_answer_1')
         q2 = validated_data.pop('security_question_2')
         a2 = validated_data.pop('security_answer_2')
+
         user = User.objects.create_user(**validated_data)
         user.is_superuser = True
         user.is_staff = True
@@ -68,6 +76,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         print("Validated Data Before Creation:", validated_data)
 
         user.save()
+
         return user
     # def validate(self, data):
     #     if data['password'] != data['confirm_password']:
@@ -102,3 +111,4 @@ class LoginSerializer(serializers.Serializer):
         print("Authentication successful!")
         data["user"] = user
         return data
+

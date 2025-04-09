@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Card, Alert, InputGroup } from "react-bootstrap";
+import { useAtom } from "jotai";
+import { isLoggedAtom, isRegisteredAtom, usernameAtom} from "../atoms/isLoggedAtom";
+import { useNavigate } from 'react-router-dom';
+
 import userIdAtom from "../atoms/userIdAtom";
 
 import { useAtom } from "jotai";
@@ -9,6 +13,7 @@ import "./Register.module.css";
 
 const Register = () => {
   const navigate = useNavigate();
+
   const [userId, setUserId] = useAtom(userIdAtom);
   const [validated, setValidated] = useState(false);
 
@@ -17,13 +22,17 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [usernameError, setUsernameError] = useState("");
+  const [, setUsernameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [registerFailed, setRegisterFailed] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [error, setError] = useState("");
+
+
+
+
 
   const [answer1, setAnswer1] = useState<string>("");
   const [selectedQuestion1Id, setSelectedQuestion1Id] = useState<number | null>(null);
@@ -110,6 +119,8 @@ const Register = () => {
             security_answer_2: answer2,
           }),
         });
+
+
         const data = await response.json();
 
         if (response.ok) {
@@ -138,6 +149,7 @@ const Register = () => {
       }
     }
   };
+
 
   const handleBackendErrors = (errorData: any) => {
     if (errorData.errors) {
@@ -272,6 +284,67 @@ const Register = () => {
                 )}
               </div>
 
+              {/* Security Question #1 */}
+              <div style={{ width: '350px' }}>
+              <Form.Group controlId="securityQuestion1" >
+                <Form.Label>Choose a security question:</Form.Label>
+                <InputGroup>
+                  <Form.Control as="select" value={selectedQuestion1Id || ''} onChange={(e) => setSelectedQuestion1Id(Number(e.target.value))}>
+                    <option className="mt-5" value="">-- Select a question --</option>
+                    {securityQuestions1.map((question) => (
+                      <option key={question.id} value={question.id}>
+                        {question.text}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </InputGroup>
+              </Form.Group>
+
+              {selectedQuestion1Id && (
+                <Form.Group controlId="answer">
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter your answer"
+                    value={answer1}
+                    onChange={(e) => setAnswer1(e.target.value)}
+                    className="mt-2"
+                  />
+                </Form.Group>
+              )}
+            </div>
+
+              {/* Security Question #2 */}
+              <div style={{ width: '350px' }} className="mt-3">
+              <Form.Group controlId="securityQuestion2" >
+                <Form.Label>Choose a security question:</Form.Label>
+                <InputGroup>
+                  <Form.Control as="select" value={selectedQuestion2Id || ''} onChange={(e) => setSelectedQuestion2Id(Number(e.target.value))}>
+                    <option className="mt-5" value="">-- Select a question --</option>
+                    {securityQuestions2.map((question) => (
+                      <option key={question.id} value={question.id}>
+                        {question.text}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </InputGroup>
+              </Form.Group>
+
+              {selectedQuestion2Id && (
+                <Form.Group controlId="answer">
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter your answer"
+                    value={answer2}
+                    onChange={(e) => setAnswer2(e.target.value)}
+                    className="mt-2"
+                  />
+                </Form.Group>
+              )}
+            </div>
+
+              <br></br>
+
+
               {/* Security Question #2 */}
               <div style={{ width: "350px" }} className="mt-3">
                 <Form.Group controlId="securityQuestion2">
@@ -322,6 +395,7 @@ const Register = () => {
           </Card.Body>
         )}
       </Card>
+
       <br />
     </div>
   );

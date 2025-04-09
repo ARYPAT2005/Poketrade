@@ -1,5 +1,10 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, AbstractUser
 from django.db import models
+from typing import Optional, TypeVar
+
+
+# Create a custom manager to handle user creation logic
+
 
 from typing import Optional, Type, TypeVar
 
@@ -34,6 +39,7 @@ class User(AbstractUser):
     password = models.CharField(max_length=128)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
     wallet_balance = models.IntegerField(default=0)
     last_claim_date = models.DateTimeField(null=True, blank=True)
     securityQuestion1 = models.CharField(max_length=255, null=True, blank=True)
@@ -42,6 +48,7 @@ class User(AbstractUser):
     securityAnswer2 = models.CharField(max_length=255, null=True, blank=True)
 
     objects = UserManager()
+
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -73,3 +80,5 @@ class UserSecurityQuestions(models.Model):
     class Meta:
         verbose_name = "User Security Question"
         verbose_name_plural = "User Security Questions"
+
+
