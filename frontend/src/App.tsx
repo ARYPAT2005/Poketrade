@@ -11,26 +11,24 @@ import Trade from "./pages/Trade";
 import Search from "./pages/Search";
 import Cards from "./pages/Cards";
 import Messages from "./pages/Messages";
-import ForgotPassword from "./pages/ForgotPassword"
+
+import Profile from "./pages/Profile";
+import LoginRewards from "./pages/LoginRewards";
+import ForgotPassword from "./pages/ForgotPassword";
+ 
 
 import CustomNavbar from "./components/CustomNavbar";
 import Footer from "./components/Footer";
 
-import { useAtom } from "jotai";
-import { userIdAtom } from "./atoms/userIdAtom";
-import { isLoggedAtom, isRegisteredAtom } from "./atoms/isLoggedAtom";
-
 import "./App.css";
 
 const App: React.FC = () => {
-  const [userId, setUserId] = useAtom(userIdAtom);
-  const [isLogged] = useAtom(isLoggedAtom);
-  const [isRegistered] = useAtom(isRegisteredAtom);
   const [navbarExpanded, setNavbarExpanded] = useState(false);
 
   return (
     <div className="app-container">
-      <CustomNavbar userId={userId} setUserId={setUserId} isLogged={isLogged} isRegistered={isRegistered} setNavbarExpanded={setNavbarExpanded} />
+
+      <CustomNavbar setNavbarExpanded={setNavbarExpanded} />
       <div className={`content ${navbarExpanded ? "navbar-expanded" : ""}`}>
         <Routes>
           <Route path="/" element={<About />} />
@@ -43,8 +41,11 @@ const App: React.FC = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/cards" element={<Cards />} />
           <Route path="/messages" element={<Messages />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
 
+
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/loginrewards" element={<LoginRewards />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </div>
       <Footer />

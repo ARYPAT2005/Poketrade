@@ -60,6 +60,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         user.is_superuser = True
         user.is_staff = True
+
         UserSecurityQuestions.objects.create(
             user=user,
             question1=q1,
@@ -85,7 +86,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
-    #
+
     # def validate(self, data):
     #     email = data.get("email")
     #     password = data.get("password")

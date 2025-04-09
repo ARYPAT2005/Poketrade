@@ -6,6 +6,8 @@ from typing import Optional, TypeVar
 # Create a custom manager to handle user creation logic
 
 
+from typing import Optional, Type, TypeVar
+
 UserType = TypeVar('UserType', bound='User')
 
 class UserManager(BaseUserManager):
@@ -37,10 +39,14 @@ class User(AbstractUser):
     password = models.CharField(max_length=128)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
+    wallet_balance = models.IntegerField(default=0)
+    last_claim_date = models.DateTimeField(null=True, blank=True)
     securityQuestion1 = models.CharField(max_length=255, null=True, blank=True)
     securityAnswer1 = models.CharField(max_length=255, null=True, blank=True)
     securityQuestion2 = models.CharField(max_length=255, null=True, blank=True)
     securityAnswer2 = models.CharField(max_length=255, null=True, blank=True)
+
     objects = UserManager()
 
 
