@@ -24,6 +24,9 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
     setUsername("");
     navigate("/");
   };
+  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
+  const [, setisRegistered] = useAtom(isRegisteredAtom);
+
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -111,7 +114,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
           >
             Store
           </Nav.Link>
-          {canClaim && location.pathname != "/loginrewards" && (
+          {canClaim && location.pathname != "/loginrewards" && username && (
             <img
               className="blinking-image"
               src={pokeball}

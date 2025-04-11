@@ -1,18 +1,228 @@
+import json
+
 from django.contrib.auth import login
 import logging
+
+from django.contrib.auth.hashers import make_password, check_password
+from django.http import JsonResponse
+
 from rest_framework import status, permissions
+from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
+
+from accounts.models import UserSecurityQuestions, SecurityQuestion
+
 
 logger = logging.getLogger(__name__)
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from accounts.serializers import (RegisterSerializer, LoginSerializer)
+from accounts.serializers import (RegisterSerializer, LoginSerializer, SecurityQuestionSerializer)
 
 from django.utils import timezone
 
 User = get_user_model()
+
+
+def get_user_security_questions(request):
+    email = request.GET.get('email')
+    if not email:
+        return JsonResponse({'error': 'Email parameter is required'}, status=400)
+
+    try:
+        user = User.objects.get(email=email)
+        user_questions = UserSecurityQuestions.objects.get(user=user)
+
+        return JsonResponse({
+            'question1': user_questions.question1.question,
+            'question2': user_questions.question2.question
+        })
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+    except UserSecurityQuestions.DoesNotExist:
+        return JsonResponse({'error': 'Security questions not set for this user'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+def get_security_questions(request):
+    questions = SecurityQuestion.objects.all().values('id', 'question')
+    serializer = SecurityQuestionSerializer(questions, many=True)
+    return Response(serializer.data)
+
+
+
+@api_view(['POST'])
+def check_old_password(request):
+    try:
+        email = request.data.get('email', '').strip().lower()
+        new_password = request.data.get('new_password', '')
+
+        user = User.objects.get(email__iexact=email)
+        is_same = check_password(new_password, user.password)
+
+        return Response({
+            'is_same': is_same,
+            'message': 'Same as old password' if is_same else 'Password is new'
+        })
+
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['POST'])
+def reset_password(request):
+    try:
+        email = request.data.get('email', '').strip().lower()
+        new_password = request.data.get('new_password', '')
+
+        if len(new_password) < 8:
+            return Response({'error': 'Password must be at least 8 characters'}, status=400)
+
+        user = User.objects.get(email__iexact=email)
+        if check_password(new_password, user.password):
+            return Response({'error': 'New password cannot be the same as old password'}, status=400)
+        user.password = make_password(new_password)
+        user.save()
+
+        return Response({'success': 'Password updated successfully'})
+
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['POST'])
+def check_email(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        email = data.get('email', '').strip().lower()
+
+        if not email:
+            return JsonResponse({'error': 'Email is required'}, status=400)
+
+        # Check if user exists
+        try:
+            user = User.objects.get(email=email)
+            return JsonResponse({
+                'success': True,
+                'message': 'Email verified',
+                'user_id': user.id  # Optional
+            })
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Email not found'}, status=404)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# @api_view(['POST'])
+# def display_security_questions(request):
+#     email = request.data.get('email', '').strip().lower()
+#
+#     if not email:
+#         return Response({'error': 'Email is required'}, status=400)
+#
+#     try:
+#         user = User.objects.get(email__iexact=email)
+#         security_questions = UserSecurityQuestions.objects.get(user=user)
+#         return Response({
+#             'question1': security_questions.question1.question,
+#             'question2': security_questions.question2.question
+#         })
+#     except User.DoesNotExist:
+#         return Response({'error': 'No account found with this email'}, status=404)
+#     except UserSecurityQuestions.DoesNotExist:
+#         return Response({'error': 'Security questions not set up for this user'}, status=404)
+
+    email = request.data.get('email', '').strip().lower()
+
+    if not email:
+        return Response({'error': 'Email is required'}, status=400)
+
+    try:
+        exists = User.objects.filter(email__iexact=email).exists()
+        return Response({
+            'exists': exists,
+            'email': email  # Optional: return the normalized email
+        })
+    except Exception as e:
+        return Response({
+            'error': 'Server error while checking email',
+            'details': str(e)
+        }, status=500)
+
+
+@api_view(['POST'])
+def get_security_questions(request):
+    email = request.data.get('email', '').strip().lower()
+
+    if not email:
+        return Response({'error': 'Email is required'}, status=400)
+
+    try:
+        user = User.objects.get(email__iexact=email)
+        security_questions = UserSecurityQuestions.objects.get(user=user)
+        return Response({
+            'question1': security_questions.question1.question,
+            'question2': security_questions.question2.question
+        })
+    except User.DoesNotExist:
+        return Response({'error': 'No account found with this email'}, status=404)
+    except UserSecurityQuestions.DoesNotExist:
+        return Response({'error': 'Security questions not set up for this user'}, status=404)
+
+@api_view(['POST'])
+def verify_security_answers(request):
+    try:
+        email = request.data.get('email', '').strip().lower()
+        answer1 = request.data.get('answer1', '').strip().lower()
+        answer2 = request.data.get('answer2', '').strip().lower()
+
+        user = User.objects.get(email__iexact=email)
+        security_questions = UserSecurityQuestions.objects.get(user=user)
+
+        print("\n--- DEBUGGING SECURITY ANSWERS ---")
+        print(f"User email: {email}")
+        print(f"Stored Answer 1: '{security_questions.answer1}'")
+        print(f"User Provided Answer 1: '{answer1}'")
+        print(f"Stored Answer 2: '{security_questions.answer2}'")
+        print(f"User Provided Answer 2: '{answer2}'")
+
+        # Normalize comparison
+        stored_answer1 = security_questions.answer1.strip().lower()
+        stored_answer2 = security_questions.answer2.strip().lower()
+        user_answer1 = answer1.strip().lower()
+        user_answer2 = answer2.strip().lower()
+
+        # More debug logs
+        print("\n--- AFTER NORMALIZATION ---")
+        print(f"Normalized Stored Answer 1: '{stored_answer1}'")
+        print(f"Normalized User Answer 1: '{user_answer1}'")
+        print(f"Normalized Stored Answer 2: '{stored_answer2}'")
+        print(f"Normalized User Answer 2: '{user_answer2}'")
+
+        verified = (stored_answer1 == user_answer1 and
+                    stored_answer2 == user_answer2)
+
+        print(f"\nVerification Result: {verified}\n")
+
+        return Response({
+            'verified': verified,
+            'email': email
+        })
+
+
+    except UserSecurityQuestions.DoesNotExist:
+        return Response({'error': 'Security questions not set up for this user'}, status=404)
+
 class RegisterView(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = User.objects.all()
@@ -22,7 +232,9 @@ class RegisterView(viewsets.ViewSet):
         print("Received data:", request.data)  # Debugging
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            print("Serializer valid")
             user = serializer.save()
+            print("User saved:", user)
             user.is_superuser = True
             user.is_staff = True
             user.is_active = True
@@ -33,7 +245,12 @@ class RegisterView(viewsets.ViewSet):
         else:
             print("Validation errors:", serializer.errors)  # Debugging
             return Response(serializer.errors, status=400)
-
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"message": "User created successfully"})
+        return Response(serializer.errors, status=400)
 
 
 # for login web request/response
