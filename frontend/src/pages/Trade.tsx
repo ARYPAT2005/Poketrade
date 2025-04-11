@@ -6,7 +6,7 @@ import LoginPrompt from "./LoginPrompt";
 import Trades, { TradeCardDetail } from "../types/Trades"; 
 
 const Trade: React.FC = () => {
-  const username = useAtomValue(userIdAtom);
+  const userId = useAtomValue(userIdAtom);
   const [trades, setTrades] = useState<Trades[]>([]);
   const [receivedTrades, setReceivedTrades] = useState<Trades[]>([]);
   const [sentTrades, setSentTrades] = useState<Trades[]>([]);
@@ -14,13 +14,13 @@ const Trade: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('received');
   useEffect(() => {
-    if (!username) {
+    if (!userId) {
       setTrades([]);
       return;
     }
     setError(null);
 
-    fetch(`http://localhost:8000/api/trades/${username}`)
+    fetch(`http://localhost:8000/api/trades/${userId}`)
       .then(response => {
         if (!response.ok) {
           throw new Error(`Network response was not ok (${response.status})`);
@@ -40,7 +40,7 @@ const Trade: React.FC = () => {
         setError(error.message || "Failed to fetch received trades.");
       })
 
-  }, [username]);
+  }, [userId]);
 
   useEffect(() => {
     sortTrades();
@@ -48,10 +48,10 @@ const Trade: React.FC = () => {
 
   const sortTrades = () => {
     console.log("Sorting Trades.")
-    const received: Trades[] = trades.filter(trade => trade.recipient_username === username && trade.status === "pending");
+    const received: Trades[] = trades.filter(trade => trade.recipient_username === userId && trade.status === "pending");
     setReceivedTrades(received);
 
-    const sent: Trades[] = trades.filter(trade => trade.sender_username === username && trade.status === 'pending');
+    const sent: Trades[] = trades.filter(trade => trade.sender_username === userId && trade.status === 'pending');
     setSentTrades(sent);
 
     const completed: Trades[] = trades.filter(trade => trade.status === "accepted");
@@ -93,7 +93,7 @@ const Trade: React.FC = () => {
   const renderTradeDetails = (trade: Trades) => {
     const offers: TradeCardDetail[] = trade.card_details.filter(detail => detail.direction === 'offer');
     const requests: TradeCardDetail[] = trade.card_details.filter(detail => detail.direction === 'request');
-    const isSender: boolean = trade.sender_username === username;
+    const isSender: boolean = trade.sender_username === userId;
     return (
       <ListGroup.Item key={trade.id} className="mb-3 border rounded p-3">
         {isSender ? 
@@ -163,7 +163,7 @@ const Trade: React.FC = () => {
   return (
     <div>
       <h1>Trade Center</h1>
-      {!username ? (
+      {!userId ? (
         <LoginPrompt />
       ) : (
         <Card style={{maxWidth: "min(1000px, 90%)", margin: "auto", marginTop: "50px",}}>
