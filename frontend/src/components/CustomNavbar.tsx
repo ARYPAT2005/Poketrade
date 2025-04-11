@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navbar, Nav, Dropdown } from "react-bootstrap";
 import { PersonCircle, Search } from "react-bootstrap-icons";
 import userIdAtom from "../atoms/userIdAtom";
+import userAtom from "../atoms/userAtom";
 import { useAtom } from "jotai";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -14,11 +15,10 @@ interface CustomNavbarProps {
 
 const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
   const [username, setUsername] = useAtom(userIdAtom);
+  const [user, setUser] = useAtom(userAtom);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [messageCount, setMessageCount] = useState(0);
-  const [balance, setBalance] = useState(0);
-  const [canClaim, setCanClaim] = useState(false);
 
   const handleLogout = () => {
     setUsername("");
@@ -66,9 +66,8 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
           return response.json();
         })
         .then((data) => {
-          console.log("Wallet data:", data);
-          setBalance(data.wallet_balance);
-          setCanClaim(data.can_claim);
+          console.log("User data:", data);
+          setUser(data);
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);
@@ -125,7 +124,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
               Search
             </Nav.Link>
           )}
-          {canClaim && location.pathname != "/loginrewards" && username && (
+          {user?.can_claim && location.pathname != "/loginrewards" && username && (
             <img
               className="blinking-image"
               src={pokeball}
@@ -158,7 +157,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
         <div style={{ marginRight: isMobile ? "" : "12px", textAlign: "center" }}>
           {username && (
             <span className="welcome-message" style={{ fontWeight: "bold", textAlign: "center" }}>
-              {username} : <span className="text-muted">${balance.toFixed(2)}</span>
+              {username} : <span className="text-muted">${user?.wallet_balance.toFixed(2)}</span>
             </span>
           )}
         </div>

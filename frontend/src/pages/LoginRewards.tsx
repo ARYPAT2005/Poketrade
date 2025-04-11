@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import userIdAtom from "../atoms/userIdAtom";
+import userAtom from "../atoms/userAtom";
 import { useAtomValue, useAtom } from "jotai";
 import { Card, Alert } from "react-bootstrap";
 import "./OpenAnimation.css";
@@ -10,10 +11,8 @@ import LoginPrompt from "./LoginPrompt";
 
 const LoginRewards: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
+  const [user, setUser] = useAtom(userAtom);
 
-  const [balance, setBalance] = useState(0);
-  const [canClaim, setCanClaim] = useState(false);
-  const [last_claim_date, setLastClaimDate] = useState<Date | null>(null);
   const [earned, setEarned] = useState(0);
   useEffect(() => {
     if (userId) {
@@ -26,9 +25,7 @@ const LoginRewards: React.FC = () => {
         })
         .then((data) => {
           console.log("Wallet data:", data);
-          setBalance(data.wallet_balance);
-          setCanClaim(data.can_claim);
-          setLastClaimDate(data.last_claim_date);
+          setUser(data);
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);
@@ -38,9 +35,9 @@ const LoginRewards: React.FC = () => {
   }, [userId]);
 
   const calculateTimeRemaining = () => {
-    if (last_claim_date) {
+    if (user?.last_claim_date) {
       const now = new Date();
-      const lastClaim = new Date(last_claim_date);
+      const lastClaim = new Date(user.last_claim_date);
 
       const millisecondsIn24Hours = 24 * 60 * 60 * 1000;
       const timeDiff = now.getTime() - lastClaim.getTime();
@@ -77,8 +74,15 @@ const LoginRewards: React.FC = () => {
       })
       .then((data) => {
         console.log("Reward claimed:", data);
-        setBalance(data.wallet_balance);
-        setLastClaimDate(data.last_claim_date);
+        if (!data || !user) {
+          return;
+        }
+        const newUser = {
+          ...user,
+          wallet_balance: data.wallet_balance,
+          last_claim_date: new Date(data.last_claim_date),
+        };
+        setUser(newUser);
         setEarned(data.amount_claimed);
       })
       .catch((error) => {
@@ -105,9 +109,9 @@ const LoginRewards: React.FC = () => {
               }}
             >
               Current Balance:
-              {" $" + balance}
+              {" $" + user?.wallet_balance}
             </Card.Title>
-            {canClaim ? (
+            {user?.can_claim ? (
               <div style={{ textAlign: "center", marginTop: "20px" }}>
                 {earned !== 0 ? (
                   <>
