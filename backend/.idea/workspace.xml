@@ -5,8 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="efb2e722-5eeb-47d4-8d20-f3872eaa4fbf" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/backend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/backend.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pokemessages/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/pokemessages/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pokemessages/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/pokemessages/models.py" afterDir="false" />
@@ -123,21 +121,15 @@
       <workItem from="1743478720067" duration="23888000" />
       <workItem from="1743735712295" duration="1447000" />
       <workItem from="1744066293624" duration="10535000" />
-      <workItem from="1744083857722" duration="8204000" />
+      <workItem from="1744083857722" duration="14043000" />
+      <workItem from="1744146251033" duration="3560000" />
+      <workItem from="1744228617520" duration="1135000" />
+      <workItem from="1744254091305" duration="6227000" />
+      <workItem from="1744341838628" duration="2712000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/pokemessages/urls.py</url>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

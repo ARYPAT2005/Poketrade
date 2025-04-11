@@ -16,13 +16,13 @@ class TradeCardDetailSerializer(serializers.ModelSerializer):
 
 class TradeSerializer(serializers.ModelSerializer):
     card_details = TradeCardDetailSerializer(many=True)
-    sender_username = serializers.CharField(source='sender.username', read_only=True)
-    recipient_username = serializers.CharField(source='recipient.username', read_only=True)
+    sender_username = serializers.CharField(source='sender.username')
+    recipient_username = serializers.CharField(source='recipient.username')
 
     class Meta:
         model = Trade
-        fields = ['id', 'sender_username', 'recipient_username', 'message', 'timestamp', 'is_read', 'accepted', 'status', 'card_details']
-        read_only_fields = ['id', 'timestamp', 'sender_username', 'recipient_username', 'status', 'is_read', 'accepted'] #remove sender and recipient to allow client to input both in same api?
+        fields = ['id', 'sender_username', 'recipient_username', 'message', 'timestamp', 'is_read', 'status', 'card_details']
+        read_only_fields = ['id', 'timestamp', 'is_read']
 
     def create(self, validated_data):
         card_details_data = validated_data.pop('card_details')

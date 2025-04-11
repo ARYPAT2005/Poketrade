@@ -25,7 +25,6 @@ class Trade(models.Model):
     message = models.CharField(blank=True, max_length=150)
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
-    accepted = models.BooleanField(default=False)
     status = models.CharField(max_length=20, default='pending')
 
     class Meta:

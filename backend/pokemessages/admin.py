@@ -17,8 +17,8 @@ class MessageAdmin(admin.ModelAdmin):
 @admin.register(Trade)
 class TradeAdmin(admin.ModelAdmin):
     inlines = [TradeCardDetailInline]
-    list_display = ('id', 'sender', 'recipient', 'status', 'accepted', 'timestamp', 'is_read')
-    list_filter = ('status', 'accepted', 'is_read', 'timestamp', 'sender', 'recipient')
+    list_display = ('id', 'sender', 'recipient', 'status', 'timestamp', 'is_read')
+    list_filter = ('status', 'is_read', 'timestamp', 'sender', 'recipient')
     search_fields = ('sender__username', 'recipient__username', 'message')
-    list_editable = ('status', 'accepted', 'is_read')
+    list_editable = ('status', 'is_read')
     readonly_fields = ('timestamp',)
