@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Card, Alert, InputGroup } from "react-bootstrap";
 import { useAtom } from "jotai";
-import { isLoggedAtom, isRegisteredAtom, usernameAtom} from "../atoms/isLoggedAtom";
 import { useNavigate } from 'react-router-dom';
 
 import userIdAtom from "../atoms/userIdAtom";
 
-import { useAtom } from "jotai";
 
-import { useNavigate } from "react-router-dom";
 import "./Register.module.css";
 
 const Register = () => {
   const navigate = useNavigate();
 
   const [userId, setUserId] = useAtom(userIdAtom);
-  const [validated, setValidated] = useState(false);
+  const [, setValidated] = useState(false);
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -30,34 +27,52 @@ const Register = () => {
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [error, setError] = useState("");
 
-
-
-
-
   const [answer1, setAnswer1] = useState<string>("");
   const [selectedQuestion1Id, setSelectedQuestion1Id] = useState<number | null>(null);
 
-  const securityQuestions1 = [
-    { id: 1, text: "What is your mother's maiden name?" },
-    { id: 2, text: "What was the name of your first pet?" },
-    { id: 3, text: "What city were you born in?" },
-    { id: 4, text: "What is your favorite book?" },
-  ];
+  // const securityQuestions1 = [
+  //   { id: 1, text: "What is your mother's maiden name?" },
+  //   { id: 2, text: "What was the name of your first pet?" },
+  //   { id: 3, text: "What city were you born in?" },
+  //   { id: 4, text: "What is your favorite book?" },
+  // ];
 
   const [answer2, setAnswer2] = useState<string>("");
   const [selectedQuestion2Id, setSelectedQuestion2Id] = useState<number | null>(null);
 
-  const securityQuestions2 = [
-    { id: 5, text: "What is your favorite food?" },
-    { id: 6, text: "What was the name of your elementary school?" },
-    { id: 7, text: "What was your dream job as a child?" },
-    { id: 8, text: "What is your favorite sports team?" },
-  ];
+  // const securityQuestions2 = [
+  //   { id: 5, text: "What is your favorite food?" },
+  //   { id: 6, text: "What was the name of your elementary school?" },
+  //   { id: 7, text: "What was your dream job as a child?" },
+  //   { id: 8, text: "What is your favorite sports team?" },
+  // ];
 
   // Regular expressions for validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email validation
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
+  const [securityQuestions, setSecurityQuestions] = useState<{id: number, text: string}[]>([]);
+  const fetchSecurityQuestions = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/get-security-questions/');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const data = await response.json();
+      const transformedData = data.map((q: {id: number, question: string}) => ({
+        id: q.id,
+        text: q.question
+      }));
+      setSecurityQuestions(transformedData);
+    } catch (error) {
+      console.error("Failed to fetch security questions:", error);
+      setSecurityQuestions([]);
+    }
+  };
+  const half = Math.ceil(securityQuestions.length / 2);
+  const firstHalf = securityQuestions.slice(0, half);
+  const secondHalf = securityQuestions.slice(half);
+  useEffect(() => {
+    fetchSecurityQuestions();
+  }, []);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -262,7 +277,7 @@ const Register = () => {
                       <option className="mt-5" value="">
                         -- Select a question --
                       </option>
-                      {securityQuestions1.map((question) => (
+                      {firstHalf.map((question) => (
                         <option key={question.id} value={question.id}>
                           {question.text}
                         </option>
@@ -283,35 +298,7 @@ const Register = () => {
                   </Form.Group>
                 )}
               </div>
-
-              {/* Security Question #1 */}
-              <div style={{ width: '350px' }}>
-              <Form.Group controlId="securityQuestion1" >
-                <Form.Label>Choose a security question:</Form.Label>
-                <InputGroup>
-                  <Form.Control as="select" value={selectedQuestion1Id || ''} onChange={(e) => setSelectedQuestion1Id(Number(e.target.value))}>
-                    <option className="mt-5" value="">-- Select a question --</option>
-                    {securityQuestions1.map((question) => (
-                      <option key={question.id} value={question.id}>
-                        {question.text}
-                      </option>
-                    ))}
-                  </Form.Control>
-                </InputGroup>
-              </Form.Group>
-
-              {selectedQuestion1Id && (
-                <Form.Group controlId="answer">
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter your answer"
-                    value={answer1}
-                    onChange={(e) => setAnswer1(e.target.value)}
-                    className="mt-2"
-                  />
-                </Form.Group>
-              )}
-            </div>
+          
 
               {/* Security Question #2 */}
               <div style={{ width: '350px' }} className="mt-3">
@@ -320,7 +307,7 @@ const Register = () => {
                 <InputGroup>
                   <Form.Control as="select" value={selectedQuestion2Id || ''} onChange={(e) => setSelectedQuestion2Id(Number(e.target.value))}>
                     <option className="mt-5" value="">-- Select a question --</option>
-                    {securityQuestions2.map((question) => (
+                    {secondHalf.map((question) => (
                       <option key={question.id} value={question.id}>
                         {question.text}
                       </option>
@@ -341,44 +328,6 @@ const Register = () => {
                 </Form.Group>
               )}
             </div>
-
-              <br></br>
-
-
-              {/* Security Question #2 */}
-              <div style={{ width: "350px" }} className="mt-3">
-                <Form.Group controlId="securityQuestion2">
-                  <Form.Label>Choose a security question:</Form.Label>
-                  <InputGroup>
-                    <Form.Control
-                      as="select"
-                      value={selectedQuestion2Id || ""}
-                      onChange={(e) => setSelectedQuestion2Id(Number(e.target.value))}
-                    >
-                      <option className="mt-5" value="">
-                        -- Select a question --
-                      </option>
-                      {securityQuestions2.map((question) => (
-                        <option key={question.id} value={question.id}>
-                          {question.text}
-                        </option>
-                      ))}
-                    </Form.Control>
-                  </InputGroup>
-                </Form.Group>
-
-                {selectedQuestion2Id && (
-                  <Form.Group controlId="answer">
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter your answer"
-                      value={answer2}
-                      onChange={(e) => setAnswer2(e.target.value)}
-                      className="mt-2"
-                    />
-                  </Form.Group>
-                )}
-              </div>
 
               <br></br>
               <Button variant="primary" type="submit">

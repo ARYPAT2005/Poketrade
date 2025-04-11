@@ -9,8 +9,6 @@ admin.site.register(User, UserAdmin)
 admin.site.register(SecurityQuestion)
 admin.site.register(UserSecurityQuestions)
 
-
-
 # questions = [
 #     "What is your mother's maiden name?",
 #     "What was the name of your first pet?",
