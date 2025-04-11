@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 
 from django.contrib.auth import login
 import logging
@@ -160,24 +161,24 @@ def check_email(request):
         }, status=500)
 
 
-@api_view(['POST'])
-def get_security_questions(request):
-    email = request.data.get('email', '').strip().lower()
-
-    if not email:
-        return Response({'error': 'Email is required'}, status=400)
-
-    try:
-        user = User.objects.get(email__iexact=email)
-        security_questions = UserSecurityQuestions.objects.get(user=user)
-        return Response({
-            'question1': security_questions.question1.question,
-            'question2': security_questions.question2.question
-        })
-    except User.DoesNotExist:
-        return Response({'error': 'No account found with this email'}, status=404)
-    except UserSecurityQuestions.DoesNotExist:
-        return Response({'error': 'Security questions not set up for this user'}, status=404)
+# @api_view(['POST'])
+# def get_security_questions(request):
+#     email = request.data.get('email', '').strip().lower()
+#
+#     if not email:
+#         return Response({'error': 'Email is required'}, status=400)
+#
+#     try:
+#         user = User.objects.get(email__iexact=email)
+#         security_questions = UserSecurityQuestions.objects.get(user=user)
+#         return Response({
+#             'question1': security_questions.question1.question,
+#             'question2': security_questions.question2.question
+#         })
+#     except User.DoesNotExist:
+#         return Response({'error': 'No account found with this email'}, status=404)
+#     except UserSecurityQuestions.DoesNotExist:
+#         return Response({'error': 'Security questions not set up for this user'}, status=404)
 
 @api_view(['POST'])
 def verify_security_answers(request):
@@ -334,8 +335,10 @@ class ClaimView(APIView):
                 'last_claim_date': last_claim_date
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Update the user's wallet balance and last claim date
-        user.wallet_balance += 100
+        if user.wallet_balance is None:
+            user.wallet_balance = Decimal('0.00')
+
+        user.wallet_balance += Decimal('100.00')
         user.last_claim_date = now
         user.save()
 
@@ -344,7 +347,7 @@ class ClaimView(APIView):
             'success': True,
             'message': 'Claim successful! Your wallet has been credited.',
             'wallet_balance': user.wallet_balance,
-            'amount_claimed': 100,
+            'amount_claimed': 100.00,
             'last_claim_date': user.last_claim_date
         }, status=status.HTTP_200_OK)
 

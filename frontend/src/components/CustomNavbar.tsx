@@ -24,10 +24,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
     setUsername("");
     navigate("/");
   };
-  const [isLogged, setIsLogged] = useAtom(isLoggedAtom);
-  const [, setisRegistered] = useAtom(isRegisteredAtom);
-
-
+ 
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
@@ -59,26 +56,26 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
   }),
     [username];
 
-  useEffect(() => {
-    if (username) {
-      fetch(`http://localhost:8000/user/${username}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Wallet data:", data);
-          setBalance(data.wallet_balance);
-          setCanClaim(data.can_claim);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-          alert("Error fetching user data");
-        });
-    }
-  }, [username]);
+  // useEffect(() => {
+  //   if (username) {
+  //     fetch(`http://localhost:8000/user/${username}`)
+  //       .then((response) => {
+  //         if (!response.ok) {
+  //           throw new Error("Network response was not ok");
+  //         }
+  //         return response.json();
+  //       })
+  //       .then((data) => {
+  //         console.log("Wallet data:", data);
+  //         setBalance(data.wallet_balance);
+  //         setCanClaim(data.can_claim);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching user data:", error);
+  //         alert("Error fetching user data");
+  //       });
+  //   }
+  // }, [username]);
 
   return (
     <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
