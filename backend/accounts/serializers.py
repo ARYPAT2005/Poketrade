@@ -83,10 +83,18 @@ class RegisterSerializer(serializers.ModelSerializer):
     #     if data['password'] != data['confirm_password']:
     #         raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
     #     return data
+class OwnedCardsSerializer(serializers.ModelSerializer):
+    card_info = CardSerializer(source='card', read_only=True)
+    card = serializers.PrimaryKeyRelatedField(queryset=Card.objects.all(), write_only=True)
+    class Meta:
+        model = OwnedCards
+        fields = ['id', 'card', 'quantity']
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+    cards = OwnedCardsSerializer(many=True)
 
     # def validate(self, data):
     #     email = data.get("email")
@@ -112,10 +120,3 @@ class LoginSerializer(serializers.Serializer):
         print("Authentication successful!")
         data["user"] = user
         return data
-
-class OwnedCardsSerializer(serializers.ModelSerializer):
-    card_info = CardSerializer(source='card', read_only=True)
-    card = serializers.PrimaryKeyRelatedField(queryset=Card.objects.all(), write_only=True)
-    class Meta:
-        model = OwnedCards
-        fields = ['id', 'card', 'quantity']
