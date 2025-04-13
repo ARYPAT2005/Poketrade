@@ -20,6 +20,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from accounts.serializers import (RegisterSerializer, LoginSerializer, SecurityQuestionSerializer)
+from pokemessages.models import Message
 
 from django.utils import timezone
 
@@ -281,6 +282,7 @@ def canClaim(user):
 class UserView(APIView):
     def get(self, request, username):
         user = User.objects.get(username=username)
+        unread_messages = Message.objects.filter(recipient=user, is_read=False).count()
         if not user:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -291,6 +293,7 @@ class UserView(APIView):
             'last_claim_date': user.last_claim_date,
             'can_claim': canClaim(user),
             'owned_cards': user.cards,
+            'unread_messages': unread_messages
         }, status=status.HTTP_200_OK)
 
 class WalletDetail(APIView):
