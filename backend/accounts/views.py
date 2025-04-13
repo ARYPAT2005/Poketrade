@@ -290,6 +290,7 @@ class UserView(APIView):
             'wallet_balance': user.wallet_balance,
             'last_claim_date': user.last_claim_date,
             'can_claim': canClaim(user),
+            'owned_cards': user.owned_cards,
         }, status=status.HTTP_200_OK)
 
 class WalletDetail(APIView):

@@ -42,6 +42,7 @@ class User(AbstractUser):
     password = models.CharField(max_length=128)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    cards = models.ManyToManyField(Card, through='OwnedCards', related_name='owned_cards')
 
     wallet_balance = models.DecimalField(
         max_digits=10,
@@ -94,9 +95,8 @@ class UserSecurityQuestions(models.Model):
         verbose_name_plural = "User Security Questions"
 
 class OwnedCards(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_cards')
     card_info = models.ForeignKey(Card, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
-        return f"{self.user.username} - {self.card.name} ({self.quantity})"
+        return f"{self.card_info.name} ({self.quantity})"
