@@ -138,8 +138,7 @@ class TradeDetail(APIView):
             return Response({"detail": data }, status=status.HTTP_400_BAD_REQUEST)
 
         trade.status = accepted_status
-        trade.is_read = True
-        trade.save(update_fields=['status', 'is_read'])
+        trade.save(update_fields=['status'])
 
         if trade.status == 'accepted':
             print(f"Card transfer logic not yet implemented. WIP.") #implement transfer here

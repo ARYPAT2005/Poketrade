@@ -1,8 +1,9 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from accounts.models import User, SecurityQuestion, UserSecurityQuestions
+from accounts.models import User, SecurityQuestion, UserSecurityQuestions, OwnedCards
 from rest_framework.serializers import ModelSerializer
-
+from cards.models import Card
+from cards.serializers import CardSerializer
 
 
 class SecurityQuestionSerializer(serializers.ModelSerializer):
@@ -112,3 +113,9 @@ class LoginSerializer(serializers.Serializer):
         data["user"] = user
         return data
 
+class OwnedCardsSerializer(serializers.ModelSerializer):
+    card_info = CardSerializer(source='card', read_only=True)
+    card = serializers.PrimaryKeyRelatedField(queryset=Card.objects.all(), write_only=True)
+    class Meta:
+        model = OwnedCards
+        fields = ['id', 'card', 'quantity']

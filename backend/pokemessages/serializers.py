@@ -21,8 +21,8 @@ class TradeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trade
-        fields = ['id', 'sender_username', 'recipient_username', 'message', 'timestamp', 'is_read', 'status', 'card_details']
-        read_only_fields = ['id', 'timestamp', 'is_read']
+        fields = ['id', 'sender_username', 'recipient_username', 'message', 'timestamp', 'status', 'card_details']
+        read_only_fields = ['id', 'timestamp']
 
     def create(self, validated_data):
         card_details_data = validated_data.pop('card_details')

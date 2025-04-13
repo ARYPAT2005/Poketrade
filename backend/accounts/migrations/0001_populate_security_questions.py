@@ -1,6 +1,6 @@
 from django.db import migrations
 
-def populate_security_questions(apps):
+def populate_security_questions(apps, schema_editor):
     SecurityQuestion = apps.get_model('accounts', 'SecurityQuestion')
     questions = [
         "What is your mother's maiden name?",

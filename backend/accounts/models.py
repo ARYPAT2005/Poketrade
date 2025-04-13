@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Abstra
 from django.core.validators import MinValueValidator
 from django.db import models
 from typing import Optional, TypeVar
-
+from cards.models import Card
 
 # Create a custom manager to handle user creation logic
 
@@ -93,4 +93,10 @@ class UserSecurityQuestions(models.Model):
         verbose_name = "User Security Question"
         verbose_name_plural = "User Security Questions"
 
+class OwnedCards(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_cards')
+    card_info = models.ForeignKey(Card, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
 
+    def __str__(self):
+        return f"{self.user.username} - {self.card.name} ({self.quantity})"
