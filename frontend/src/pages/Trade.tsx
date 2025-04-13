@@ -4,6 +4,8 @@ import { useAtomValue } from "jotai";
 import { Card, Tabs, Tab, ListGroup, Button, Spinner, Alert } from "react-bootstrap";
 import LoginPrompt from "./LoginPrompt";
 import Trades, { TradeCardDetail } from "../types/Trades"; 
+import CardDetail from "../components/CardDetails";
+import PokemonCard from "../types/Card";
 
 const Trade: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
@@ -11,14 +13,22 @@ const Trade: React.FC = () => {
   const [receivedTrades, setReceivedTrades] = useState<Trades[]>([]);
   const [sentTrades, setSentTrades] = useState<Trades[]>([]);
   const [completedTrades, setCompletedTrades] = useState<Trades[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('received');
+  const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null);
+
+  const handleCardClick = (card: PokemonCard) => {
+    setSelectedCard(card);
+  };
+
+  const handleCloseOverlay = () => {
+    setSelectedCard(null);
+  };
+  
   useEffect(() => {
     if (!userId) {
       setTrades([]);
       return;
     }
-    setError(null);
 
     fetch(`http://localhost:8000/api/trades/${userId}`)
       .then(response => {
@@ -37,7 +47,6 @@ const Trade: React.FC = () => {
       })
       .catch((error) => {
         console.error("Error fetching received trades:", error);
-        setError(error.message || "Failed to fetch received trades.");
       })
 
   }, [userId]);
@@ -59,7 +68,6 @@ const Trade: React.FC = () => {
   }
 
   const handleTradeResponse = async (tradeId: number, status: string) => {
-      setError(null);
 
       try {
           const response = await fetch(`http://localhost:8000/api/trades/id/${tradeId}/`, {
@@ -86,7 +94,6 @@ const Trade: React.FC = () => {
 
       } catch (err: any) {
           console.error("Error responding to trade:", err);
-          setError(err.message || "Failed to update trade status.");
       }
   };
 
@@ -112,26 +119,27 @@ const Trade: React.FC = () => {
                 <ListGroup variant="flush" className="mt-1">
                     {offers.map((detail: TradeCardDetail) => (
                         <ListGroup.Item key={detail.id} className="d-flex align-items-center p-1">
-                            {detail.quantity}x {detail.card_info.name}
-                            {detail.card_info.image_url && <img src={detail.card_info.image_url} alt={detail.card_info.name} style={{maxWidth: '40px', height: 'auto', marginLeft: '10px', borderRadius: '4px'}} />}
+                          {detail.quantity}x {detail.card_info.name}
+                          {detail.card_info.image_url && <img src={detail.card_info.image_url} alt={detail.card_info.name} style={{maxWidth: '40px', height: 'auto', marginLeft: '10px', borderRadius: '4px'}} onClick={() => handleCardClick(detail.card_info)} />}
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
             ) : ( <p className="text-muted mt-1">Nothing</p> )}
           </div>
           <div className="m-2">
-              <strong>Requesting:</strong>
-                {requests.length > 0 ? (
-                  <ListGroup variant="flush" className="mt-1">
-                      {requests.map((detail: TradeCardDetail) => (
-                          <ListGroup.Item key={detail.id} className="d-flex align-items-center p-1">
-                              {detail.quantity}x {detail.card_info.name}
-                              {detail.card_info.image_url && <img src={detail.card_info.image_url} alt={detail.card_info.name} style={{maxWidth: '40px', height: 'auto', marginLeft: '10px', borderRadius: '4px'}} />}
-                          </ListGroup.Item>
-                      ))}
-                  </ListGroup>
-                ) : ( <p className="text-muted mt-1">Nothing</p> )}
-            </div>
+            <strong>Requesting:</strong>
+            {requests.length > 0 ? (
+              <ListGroup variant="flush" className="mt-1">
+                {requests.map((detail: TradeCardDetail) => (
+                  <ListGroup.Item key={detail.id} className="d-flex align-items-center p-1">
+                  {detail.quantity}x {detail.card_info.name}
+                  {detail.card_info.image_url && <img src={detail.card_info.image_url} alt={detail.card_info.name} style={{maxWidth: '40px', height: 'auto', marginLeft: '10px', borderRadius: '4px'}} onClick={() => handleCardClick(detail.card_info)} />}
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            ) : ( <p className="text-muted mt-1">Nothing</p> )}
+            {selectedCard && <CardDetail card={selectedCard} onClose={handleCloseOverlay} />}
+          </div>
         </div>
           {trade.status === 'pending' && !isSender &&
             <div className="mt-3 text-center">
