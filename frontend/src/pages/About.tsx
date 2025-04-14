@@ -7,7 +7,7 @@ const About: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/cards/?page=1")
+    fetch(`${import.meta.env.VITE_API_URL}/api/cards/?page=1`)
       .then((response) => response.json())
       .then((data) => {
         if (data && data.results) {

@@ -17,8 +17,8 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [messageCount, setMessageCount] = useState(0);
-  const [balance, setBalance] = useState(0);
-  const [canClaim, setCanClaim] = useState(false);
+  const [balance,] = useState(0);
+  const [canClaim,] = useState(false);
 
   const handleLogout = () => {
     setUsername("");
@@ -39,7 +39,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
   useEffect(() => {
     if (username) {
-      fetch(`http://localhost:8000/api/messages/${username}/count`)
+      fetch(`${import.meta.env.VITE_API_URL}/api/messages/${username}/count`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");

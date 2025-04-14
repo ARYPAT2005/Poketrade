@@ -13,7 +13,7 @@ const Search = () => {
             const handleKeyUp = (e: KeyboardEvent) => {
                 const searchText = (e.target as HTMLInputElement).value.toLowerCase();
                 
-                fetch("http://localhost:8000/search/?q=" + searchText)
+                fetch(`${import.meta.env.VITE_API_URL}/search/?q=` + searchText)
                     .then((response) => response.json())
                     .then((data) => {
                         setAllCards(data.results);
