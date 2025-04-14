@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./Messages.css";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useAtom } from "jotai";
 import userIdAtom from "../atoms/userIdAtom";
+import userAtom from "../atoms/userAtom";
 
 import { Tabs, Tab, Card, ListGroup, Form, InputGroup, Button, Alert } from "react-bootstrap";
 import { CircleFill } from "react-bootstrap-icons";
@@ -20,6 +21,7 @@ interface Message {
 
 const Messages: React.FC = () => {
   const username = useAtomValue(userIdAtom);
+  const [user, setUser] = useAtom(userAtom);
   const [inboxMessages, setInboxMessages] = useState<Message[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
@@ -43,6 +45,12 @@ const Messages: React.FC = () => {
       const response = await updateMessageReadStatus(message.id);
       const updatedMessages = inboxMessages.map((msg) => (msg.id === message.id ? { ...msg, is_read: true } : msg));
       setInboxMessages(updatedMessages);
+      if (user) {
+        setUser((prevUser: any) => ({
+          ...prevUser,
+          unread_messages: prevUser.unread_messages - 1,
+        }));
+      }
     }
     setSelectedMessage(message);
   };
