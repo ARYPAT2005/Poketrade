@@ -19,8 +19,8 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [messageCount, setMessageCount] = useState(0);
-  const [balance,] = useState(0);
-  const [canClaim,] = useState(false);
+  // const [balance,] = useState(0);
+  // const [canClaim,] = useState(false);
 
   const handleLogout = () => {
     setUsername("");
