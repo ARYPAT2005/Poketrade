@@ -12,7 +12,7 @@ import LoginPrompt from "./LoginPrompt";
 
 const LoginRewards: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
-  const [user, setUser] = useAtom(userAtom);
+  // const [user, setUser] = useAtom(userAtom);
 
   const [earned, setEarned] = useState(0);
   useEffect(() => {
