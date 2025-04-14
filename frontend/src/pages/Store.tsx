@@ -10,8 +10,8 @@ import { Carousel } from "react-bootstrap";
 import LoginPrompt from "./LoginPrompt";
 
 import Pack from "../types/Pack";
-import Card from "../types/Card";
-import { useAtom } from "jotai";
+// import Card from "../types/Card";
+// import { useAtom } from "jotai";
 
 import pokeball from "../assets/individual_pokeball.svg";
 
@@ -32,7 +32,7 @@ const Store: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/packs/")
+    fetch(`${import.meta.env.VITE_API_URL}/api/packs/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");

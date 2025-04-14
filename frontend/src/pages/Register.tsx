@@ -53,7 +53,7 @@ const Register = () => {
   const [securityQuestions, setSecurityQuestions] = useState<{id: number, text: string}[]>([]);
   const fetchSecurityQuestions = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/get-security-questions/');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/get-security-questions/`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
@@ -118,7 +118,7 @@ const Register = () => {
       event.preventDefault();
       // Proceed with form submission (e.g., API call)
       try {
-        const response: Response = await fetch("http://127.0.0.1:8000/register/", {
+        const response: Response = await fetch(`${import.meta.env.VITE_API_URL}/register/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -166,24 +166,24 @@ const Register = () => {
   };
 
 
-  const handleBackendErrors = (errorData: any) => {
-    if (errorData.errors) {
-      // FIXME: Delete this
-      return;
-      // Handle serializer errors
-      if (errorData.errors.email) {
-        setEmailError(errorData.errors.email[0]);
-      }
-      if (errorData.errors.password) {
-        setPasswordError(errorData.errors.password[0]);
-      }
-    } else if (errorData.error) {
-      // Handle server errors
-      setPasswordError(errorData.error);
-    } else {
-      setPasswordError("Unknown error occurred");
-    }
-  };
+  // const handleBackendErrors = (errorData: any) => {
+  //   if (errorData.errors) {
+  //     // FIXME: Delete this
+  //     return;
+  //     // Handle serializer errors
+  //     if (errorData.errors.email) {
+  //       setEmailError(errorData.errors.email[0]);
+  //     }
+  //     if (errorData.errors.password) {
+  //       setPasswordError(errorData.errors.password[0]);
+  //     }
+  //   } else if (errorData.error) {
+  //     // Handle server errors
+  //     setPasswordError(errorData.error);
+  //   } else {
+  //     setPasswordError("Unknown error occurred");
+  //   }
+  // };
 
   return (
     <div>

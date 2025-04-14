@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 import userIdAtom from "../atoms/userIdAtom";
-import userAtom from "../atoms/userAtom";
-import { useAtomValue, useAtom } from "jotai";
+
+import { useAtomValue } from "jotai";
+
 import { Card, Alert } from "react-bootstrap";
 import "./OpenAnimation.css";
 import pokeball from "../assets/individual_pokeball.svg";
@@ -60,7 +61,7 @@ const LoginRewards: React.FC = () => {
 
   const handleRewardClaim = () => {
     if (!userId) return;
-    fetch(`http://localhost:8000/claim/${userId}/`, {
+    fetch(`${import.meta.env.VITE_API_URL}/claim/${userId}/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

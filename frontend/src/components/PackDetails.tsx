@@ -28,7 +28,7 @@ const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
   }, [pack]);
 
   const handlePackOpen = () => {
-    fetch(`http://127.0.0.1:8000/api/packs/${pack.id}/`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/packs/${pack.id}/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");

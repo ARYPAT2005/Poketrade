@@ -30,7 +30,7 @@ const Login = () => {
 
     //TODO: Implement login logic here
     try {
-      const response: Response = await fetch("http://127.0.0.1:8000/login/", {
+      const response: Response = await fetch(`${import.meta.env.VITE_API_URL}/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
