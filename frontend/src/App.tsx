@@ -19,6 +19,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 
 import CustomNavbar from "./components/CustomNavbar";
 import Footer from "./components/Footer";
+import Sell from "./pages/Sell";
 
 import "./App.css";
 
@@ -41,9 +42,9 @@ const App: React.FC = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/cards" element={<Cards />} />
           <Route path="/messages" element={<Messages />} />
-
-
+          <Route path="/trade" element={<Trade />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/sell" element={<Sell />} />
           <Route path="/loginrewards" element={<LoginRewards />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
