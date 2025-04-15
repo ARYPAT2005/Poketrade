@@ -84,17 +84,33 @@ class RegisterSerializer(serializers.ModelSerializer):
     #         raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
     #     return data
 class OwnedCardsSerializer(serializers.ModelSerializer):
-    card_info = CardSerializer(source='card', read_only=True)
-    card = serializers.PrimaryKeyRelatedField(queryset=Card.objects.all(), write_only=True)
+    card_info = serializers.PrimaryKeyRelatedField(queryset=Card.objects.all(), write_only=True)
+    card_details = CardSerializer(source='card_info', read_only=True)
     class Meta:
         model = OwnedCards
-        fields = ['id', 'card', 'quantity']
+        fields = ['id', 'card_info', 'card_details', 'quantity']
+
+class UserSerializer(serializers.ModelSerializer):
+    owned_cards = OwnedCardsSerializer(many=True, read_only=True, source='ownedcards_set')
+    can_claim = serializers.SerializerMethodField()
+    unread_messages = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'wallet_balance', 'last_claim_date', 'can_claim', 'owned_cards', 'unread_messages']
+
+    def get_can_claim(self, obj):
+        from .views import canClaim
+        return canClaim(obj)
+
+    def get_unread_messages(self, obj):
+        from pokemessages.models import Message
+        return Message.objects.filter(recipient=obj, is_read=False).count()
 
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
-    cards = OwnedCardsSerializer(many=True)
 
     # def validate(self, data):
     #     email = data.get("email")

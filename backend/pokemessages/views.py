@@ -3,8 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+
+from cards.serializers import CardSerializer
 from .models import Message, Trade, TradeCardDetail
 from .serializers import MessageSerializer, TradeSerializer
+import requests
 
 from django.utils import timezone
 
@@ -141,7 +144,12 @@ class TradeDetail(APIView):
         trade.save(update_fields=['status'])
 
         if trade.status == 'accepted':
-            print(f"Card transfer logic not yet implemented. WIP.") #implement transfer here
+            trade_cards_to_receive = trade.card_details.filter(direction='offer')
+            cards_to_receive = [detail.card for detail in trade_cards_to_receive]
+            receiver = trade.recipient.username
+            url = f"http://localhost:8000/deck/{receiver}/"
+            for card in cards_to_receive:
+                requests.post(url, json={'card': card.id})
             pass
         else:
             trade.delete()

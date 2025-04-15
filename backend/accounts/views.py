@@ -1,6 +1,7 @@
 import json
 from decimal import Decimal
 
+import requests
 from django.contrib.auth import login
 import logging
 
@@ -11,15 +12,16 @@ from rest_framework import status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
 
-from accounts.models import UserSecurityQuestions, SecurityQuestion
-
+from accounts.models import UserSecurityQuestions, SecurityQuestion, OwnedCards
+from cards.models import Card
 
 logger = logging.getLogger(__name__)
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from accounts.serializers import (RegisterSerializer, LoginSerializer, SecurityQuestionSerializer)
+from accounts.serializers import (RegisterSerializer, LoginSerializer, SecurityQuestionSerializer, UserSerializer,
+                                  OwnedCardsSerializer)
 from pokemessages.models import Message
 
 from django.utils import timezone
@@ -281,20 +283,56 @@ def canClaim(user):
 
 class UserView(APIView):
     def get(self, request, username):
-        user = User.objects.get(username=username)
-        unread_messages = Message.objects.filter(recipient=user, is_read=False).count()
-        if not user:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({
-            'username': user.username,
-            'email': user.email,
-            'wallet_balance': user.wallet_balance,
-            'last_claim_date': user.last_claim_date,
-            'can_claim': canClaim(user),
-            'owned_cards': user.cards,
-            'unread_messages': unread_messages
-        }, status=status.HTTP_200_OK)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+
+class DeckView(APIView):
+    def get(self, request, username):
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        owned_cards = user.ownedcards_set.all()
+        serializer = OwnedCardsSerializer(owned_cards, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request, username):
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+        card_identifier = request.data.get('card')
+        card_instance = Card.objects.get(pk=card_identifier)
+        try:
+            owned_card_instance, created = OwnedCards.objects.get_or_create(
+                user=user,
+                card_info=card_instance,
+                defaults={'quantity': 1}
+            )
+            if created:
+                response_status = status.HTTP_201_CREATED
+            else:
+                owned_card_instance.quantity += 1
+                owned_card_instance.save()
+                response_status = status.HTTP_200_OK
+
+            serializer = OwnedCardsSerializer(owned_card_instance, context={'request': request})
+            return Response(serializer.data, status=response_status)
+
+        except Exception as e:
+            print(f"Error processing owned card: {e}")
+            return Response({"error": "An internal server error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
 
 class WalletDetail(APIView):
     def get(self, request, username):

@@ -95,6 +95,7 @@ class UserSecurityQuestions(models.Model):
         verbose_name_plural = "User Security Questions"
 
 class OwnedCards(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ownedcards_set')
     card_info = models.ForeignKey(Card, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
 

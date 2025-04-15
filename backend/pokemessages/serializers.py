@@ -8,11 +8,10 @@ User = get_user_model()
 
 class TradeCardDetailSerializer(serializers.ModelSerializer):
     card_info = CardSerializer(source='card', read_only=True) # make false if we make it so users can create cards?
-    card = serializers.PrimaryKeyRelatedField(queryset=Card.objects.all(), write_only=True)
 
     class Meta:
         model = TradeCardDetail
-        fields = ['id', 'card', 'card_info', 'quantity', 'direction']
+        fields = ['id', 'card_info', 'quantity', 'direction']
 
 class TradeSerializer(serializers.ModelSerializer):
     card_details = TradeCardDetailSerializer(many=True)

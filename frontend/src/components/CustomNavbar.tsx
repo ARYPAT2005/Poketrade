@@ -157,7 +157,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
         <div style={{ marginRight: isMobile ? "" : "12px", textAlign: "center" }}>
           {username && (
             <span className="welcome-message" style={{ fontWeight: "bold", textAlign: "center" }}>
-              {username} : <span className="text-muted">${user?.wallet_balance.toFixed(2)}</span>
+              {username} : <span className="text-muted">${user?.wallet_balance}</span>
             </span>
           )}
         </div>
