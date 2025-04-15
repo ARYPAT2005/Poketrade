@@ -1,0 +1,98 @@
+.Outline {
+    background: #e3a9a9;
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    height:60%;
+    width:60%;
+}
+.slider {
+  background-color: #e3a9a9;
+  position: absolute;
+  top: 84.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  padding-left: 10%;
+}
+
+.slick-slide {
+  display: flex;
+  justify-content: center;  
+  align-items: center;    
+
+}
+
+.card-img {
+  max-width: 50%;
+  height: auto;
+  display: block; 
+
+}
+.cardSell {
+  position: absolute;
+  height:52%;
+  width: 20%;
+  top:10%;
+  left:20%;
+  outline: 5px dotted #000;
+}
+
+.image {
+  max-width: 100%;
+  height: auto;
+  display: block; 
+  z-index: 1000;
+}
+.sell {
+  position: absolute;
+  height:52%;
+  width: 50%;
+  top:10%;
+  left:45%;
+}
+.Price {
+  position: absolute;
+  top: 10%;
+  height:10%;
+  width:60%;
+}
+.inputBox {
+  background-color: white;
+  color: black;
+
+}
+.Buy {
+  position: absolute;
+  height:52%;
+  width: 50%;
+  top:10%;
+  
+  font-size:100%;
+}
+.BuyNow {
+  font-size:20%;
+}
+
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  height:52%;
+  width: 50%;
+  gap: 5px;
+
+}
+.flex-container p {
+  margin: 0;
+}
+.flex-container button {
+  margin: 10px;
+}
+
+
+
+
+
+  
