@@ -295,6 +295,30 @@ class UserView(APIView):
             'unread_messages': unread_messages
         }, status=status.HTTP_200_OK)
 
+class PaymentView(APIView):
+    def put(self, request, username, amount):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if user.wallet_balance is None:
+            user.wallet_balance = Decimal('0.00')
+
+        if amount > user.wallet_balance:
+            return Response({
+                'success': False,
+                'message': 'Insufficient funds.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user.wallet_balance -= amount
+        user.save()
+
+        return Response({
+            'success': True,
+            'message': 'Payment successful!',
+            'wallet_balance': user.wallet_balance
+        }, status=status.HTTP_200_OK)
+
 class WalletDetail(APIView):
     def get(self, request, username):
         user = User.objects.get(username=username)
