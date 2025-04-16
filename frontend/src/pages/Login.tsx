@@ -2,7 +2,7 @@ import React from "react";
 
 import { Button, Form, Card, Alert } from "react-bootstrap";
 import { useAtom } from "jotai";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import userIdAtom from "../atoms/userIdAtom";
 
 const Login = () => {
@@ -28,7 +28,6 @@ const Login = () => {
     console.log("Email:", data.email);
     console.log("Password:", data.password);
 
-    //TODO: Implement login logic here
     try {
       const response: Response = await fetch(`${import.meta.env.VITE_API_URL}/login/`, {
         method: "POST",
@@ -103,7 +102,7 @@ const Login = () => {
         </Card.Footer>
       </Card>
 
-{/* DO NOT DELETE - leave it commented (debugging purposes): */}
+      {/* DO NOT DELETE - leave it commented (debugging purposes): */}
       {/* <p style={{ marginTop: "50px" }}>
 =======
       <p style={{ marginTop: "50px" }}>
@@ -127,9 +126,7 @@ const Login = () => {
         variant={isLogged ? "danger" : "success"}
       >
         {isLogged ? "Logout" : "Login"}
-      </Button> */ }
-
-
+      </Button> */}
     </div>
   );
 };

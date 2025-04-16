@@ -80,7 +80,7 @@ const Messages: React.FC = () => {
   // };
 
   const handleMessageDelete = (messageId: number) => {
-    fetch(`http://127.0.0.1:8000/api/message/${messageId}/`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/message/${messageId}/`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -186,7 +186,7 @@ const Messages: React.FC = () => {
       fetch(`${import.meta.env.VITE_API_URL}/api/messages/${username}/sent/`)
         .then((response) => response.json())
         .then((data) => {
-          setSentMessages(data);
+          setSelectedMessage(data);
         })
         .catch((error) => {
           console.error("Error fetching messages:", error);
