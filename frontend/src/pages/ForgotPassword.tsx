@@ -26,7 +26,7 @@ const ForgotPassword = () => {
         try {
             if (step === 1) {
                 // Enter the correct email, you get your security questions
-                const verifyResponse = await fetch("http://127.0.0.1:8000/check-email/", {
+                const verifyResponse = await fetch(`${import.meta.env.VITE_API_URL}/check-email/`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ email }),
@@ -37,7 +37,7 @@ const ForgotPassword = () => {
                 }
               
                 // get questions
-                const questionsResponse = await fetch(`http://127.0.0.1:8000/user-security-questions/?email=${email}`);
+                const questionsResponse = await fetch(`${import.meta.env.VITE_API_URL}/user-security-questions/?email=${email}`);
                 if (!questionsResponse.ok) {
                   throw new Error("Failed to get security questions");
                 }
@@ -53,7 +53,7 @@ const ForgotPassword = () => {
     
             } else if (step == 2) {
                 // Verify the security questions are correct
-                const response = await fetch("http://127.0.0.1:8000/verify-security-answers/", {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/verify-security-answers/`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: 'include',
@@ -87,7 +87,7 @@ const ForgotPassword = () => {
                     );
                 }
                 // check if the user isn't using their old password
-                const Oldresponse = await fetch("http://127.0.0.1:8000/check-old-password/", {
+                const Oldresponse = await fetch(`${import.meta.env.VITE_API_URL}/check-old-password/`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -106,7 +106,7 @@ const ForgotPassword = () => {
                     throw new Error("New password cannot be the same as your old password");
                 }
                 // reset
-                const response = await fetch("http://127.0.0.1:8000/reset-password/", {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/reset-password/`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({

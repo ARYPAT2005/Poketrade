@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Navbar, Nav, Dropdown } from "react-bootstrap";
-import { PersonCircle } from "react-bootstrap-icons";
+import { PersonCircle, Search } from "react-bootstrap-icons";
 import userIdAtom from "../atoms/userIdAtom";
+import userAtom from "../atoms/userAtom";
 import { useAtom } from "jotai";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -14,17 +15,18 @@ interface CustomNavbarProps {
 
 const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
   const [username, setUsername] = useAtom(userIdAtom);
+  const [user, setUser] = useAtom(userAtom);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [messageCount, setMessageCount] = useState(0);
-  const [balance, setBalance] = useState(0);
-  const [canClaim, setCanClaim] = useState(false);
+  // const [balance,] = useState(0);
+  // const [canClaim,] = useState(false);
 
   const handleLogout = () => {
     setUsername("");
     navigate("/");
   };
- 
+
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
@@ -39,7 +41,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
   useEffect(() => {
     if (username) {
-      fetch(`http://localhost:8000/api/messages/${username}/count`)
+      fetch(`${import.meta.env.VITE_API_URL}/api/messages/${username}/count`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -56,26 +58,25 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
   }),
     [username];
 
-  // useEffect(() => {
-  //   if (username) {
-  //     fetch(`http://localhost:8000/user/${username}`)
-  //       .then((response) => {
-  //         if (!response.ok) {
-  //           throw new Error("Network response was not ok");
-  //         }
-  //         return response.json();
-  //       })
-  //       .then((data) => {
-  //         console.log("Wallet data:", data);
-  //         setBalance(data.wallet_balance);
-  //         setCanClaim(data.can_claim);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching user data:", error);
-  //         alert("Error fetching user data");
-  //       });
-  //   }
-  // }, [username]);
+  useEffect(() => {
+    if (username) {
+      fetch(`http://localhost:8000/user/${username}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("User data:", data);
+          setUser(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+          alert("Error fetching user data");
+        });
+    }
+  }, [username]);
 
   return (
     <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
@@ -90,6 +91,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
           <Nav.Link
             style={{
               color: location.pathname === "/marketplace" ? "black" : "#513639",
+              textAlign: "center",
             }}
             href="/marketplace"
           >
@@ -98,6 +100,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
           <Nav.Link
             style={{
               color: location.pathname === "/trade" ? "black" : "#513639",
+              textAlign: "center",
             }}
             href="/trade"
           >
@@ -106,12 +109,24 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
           <Nav.Link
             style={{
               color: location.pathname === "/store" ? "black" : "#513639",
+              textAlign: "center",
             }}
             href="/store"
           >
             Store
           </Nav.Link>
-          {canClaim && location.pathname != "/loginrewards" && username && (
+          {isMobile && (
+            <Nav.Link
+              style={{
+                color: location.pathname === "/search" ? "black" : "#513639",
+                textAlign: "center",
+              }}
+              href="/search"
+            >
+              Search
+            </Nav.Link>
+          )}
+          {user?.can_claim && location.pathname != "/loginrewards" && username && (
             <img
               className="blinking-image"
               src={pokeball}
@@ -127,30 +142,48 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
             />
           )}
         </Nav>
-        <div style={{ marginRight: "12px" }}>
+        {!isMobile && (
+          <Search
+            style={{
+              color: location.pathname === "/search" ? "black" : "#513639",
+              textAlign: "center",
+              marginRight: "10px",
+              marginBottom: "5px",
+              cursor: "pointer",
+            }}
+            size={17}
+            onClick={() => navigate("/search")}
+          />
+        )}
+
+        <div style={{ marginRight: isMobile ? "" : "12px", textAlign: "center" }}>
           {username && (
-            <span className="welcome-message" style={{ marginRight: "15px", fontWeight: "bold" }}>
-              {username} : <span className="text-muted">${balance.toFixed(2)}</span>
+            <span className="welcome-message" style={{ fontWeight: "bold", textAlign: "center" }}>
+              {username} : <span className="text-muted">${user?.wallet_balance.toFixed(2)}</span>
             </span>
           )}
-          <a href="./Search">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="black"
-              className="bi bi-search"
-              viewBox="0 0 16 16"
-            >
-              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-            </svg>
-          </a>
         </div>
-        <Dropdown style={{ marginRight: "10px" }}>
-          <Dropdown.Toggle id="dropdown-basic" variant="outline-dark">
+        <Dropdown style={{ marginRight: isMobile ? "" : "10px", width: isMobile ? "" : "auto" }}>
+          <Dropdown.Toggle id="dropdown-basic" variant="outline-dark" style={{ width: "100%" }}>
             <PersonCircle />
+            {isMobile && (
+              <span
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                }}
+              >
+                Profile
+              </span>
+            )}
           </Dropdown.Toggle>
-          <Dropdown.Menu align={isMobile ? "start" : "end"}>
+          <Dropdown.Menu
+            align="end"
+            style={{
+              width: isMobile ? "100%" : "200px",
+            }}
+          >
             {username ? (
               <>
                 <Dropdown.Item href="/messages">

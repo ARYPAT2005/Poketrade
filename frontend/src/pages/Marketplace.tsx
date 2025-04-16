@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+
 import "./Marketplace.css";
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
@@ -40,7 +41,8 @@ const Marketplace = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/cards/?page=1")
+    // Replace URL with page containing list of trades.
+    fetch(`${import.meta.env.VITE_API_URL}/api/cards/?page=1`)
       .then((response) => response.json())
       .then((data) => {
         setCards(data.results);

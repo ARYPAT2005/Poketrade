@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import userIdAtom from "../atoms/userIdAtom";
-import { useAtomValue, useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { Card, ListGroup } from "react-bootstrap";
 
 import LoginPrompt from "./LoginPrompt";
@@ -20,7 +20,7 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:8000/user/${userId}`)
+      fetch(`${import.meta.env.VITE_API_URL}/user/${userId}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./Messages.css";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useAtom } from "jotai";
 import userIdAtom from "../atoms/userIdAtom";
+import userAtom from "../atoms/userAtom";
 
 import { Tabs, Tab, Card, ListGroup, Form, InputGroup, Button, Alert } from "react-bootstrap";
 import { CircleFill } from "react-bootstrap-icons";
@@ -20,6 +21,7 @@ interface Message {
 
 const Messages: React.FC = () => {
   const username = useAtomValue(userIdAtom);
+  const [user, setUser] = useAtom(userAtom);
   const [inboxMessages, setInboxMessages] = useState<Message[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
@@ -40,9 +42,15 @@ const Messages: React.FC = () => {
     console.log("Message clicked:", message);
     if (!message.is_read) {
       console.log("Updating message read status");
-      const response = await updateMessageReadStatus(message.id);
+      // const response = await updateMessageReadStatus(message.id);
       const updatedMessages = inboxMessages.map((msg) => (msg.id === message.id ? { ...msg, is_read: true } : msg));
       setInboxMessages(updatedMessages);
+      if (user) {
+        setUser((prevUser: any) => ({
+          ...prevUser,
+          unread_messages: prevUser.unread_messages - 1,
+        }));
+      }
     }
     setSelectedMessage(message);
   };
@@ -52,24 +60,24 @@ const Messages: React.FC = () => {
     setSelectedSentMessage(message);
   };
 
-  const updateMessageReadStatus = (messageId: number) => {
-    fetch(`http://127.0.0.1:8000/api/message/${messageId}/`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ is_read: true }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return 0;
-      })
-      .catch((error) => {
-        console.error("Error updating message read status:", error);
-      });
-  };
+  // const updateMessageReadStatus = (messageId: number) => {
+  //   fetch(`http://127.0.0.1:8000/api/message/${messageId}/`, {
+  //     method: "PATCH",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ is_read: true }),
+  //   })
+  //     .then((response) => {
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       return 0;
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error updating message read status:", error);
+  //     });
+  // };
 
   const handleMessageDelete = (messageId: number) => {
     fetch(`http://127.0.0.1:8000/api/message/${messageId}/`, {
@@ -100,7 +108,7 @@ const Messages: React.FC = () => {
     setComposeValidated(false);
   };
 
-  const handleComposeSend = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleComposeSend = () => {
     let valid = true;
 
     // TODO: Check if recipient is a valid user
@@ -127,7 +135,7 @@ const Messages: React.FC = () => {
 
     if (valid) {
       setComposeValidated(true);
-      fetch(`http://127.0.0.1:8000/api/messages/send/${username}/${composeRecipient}/`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/messages/send/${username}/${composeRecipient}/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,7 +169,7 @@ const Messages: React.FC = () => {
 
   useEffect(() => {
     if (username) {
-      fetch(`http://127.0.0.1:8000/api/messages/${username}/`)
+      fetch(`${import.meta.env.VITE_API_URL}/api/messages/${username}/`)
         .then((response) => response.json())
         .then((data) => {
           setInboxMessages(data);
@@ -175,7 +183,7 @@ const Messages: React.FC = () => {
   useEffect(() => {
     if (username) {
       // 127.0.0.1:8000/api/messages/admin/sent/
-      fetch(`http://127.0.0.1:8000/api/messages/${username}/sent/`)
+      fetch(`${import.meta.env.VITE_API_URL}/api/messages/${username}/sent/`)
         .then((response) => response.json())
         .then((data) => {
           setSentMessages(data);
