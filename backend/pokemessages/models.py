@@ -21,21 +21,27 @@ class Message(models.Model):
 class Trade(models.Model):
     sender = models.ForeignKey(User, related_name='sent_trades', on_delete=models.CASCADE)
     recipient = models.ForeignKey(User, related_name='received_trades', on_delete=models.CASCADE)
-    message = models.TextField()
+    cards = models.ManyToManyField(Card, through='TradeCardDetail', related_name='trades_involved_in')
+    message = models.CharField(blank=True, max_length=150)
     timestamp = models.DateTimeField(auto_now_add=True)
-    is_read = models.BooleanField(default=False)
-    accepted = models.BooleanField(null=True)
+    status = models.CharField(max_length=20, default='pending')
 
     class Meta:
         ordering = ['-timestamp']
 
     def __str__(self):
-        return f"Trade {self.id} - {self.sender} to {self.recipient}"
+        return f"{self.sender.username} to {self.recipient.username} ({self.status})"
 
-class TradeItem(models.Model):
-    trade = models.ForeignKey(Trade, related_name='items', on_delete=models.CASCADE)
-    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+class TradeCardDetail(models.Model):
+    DIRECTION_CHOICES = [
+        ('offer', 'Sender Offers'),
+        ('request', 'Sender Requests'),
+    ]
+
+    trade = models.ForeignKey(Trade, on_delete=models.CASCADE, related_name='card_details')
+    card = models.ForeignKey(Card, on_delete=models.CASCADE, related_name='trade_details')
     quantity = models.PositiveIntegerField(default=1)
+    direction = models.CharField(max_length=10, choices=DIRECTION_CHOICES)
 
     def __str__(self):
-        return f"{self.quantity}x {self.card.name} in Trade {self.trade.id}"
+        return f"{self.get_direction_display()} {self.quantity}x {self.card.name}"

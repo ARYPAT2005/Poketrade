@@ -1,8 +1,9 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from accounts.models import User, SecurityQuestion, UserSecurityQuestions
+from accounts.models import User, SecurityQuestion, UserSecurityQuestions, OwnedCards
 from rest_framework.serializers import ModelSerializer
-
+from cards.models import Card
+from cards.serializers import CardSerializer
 
 
 class SecurityQuestionSerializer(serializers.ModelSerializer):
@@ -82,6 +83,30 @@ class RegisterSerializer(serializers.ModelSerializer):
     #     if data['password'] != data['confirm_password']:
     #         raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
     #     return data
+class OwnedCardsSerializer(serializers.ModelSerializer):
+    card_info = serializers.PrimaryKeyRelatedField(queryset=Card.objects.all(), write_only=True)
+    card_details = CardSerializer(source='card_info', read_only=True)
+    class Meta:
+        model = OwnedCards
+        fields = ['id', 'card_info', 'card_details', 'quantity']
+
+class UserSerializer(serializers.ModelSerializer):
+    owned_cards = OwnedCardsSerializer(many=True, read_only=True, source='ownedcards_set')
+    can_claim = serializers.SerializerMethodField()
+    unread_messages = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'wallet_balance', 'last_claim_date', 'can_claim', 'owned_cards', 'unread_messages']
+
+    def get_can_claim(self, obj):
+        from .views import canClaim
+        return canClaim(obj)
+
+    def get_unread_messages(self, obj):
+        from pokemessages.models import Message
+        return Message.objects.filter(recipient=obj, is_read=False).count()
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -111,4 +136,3 @@ class LoginSerializer(serializers.Serializer):
         print("Authentication successful!")
         data["user"] = user
         return data
-

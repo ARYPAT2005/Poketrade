@@ -3,8 +3,15 @@ import React, { useEffect, useState } from "react";
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
 import { Card, ListGroup } from "react-bootstrap";
+import PokemonCard from "../types/Card";
 
 import LoginPrompt from "./LoginPrompt";
+
+type OwnedCards = {
+  card_details: PokemonCard;
+  quantity: number;
+  id: number;
+}
 
 type User = {
   username: string;
@@ -12,6 +19,7 @@ type User = {
   wallet_balance: number;
   last_claim_date: Date | null;
   can_claim: boolean;
+  owned_cards: OwnedCards[];
 };
 
 const Profile: React.FC = () => {
@@ -58,7 +66,7 @@ const Profile: React.FC = () => {
                 <strong>Email:</strong> {user?.email}
               </ListGroup.Item>
               <ListGroup.Item>
-                <strong>Wallet Balance:</strong> ${user?.wallet_balance.toFixed(2)}
+                <strong>Wallet Balance:</strong> ${user?.wallet_balance}
               </ListGroup.Item>
               <ListGroup.Item>
                 <strong>Last Rewards Claim Date:</strong>{" "}
@@ -73,6 +81,16 @@ const Profile: React.FC = () => {
                 ) : (
                   <span style={{ color: "red" }}>Not Available</span>
                 )}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                Deck:
+                {user?.owned_cards.map(owned_card => (
+                  <div key={owned_card.id}>
+                    <img src={owned_card.card_details.image_url}/>
+                    {owned_card.quantity}
+                  </div>
+                ))}
+                
               </ListGroup.Item>
             </ListGroup>
           </Card.Body>

@@ -1,6 +1,7 @@
 import json
 from decimal import Decimal
 
+import requests
 from django.contrib.auth import login
 import logging
 
@@ -11,15 +12,16 @@ from rest_framework import status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
 
-from accounts.models import UserSecurityQuestions, SecurityQuestion
-
+from accounts.models import UserSecurityQuestions, SecurityQuestion, OwnedCards
+from cards.models import Card
 
 logger = logging.getLogger(__name__)
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from accounts.serializers import (RegisterSerializer, LoginSerializer, SecurityQuestionSerializer)
+from accounts.serializers import (RegisterSerializer, LoginSerializer, SecurityQuestionSerializer, UserSerializer,
+                                  OwnedCardsSerializer)
 from pokemessages.models import Message
 
 from django.utils import timezone
@@ -281,19 +283,26 @@ def canClaim(user):
 
 class UserView(APIView):
     def get(self, request, username):
-        user = User.objects.get(username=username)
-        unread_messages = Message.objects.filter(recipient=user, is_read=False).count()
-        if not user:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({
-            'username': user.username,
-            'email': user.email,
-            'wallet_balance': user.wallet_balance,
-            'last_claim_date': user.last_claim_date,
-            'can_claim': canClaim(user),
-            'unread_messages': unread_messages
-        }, status=status.HTTP_200_OK)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+class DeckView(APIView):
+    def get(self, request, username):
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        owned_cards = user.ownedcards_set.all()
+        serializer = OwnedCardsSerializer(owned_cards, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+
 
 class PaymentView(APIView):
     def put(self, request, username, amount):

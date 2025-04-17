@@ -23,6 +23,7 @@ urlpatterns = [
     path('check-old-password/', check_old_password, name='check-old-password'),
     # grabs the only 2 security questions that the user answered when registering
     path('user-security-questions/', get_user_security_questions, name='security-questions'),
+    path('deck/<str:username>/', views.DeckView.as_view(), name='deck'),
     path('user/<str:username>/pay/<int:amount>/', views.PaymentView.as_view(), name='pay'),
 
 ]   +  router.urls
