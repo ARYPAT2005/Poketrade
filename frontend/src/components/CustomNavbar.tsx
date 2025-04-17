@@ -17,7 +17,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
   const [username, setUsername] = useAtom(userIdAtom);
   const [user, setUser] = useAtom(userAtom);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [messageCount, setMessageCount] = useState(0);
   // const [balance,] = useState(0);
   // const [canClaim,] = useState(false);
@@ -30,7 +30,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 800);
+    const handleResize = () => setIsMobile(window.innerWidth < 992);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -127,19 +127,30 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
             </Nav.Link>
           )}
           {user?.can_claim && location.pathname != "/loginrewards" && username && (
-            <img
-              className="blinking-image"
-              src={pokeball}
-              onClick={() => navigate("/loginrewards")}
-              alt="Login Reward"
+            <Nav.Link
               style={{
-                cursor: "pointer",
-                width: "30px",
-                height: "30px",
-                marginLeft: "10px",
-                marginTop: "3px",
+                textAlign: "center",
+                padding: "0px",
+                margin: "0px",
               }}
-            />
+            >
+              <img
+                className="blinking-image"
+                src={pokeball}
+                onClick={() => navigate("/loginrewards")}
+                alt="Login Reward"
+                style={{
+                  cursor: "pointer",
+                  width: "30px",
+                  height: "30px",
+                  marginLeft: isMobile ? "0px" : "10px",
+                  marginTop: isMobile ? "0px" : "3px",
+                  marginRight: isMobile ? "10px" : "0px",
+                  marginBottom: isMobile ? "10px" : "0px",
+                }}
+              />
+              {isMobile && <>Login Rewards</>}
+            </Nav.Link>
           )}
         </Nav>
         {!isMobile && (
