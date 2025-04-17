@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Card from "../types/Card";
+import userAtom from "../atoms/userAtom";
+import { useAtom } from "jotai";
 
 import pokeball from "../assets/individual_pokeball.svg";
 import Pack from "../types/Pack";
@@ -9,6 +11,7 @@ interface CardDetailProps {
 }
 
 const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
+  const [user, setUser] = useAtom(userAtom);
   const [cardWon, setCardWon] = useState<Card | null>(null);
   const cardDetailRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -23,12 +26,18 @@ const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
-  useEffect(() => {
-    console.log("PackDetails mounted with pack:", pack);
-  }, [pack]);
 
   const handlePackOpen = () => {
-    fetch(`http://127.0.0.1:8000/api/packs/${pack.id}/`)
+    if (!user) {
+      console.error("User not found");
+      return;
+    }
+    if (user.wallet_balance < pack.cost) {
+      alert("You don't have enough coins to open this pack.");
+      return;
+    }
+    console.log("pack", pack);
+    fetch(`${import.meta.env.VITE_API_URL}/api/packs/${pack.id}/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -37,7 +46,35 @@ const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
       })
       .then((data) => {
         if (data) {
-          console.log("Pack opened, card won:", data);
+          // console.log(`${import.meta.env.VITE_API_URL}/user/${user.username}/pay/${pack.cost}/`);
+          fetch(`${import.meta.env.VITE_API_URL}/user/${user.username}/pay/${pack.cost}/`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              pack_id: pack.id,
+            }),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              console.log("Pack opened, card won:", data);
+              const newUser = {
+                ...user,
+                wallet_balance: user.wallet_balance - pack.cost,
+              };
+              setUser(newUser);
+            })
+            .catch((error) => {
+              console.error("Error opening pack:", error);
+              alert("Failed to open the pack. Please try again later.");
+            });
+
           setCardWon(data);
         }
       })

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 
 import userIdAtom from "../atoms/userIdAtom";
 import userAtom from "../atoms/userAtom";
+
 import { useAtomValue, useAtom } from "jotai";
+
 import { Card, Alert } from "react-bootstrap";
 import "./OpenAnimation.css";
 import pokeball from "../assets/individual_pokeball.svg";
@@ -16,7 +18,7 @@ const LoginRewards: React.FC = () => {
   const [earned, setEarned] = useState(0);
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:8000/user/${userId}`)
+      fetch(`${import.meta.env.VITE_API_URL}/user/${userId}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -60,7 +62,7 @@ const LoginRewards: React.FC = () => {
 
   const handleRewardClaim = () => {
     if (!userId) return;
-    fetch(`http://localhost:8000/claim/${userId}/`, {
+    fetch(`${import.meta.env.VITE_API_URL}/claim/${userId}/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -82,6 +84,7 @@ const LoginRewards: React.FC = () => {
           wallet_balance: data.wallet_balance,
           last_claim_date: new Date(data.last_claim_date),
         };
+
         setUser(newUser);
         setEarned(data.amount_claimed);
       })

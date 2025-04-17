@@ -17,8 +17,10 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
   const [username, setUsername] = useAtom(userIdAtom);
   const [user, setUser] = useAtom(userAtom);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
   const [messageCount, setMessageCount] = useState(0);
+  // const [balance,] = useState(0);
+  // const [canClaim,] = useState(false);
 
   const handleLogout = () => {
     setUsername("");
@@ -28,7 +30,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 992);
+    const handleResize = () => setIsMobile(window.innerWidth < 800);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -39,7 +41,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
   useEffect(() => {
     if (username) {
-      fetch(`http://localhost:8000/api/messages/${username}/count`)
+      fetch(`${import.meta.env.VITE_API_URL}/api/messages/${username}/count`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -58,7 +60,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
   useEffect(() => {
     if (username) {
-      fetch(`http://localhost:8000/user/${username}`)
+      fetch(`${import.meta.env.VITE_API_URL}/user/${username}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");

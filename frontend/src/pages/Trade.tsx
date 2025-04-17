@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
-import { Card, Tabs, Tab, ListGroup, Button, Spinner, Alert } from "react-bootstrap";
+import { Card, Tabs, Tab, ListGroup, Button } from "react-bootstrap";
 import LoginPrompt from "./LoginPrompt";
 import Trades, { TradeCardDetail } from "../types/Trades"; 
 import CardDetail from "../components/CardDetails";
