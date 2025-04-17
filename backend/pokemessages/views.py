@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-
+from accounts.utils import transfer_cards_or_coins
 from cards.serializers import CardSerializer
 from .models import Message, Trade, TradeCardDetail
 from .serializers import MessageSerializer, TradeSerializer
@@ -144,13 +144,21 @@ class TradeDetail(APIView):
         trade.save(update_fields=['status'])
 
         if trade.status == 'accepted':
-            trade_cards_to_receive = trade.card_details.filter(direction='offer')
-            cards_to_receive = [detail.card for detail in trade_cards_to_receive]
-            receiver = trade.recipient.username
-            url = f"http://localhost:8000/deck/{receiver}/"
-            for card in cards_to_receive:
-                requests.post(url, json={'card': card.id})
-            pass
+            sender = trade.sender
+            receiver = trade.recipient
+            card_details = trade.card_details.all()
+            senders_cards = []
+            for card_detail in card_details.filter(direction='offer'):
+                senders_cards.append({'card': card_detail.card, 'quantity': card_detail.quantity})
+            receivers_cards = []
+            for card_detail in card_details.filter(direction='request'):
+                receivers_cards.append({'card': card_detail.card, 'quantity': card_detail.quantity})
+            coin_data = {'sender_coin_transfer': 0, 'receiver_coin_transfer': 0}
+            transfer_response = transfer_cards_or_coins(sender, receiver, senders_cards, receivers_cards, coin_data)
+            if not transfer_response[0]:
+                trade.status = 'pending'
+                trade.save(update_fields=['status'])
+                return Response({"detail": f"Trade {trade.id} failed. {transfer_response[1]}"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             trade.delete()
             return Response({"detail": f"Trade {trade.id} deleted successfully."}, status=status.HTTP_200_OK)

@@ -291,7 +291,6 @@ class UserView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-
 class DeckView(APIView):
     def get(self, request, username):
         try:
@@ -301,35 +300,6 @@ class DeckView(APIView):
         owned_cards = user.ownedcards_set.all()
         serializer = OwnedCardsSerializer(owned_cards, many=True, context={'request': request})
         return Response(serializer.data)
-
-    def post(self, request, username):
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
-
-        card_identifier = request.data.get('card')
-        card_instance = Card.objects.get(pk=card_identifier)
-        try:
-            owned_card_instance, created = OwnedCards.objects.get_or_create(
-                user=user,
-                card_info=card_instance,
-                defaults={'quantity': 1}
-            )
-            if created:
-                response_status = status.HTTP_201_CREATED
-            else:
-                owned_card_instance.quantity += 1
-                owned_card_instance.save()
-                response_status = status.HTTP_200_OK
-
-            serializer = OwnedCardsSerializer(owned_card_instance, context={'request': request})
-            return Response(serializer.data, status=response_status)
-
-        except Exception as e:
-            print(f"Error processing owned card: {e}")
-            return Response({"error": "An internal server error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
