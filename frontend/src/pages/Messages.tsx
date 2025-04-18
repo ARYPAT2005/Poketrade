@@ -186,7 +186,7 @@ const Messages: React.FC = () => {
       fetch(`${import.meta.env.VITE_API_URL}/api/messages/${username}/sent/`)
         .then((response) => response.json())
         .then((data) => {
-          setSelectedMessage(data);
+          setSentMessages(data);
         })
         .catch((error) => {
           console.error("Error fetching messages:", error);

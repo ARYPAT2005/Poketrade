@@ -118,12 +118,21 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
           </Nav.Link>
           <Nav.Link
             style={{
-              color: location.pathname === "/about" ? "black" : "#513639",
+              color: location.pathname === "/creator" ? "black" : "#513639",
               textAlign: "center",
             }}
             href="/creator"
           >
             Creator
+          </Nav.Link>
+          <Nav.Link
+            style={{
+              color: location.pathname === "/battles" ? "black" : "#513639",
+              textAlign: "center",
+            }}
+            href="/battles"
+          >
+            Battles
           </Nav.Link>
           {isMobile && (
             <Nav.Link

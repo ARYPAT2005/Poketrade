@@ -328,6 +328,24 @@ class PaymentView(APIView):
             'wallet_balance': user.wallet_balance
         }, status=status.HTTP_200_OK)
 
+class EarnView(APIView):
+    def put(self, request, username, amount):
+        user = User.objects.get(username=username)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if user.wallet_balance is None:
+            user.wallet_balance = Decimal('0.00')
+
+        user.wallet_balance += amount
+        user.save()
+
+        return Response({
+            'success': True,
+            'message': 'Earned successfully!',
+            'wallet_balance': user.wallet_balance
+        }, status=status.HTTP_200_OK)
+
 class WalletDetail(APIView):
     def get(self, request, username):
         user = User.objects.get(username=username)
