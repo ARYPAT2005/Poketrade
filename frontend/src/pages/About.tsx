@@ -4,7 +4,14 @@ import CardDetail from "../components/CardDetails";
 const About: React.FC = () => {
   const [cards, setCards] = useState<Card[]>([]);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-
+  console.log("VITE url:" + `${import.meta.env.VITE_API_URL}`);
+  fetch(`${import.meta.env.VITE_API_URL}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log('Fetched data:', data); // Debug log
+      // Handle data here
+    })
+    .catch(error => console.error('Fetch error:', error));
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/cards/?page=1`)
       .then((response) => response.json())
