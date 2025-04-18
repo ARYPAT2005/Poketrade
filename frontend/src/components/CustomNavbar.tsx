@@ -24,6 +24,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
   const handleLogout = () => {
     setUsername("");
+    setUser(null);
     navigate("/");
   };
 
@@ -115,6 +116,15 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
           >
             Store
           </Nav.Link>
+          <Nav.Link
+            style={{
+              color: location.pathname === "/about" ? "black" : "#513639",
+              textAlign: "center",
+            }}
+            href="/creator"
+          >
+            Creator
+          </Nav.Link>
           {isMobile && (
             <Nav.Link
               style={{
@@ -133,6 +143,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
                 padding: "0px",
                 margin: "0px",
               }}
+              href="/loginrewards"
             >
               <img
                 className="blinking-image"
