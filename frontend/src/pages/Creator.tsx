@@ -94,7 +94,7 @@ const Creator: React.FC = () => {
   type CardType = "grass" | "fire" | "water" | "lightning";
   const [cardType, setCardType] = useState<CardType>("grass");
 
-  const [user, setUser] = useAtom(userAtom);
+  const [user, ] = useAtom(userAtom);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [abilitiesAndAttacks, setAbilitiesAndAttacks] = useState("");
@@ -209,13 +209,13 @@ const Creator: React.FC = () => {
             }
             return response.json();
           })
-          .then((data) => {
-            const newUser = {
-              ...user,
-              wallet_balance: user.wallet_balance - generation_cost,
-            };
-            setUser(newUser);
-          });
+          // .then((data) => {
+          //   const newUser = {
+          //     ...user,
+          //     wallet_balance: user.wallet_balance - generation_cost,
+          //   };
+          //   setUser(newUser);
+          // });
       } else {
         throw new Error("No image URL found in response");
       }
