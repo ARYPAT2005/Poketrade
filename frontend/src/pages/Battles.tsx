@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 
-import Card from "../types/Card";
+// import Card from "../types/Card";
 
-import { Navbar, Form, Button, InputGroup, Spinner, Alert } from "react-bootstrap";
+import { Navbar, Form, Button, Spinner, Alert } from "react-bootstrap";
 import LoginPrompt from "./LoginPrompt";
 
 import userAtom from "../atoms/userAtom";
@@ -210,13 +210,14 @@ const Battles: React.FC = () => {
               }
               return response.json();
             })
-            .then((data) => {
-              const newBalance: number = Number(user.wallet_balance) + Number(amount);
-              setUser({
-                ...user,
-                wallet_balance: newBalance,
-              });
-            });
+            // .then((data) => {
+            //   const newBalance: number = Number(user.wallet_balance) + Number(amount);
+            //   setUser({
+            //     ...user,
+            //     wallet_balance: newBalance,
+            //   });
+            // });
+          console.log(data);
         }
       } else {
         // If we couldn't extract the outcome format, just display the whole response
