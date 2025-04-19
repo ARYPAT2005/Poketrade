@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 
-import Card from "../types/Card";
+// import Card from "../types/Card";
 
-import { Navbar, Form, Button, InputGroup, Spinner, Alert } from "react-bootstrap";
+import { Navbar, Form, Button, Spinner, Alert } from "react-bootstrap";
 import LoginPrompt from "./LoginPrompt";
 
 import userAtom from "../atoms/userAtom";
@@ -211,6 +211,7 @@ const Battles: React.FC = () => {
               return response.json();
             })
             .then((data) => {
+              console.log(data);
               const newBalance: number = Number(user.wallet_balance) + Number(amount);
               setUser({
                 ...user,
