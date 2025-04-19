@@ -210,6 +210,7 @@ const Creator: React.FC = () => {
             return response.json();
           })
           .then((data) => {
+            console.log(data);
             const newUser = {
               ...user,
               wallet_balance: user.wallet_balance - generation_cost,
