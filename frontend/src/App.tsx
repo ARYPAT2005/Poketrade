@@ -11,6 +11,7 @@ import Trade from "./pages/Trade";
 import Search from "./pages/Search";
 import Messages from "./pages/Messages";
 import Creator from "./pages/Creator";
+import Battles from "./pages/Battles";
 
 import Profile from "./pages/Profile";
 import LoginRewards from "./pages/LoginRewards";
@@ -43,6 +44,7 @@ const App: React.FC = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/loginrewards" element={<LoginRewards />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/battles" element={<Battles />} />
         </Routes>
       </div>
       <Footer />

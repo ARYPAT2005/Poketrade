@@ -25,6 +25,7 @@ urlpatterns = [
     path('user-security-questions/', get_user_security_questions, name='security-questions'),
     path('deck/<str:username>/', views.DeckView.as_view(), name='deck'),
     path('user/<str:username>/pay/<int:amount>/', views.PaymentView.as_view(), name='pay'),
+    path('user/<str:username>/earn/<int:amount>/', views.EarnView.as_view(), name='earn'),
 
 ]   +  router.urls
 from django.conf import settings

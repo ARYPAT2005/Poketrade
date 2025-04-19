@@ -42,11 +42,7 @@ Setup
 
 3. Create the frontend .env
 
-    Create a file `.env` in the `/frontend` directory with the following content:
-
-    ```env
-    VITE_API_URL="http://127.0.0.1:8000"
-    ```
+    Receive a .env file from the repo creators. Place it in `./frontend` directory. 
 
 4. In a separate terminal, run the frontend server
 

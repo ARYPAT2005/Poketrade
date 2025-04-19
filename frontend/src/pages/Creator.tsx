@@ -11,7 +11,7 @@ import waterTemplate from "../assets/card_templates/water_template.png";
 import lightningTemplate from "../assets/card_templates/lightning_template.png";
 import default_portrait from "../assets/default_portrait.png";
 
-import { PhoneLandscape, InfoCircle, Download, BrushFill } from "react-bootstrap-icons";
+import { PhoneLandscape, InfoCircle, Download, BrushFill, ExclamationTriangle } from "react-bootstrap-icons";
 
 import html2canvas from "html2canvas";
 
@@ -156,7 +156,6 @@ const Creator: React.FC = () => {
     try {
       // Get API key from environment or secure storage
       const apiKey = import.meta.env.VITE_DALL_E_API_KEY;
-      console.log(`${import.meta.env.VITE_DALL_E_API_KEY}`);
 
       if (!apiKey) {
         throw new Error("API key not found");
@@ -346,6 +345,26 @@ const Creator: React.FC = () => {
                   )}
                 </Form>
               </Navbar>
+              <Alert
+                variant="warning"
+                dismissible
+                style={{
+                  width: "80%",
+                  margin: "auto",
+                  marginBottom: "10px",
+                  marginTop: "10px",
+                  borderRadius: "5px",
+                }}
+              >
+                <Alert.Heading>
+                  <ExclamationTriangle style={{ marginRight: "0.5em" }} />
+                  Important Note
+                </Alert.Heading>
+                <p>
+                  The image generator has an aggressive safety filter. If you encounter a 400 error, modify your title
+                  or description to avoid any language that may potentially be flagged as inappropriate.
+                </p>
+              </Alert>
               {error && (
                 <Alert
                   variant="danger"
