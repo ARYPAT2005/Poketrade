@@ -210,14 +210,14 @@ const Battles: React.FC = () => {
               }
               return response.json();
             })
-            // .then((data) => {
-            //   const newBalance: number = Number(user.wallet_balance) + Number(amount);
-            //   setUser({
-            //     ...user,
-            //     wallet_balance: newBalance,
-            //   });
-            // });
-          console.log(data);
+            .then((data) => {
+              console.log(data);
+              const newBalance: number = Number(user.wallet_balance) + Number(amount);
+              setUser({
+                ...user,
+                wallet_balance: newBalance,
+              });
+            });
         }
       } else {
         // If we couldn't extract the outcome format, just display the whole response
