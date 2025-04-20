@@ -31,7 +31,10 @@ const LoginRewards: React.FC = () => {
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);
-          alert("Error fetching user data");
+          // only alert if the user hasn't been loaded in yet
+          if (!user) {
+            alert("Error fetching user data");
+          }
         });
     }
   }, [userId]);
