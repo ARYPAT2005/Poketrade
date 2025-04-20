@@ -83,6 +83,21 @@ const Profile: React.FC = () => {
                 )}
               </ListGroup.Item>
               <ListGroup.Item>
+                <strong>Deck:</strong>
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                  gap: "16px",
+                  marginTop: "16px"
+                }}>
+                  {user?.owned_cards.map(owned_card => (
+                    <div key={owned_card.id} >
+                      <img src={owned_card.card_details.image_url} style={{ width: "100%"}}/> {"Quantity: " + owned_card.quantity}
+                    </div>
+                  ))}
+                </div>
+              </ListGroup.Item>
+              {/* <ListGroup.Item>
                 Deck:
                 {user?.owned_cards.map(owned_card => (
                   <div key={owned_card.id}>
@@ -90,8 +105,7 @@ const Profile: React.FC = () => {
                     {owned_card.quantity}
                   </div>
                 ))}
-                
-              </ListGroup.Item>
+              </ListGroup.Item> */}
             </ListGroup>
           </Card.Body>
         </Card>
