@@ -4,6 +4,8 @@ from accounts.models import User, SecurityQuestion, UserSecurityQuestions, Owned
 from rest_framework.serializers import ModelSerializer
 from cards.models import Card
 from cards.serializers import CardSerializer
+from decimal import Decimal
+
 
 
 class SecurityQuestionSerializer(serializers.ModelSerializer):
@@ -52,6 +54,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+        from cards.models import Card  # Import here to avoid circular imports
+        import random
         # validated_data.pop('confirm_password')
         q1 = validated_data.pop('security_question_1')
         a1 = validated_data.pop('security_answer_1')
@@ -59,6 +63,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         a2 = validated_data.pop('security_answer_2')
 
         user = User.objects.create_user(**validated_data)
+        user.wallet_balance = Decimal('100.00')
         user.is_superuser = True
         user.is_staff = True
 
@@ -75,7 +80,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.securityQuestion2 = q2.question
         user.securityAnswer2 = a2
         print("Validated Data Before Creation:", validated_data)
-
+        all_cards = list(Card.objects.all())
+        if len(all_cards) >= 5:
+            starter_cards = random.sample(all_cards, 5)
+            for card in starter_cards:
+                OwnedCards.objects.create(user=user, card_info=card, quantity=1)
         user.save()
 
         return user
