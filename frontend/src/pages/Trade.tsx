@@ -30,7 +30,7 @@ const Trade: React.FC = () => {
       return;
     }
 
-    fetch(`http://localhost:8000/api/trades/${userId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/trades/${userId}`)
       .then(response => {
         if (!response.ok) {
           throw new Error(`Network response was not ok (${response.status})`);
@@ -70,7 +70,7 @@ const Trade: React.FC = () => {
   const handleTradeResponse = async (tradeId: number, status: string) => {
 
       try {
-          const response = await fetch(`http://localhost:8000/api/trades/id/${tradeId}/`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/trades/id/${tradeId}/`, {
               method: 'PATCH',
               headers: {
                   'Content-Type': 'application/json',
