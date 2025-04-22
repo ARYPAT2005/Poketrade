@@ -21,6 +21,7 @@ import CustomNavbar from "./components/CustomNavbar";
 import Footer from "./components/Footer";
 
 import "./App.css";
+import PlayerProfile from "./pages/PlayerProfile";
 
 const App: React.FC = () => {
   const [navbarExpanded, setNavbarExpanded] = useState(false);
@@ -46,6 +47,7 @@ const App: React.FC = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/loginrewards" element={<LoginRewards />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/player/:playerName" element={<PlayerProfile />} />
         </Routes>
       </div>
       <Footer />

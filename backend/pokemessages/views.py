@@ -153,7 +153,7 @@ class TradeDetail(APIView):
             receivers_cards = []
             for card_detail in card_details.filter(direction='request'):
                 receivers_cards.append({'card': card_detail.card, 'quantity': card_detail.quantity})
-            coin_data = {'sender_coin_transfer': 0, 'receiver_coin_transfer': 0}
+            coin_data = {'sender_coin_transfer': trade.sender_coins, 'receiver_coin_transfer': trade.recipient_coins}
             transfer_response = transfer_cards_or_coins(sender, receiver, senders_cards, receivers_cards, coin_data)
             if not transfer_response[0]:
                 trade.status = 'pending'

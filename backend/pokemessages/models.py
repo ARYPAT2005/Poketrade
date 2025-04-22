@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from cards.models import Card
+from decimal import Decimal
+from django.core.validators import MinValueValidator
 
 User = get_user_model()
 
@@ -25,6 +27,24 @@ class Trade(models.Model):
     message = models.CharField(blank=True, max_length=150)
     timestamp = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='pending')
+    sender_coins = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        null=False,
+        blank=False,
+        # Add these to ensure proper type handling
+        validators=[MinValueValidator(Decimal('0.00'))]
+    )
+    recipient_coins = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        null=False,
+        blank=False,
+        # Add these to ensure proper type handling
+        validators=[MinValueValidator(Decimal('0.00'))]
+    )
 
     class Meta:
         ordering = ['-timestamp']

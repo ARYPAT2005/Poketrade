@@ -123,6 +123,11 @@ const Trade: React.FC = () => {
                           {detail.card_info.image_url && <img src={detail.card_info.image_url} alt={detail.card_info.name} style={{maxWidth: '40px', height: 'auto', marginLeft: '10px', borderRadius: '4px'}} onClick={() => handleCardClick(detail.card_info)} />}
                         </ListGroup.Item>
                     ))}
+                    {isSender? 
+                      <p>Coins to give: </p>
+                    : <p>Coins offered: </p>
+                    }
+                    {trade.sender_coins}
                 </ListGroup>
             ) : ( <p className="text-muted mt-1">Nothing</p> )}
           </div>
@@ -136,6 +141,11 @@ const Trade: React.FC = () => {
                   {detail.card_info.image_url && <img src={detail.card_info.image_url} alt={detail.card_info.name} style={{maxWidth: '40px', height: 'auto', marginLeft: '10px', borderRadius: '4px'}} onClick={() => handleCardClick(detail.card_info)} />}
                   </ListGroup.Item>
                 ))}
+                {isSender? 
+                  <p>Coins to receive: </p>
+                : <p>Coins to give: </p>
+                }
+                {trade.recipient_coins}
               </ListGroup>
             ) : ( <p className="text-muted mt-1">Nothing</p> )}
             {selectedCard && <CardDetail card={selectedCard} onClose={handleCloseOverlay} />}
