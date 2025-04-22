@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import "./Marketplace.css";
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
@@ -7,26 +6,40 @@ import Card from "../types/Card";
 import LoginPrompt from "./LoginPrompt";
 import { useNavigate } from 'react-router-dom';
 
+interface MarketplaceItem {
+  id: number;
+  card: Card;
+  buy_price: string;
+  auction_price: string;
+  seller: string | null;
+}
 
 const Marketplace = () => {
-  const [overlayIsVisible, setOverlayVisibility] = useState<string | null>(null);
+  const [overlayIsVisible, setOverlayVisibility] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [cards, setCards] = useState<Card[]>([]);
-  const [filteredCards, setFilteredCards] = useState<Card[]>([]);
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(1000);
+  const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<MarketplaceItem[]>([]);
+  const [minPriceHP, setMinPriceHP] = useState(0);
+  const [maxPriceHP, setMaxPriceHP] = useState(1000);
+  const [minPriceAuction, setMinPriceAuction] = useState(0);
+  const [maxPriceAuction, setMaxPriceAuction] = useState(1000);
   const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
   const userId = useAtomValue(userIdAtom);
-  const minValue = 500;
   const navigate = useNavigate();
+  const [bidAmount, setBidAmount] = useState('');
+  const [bidError, setBidError] = useState('');
+  const [userCoins, setUserCoins] = useState(1500);
 
-
-  const handleCardClick = (cardId: string) => {
-    setOverlayVisibility(prevId => prevId === cardId ? null : cardId);
+  const handleCardClick = (itemId: number) => {
+    setOverlayVisibility(prevId => prevId === itemId ? null : itemId);
+    setBidAmount('');
+    setBidError('');
   };
 
   const handleCloseOverlay = () => {
     setOverlayVisibility(null);
+    setBidAmount('');
+    setBidError('');
   };
 
   const handleRarityChange = (rarity: string) => {
@@ -36,45 +49,83 @@ const Marketplace = () => {
         : [...prev, rarity]
     );
   };
+
   const handClick = () => {
     navigate('/sell');
   };
 
+
   useEffect(() => {
-    // Replace URL with page containing list of trades.
-    fetch(`${import.meta.env.VITE_API_URL}/api/cards/?page=1`)
+    fetch(`http://127.0.0.1:8000/api/marketplace/`)
       .then((response) => response.json())
-      .then((data) => {
-        setCards(data.results);
+      .then((data: MarketplaceItem[]) => {
+        setMarketplaceItems(data);
+        console.log(data);
       })
-      .catch((error) => console.error("Error fetching cards:", error));
+      .catch((error) => console.error("Error fetching marketplace items:", error));
   }, []);
 
   useEffect(() => {
-    const filtered = cards.filter((card) => {
+    const filtered = marketplaceItems.filter((item) => {
+      const card = item.card;
       const matchesName = card.name.toLowerCase().startsWith(searchQuery.toLowerCase().trim());
       const matchesRarity =
         selectedRarities.length === 0 ||
         (card.rarity && selectedRarities.includes(card.rarity));
       const hp = parseInt(card.hp || "0", 10);
-      const matchesHP = hp >= minPrice && hp <= maxPrice;
+      const matchesHP = hp >= minPriceHP && hp <= maxPriceHP;
+      const auctionPrice = parseFloat(item.auction_price);
+      const matchesAuctionPrice = auctionPrice >= minPriceAuction && auctionPrice <= maxPriceAuction;
 
-      return matchesName && matchesRarity && matchesHP;
+      return matchesName && matchesRarity && matchesHP && matchesAuctionPrice;
     });
 
-    setFilteredCards(filtered);
-  }, [searchQuery, selectedRarities, cards, minPrice, maxPrice]);
+    setFilteredItems(filtered);
+  }, [searchQuery, selectedRarities, marketplaceItems, minPriceHP, maxPriceHP, minPriceAuction, maxPriceAuction]);
+
+  const handleBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBidAmount(e.target.value);
+    setBidError('');
+  };
+
+  const handlePlaceBid = (item: MarketplaceItem) => {
+    const bid = parseFloat(bidAmount);
+    const auctionPrice = parseFloat(item.auction_price);
+
+    if (isNaN(bid) || bid <= 0) {
+      setBidError('Please enter a valid bid amount.');
+      return;
+    }
+
+    if (bid <= auctionPrice) {
+      setBidError('Your bid must be higher than the current auction price.');
+      return;
+    }
+
+    if (bid > userCoins) {
+      setBidError('You do not have enough coins to place this bid.');
+      return;
+    }
+
+    console.log(`Bid of ${bid} placed on item ${item.id}`);
+    setUserCoins(prevCoins => prevCoins - bid);
+    handleCloseOverlay();
+  };
 
   return (
     <div>
+
+<div className="sells">
+            <button onClick={handClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Sell</button>
+          </div>
       <h1>Marketplace</h1>
       {userId ? (
         <>
-            <div className="filter">
+          <div className="filter">
             <div className="filterWord">Filters</div>
             <div className="buttonBox">
-            <div className="Rarity">Rarity</div>
-            <div className="categories">
+              <div className="Rarity">Rarity</div>
+              <div className="categories">
                 {[
                   "Uncommon",
                   "Common",
@@ -94,23 +145,44 @@ const Marketplace = () => {
               </div>
             </div>
 
+
             <div className="price-slider-container">
-              <label className="price-label">HP</label>
               <div className="slider-track">
+                <div className="price-values">
+                  <span>Auction Price</span>
+                </div>
                 <input
                   type="range"
                   min="0"
                   max="1000"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(Number(e.target.value))}
-                  className="thumb thumb-left"
+                  value={1000 - maxPriceAuction} // Adjust for reversed slider
+                  onChange={(e) => setMaxPriceAuction(1000 - Number(e.target.value))} // Adjust for reversed slider
+                  className="thumb thumb-right"
                 />
                 <div className="price-values">
-                  <span>{minPrice} HP</span>
+                  <span>{maxPriceAuction} Coins</span>
                 </div>
               </div>
             </div>
+            <div className="price-slider-container2">
+
+              <div className="price-values">
+                <span>HP</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="1000"
+                value={1000 - maxPriceHP} 
+                onChange={(e) => setMaxPriceHP(1000 - Number(e.target.value))}
+                className="thumb thumb-right"
+              />
+              <div className="price-values">
+                <span>{maxPriceHP} HP</span>
+              </div>
+            </div>
           </div>
+
 
           <p style={{ textAlign: "center", color: "#DADADA" }}>
             Buy and sell items here!
@@ -126,35 +198,34 @@ const Marketplace = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="sell">
-          <button onClick={handClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Sell</button>
+          <div className="sells">
+            <button onClick={handClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Sell</button>
           </div>
-
 
           <div className="container">
             <div className="marketplace-container">
-              {filteredCards.map((card) => (
-                <a href="#" onClick={(e) => e.preventDefault()} key={card.id}>
+              {filteredItems.map((item) => (
+                <a href="#" onClick={(e) => e.preventDefault()} key={item.id}>
                   <div
                     className="card"
-                    onClick={() => handleCardClick(card.id)}
+                    onClick={() => handleCardClick(item.id)}
                   >
                     <img
-                      src={card.image_url}
+                      src={item.card.image_url}
                       className="card-img-top"
-                      alt={card.name}
+                      alt={item.card.name}
                     />
                     <div className="card-body">
-                      <h5 className="card-title">{card.name}</h5>
-                      <p>HP: {card.hp || "N/A"}</p>
-                      <p>Auction: {minValue}</p>
+                      <h5 className="card-title">{item.card.name}</h5>
+                      <p>Seller: {item.seller || "N/A"}</p>
+                      <p>Buy: {item.buy_price}</p>
                     </div>
 
-                    {overlayIsVisible === card.id && (
+                    {overlayIsVisible === item.id && (
                       <div className="overlays">
                         <div className="Buy">
                           <div>Buy:</div>
-                          <div className="Coins">Coins: 1000</div>
+                          <div className="Coins">Coins: {userCoins}</div>
                           <div className="X">
                             <button
                               type="button"
@@ -166,29 +237,41 @@ const Marketplace = () => {
 
                           <div className="buycard">
                             <img
-                              src={card.image_url}
+                              src={item.card.image_url}
                               style={{ width: "300px", height: "auto" }}
-                              alt={card.name}
+                              alt={item.card.name}
                             />
                             <div className="timer">24:00</div>
                           </div>
                           <div className="BidAmount">Set Bid Amount</div>
-                          <button type="button" className="btn btn-light">
-                            Light
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={bidAmount}
+                            onChange={handleBidChange}
+                            placeholder={`Min. Bid: ${parseFloat(item.auction_price) + 1}`}
+                          />
+                          {bidError && <p className="error-message">{bidError}</p>}
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => handlePlaceBid(item)}
+                          >
+                            Place Bid
                           </button>
                         </div>
                         <div className="status">
                           Stats:
-                          <p>HP: {card.hp || "N/A"}</p>
-                          {card.types && card.types.length > 0 && (
-                            <p>Types: {card.types.join(", ")}</p>
+                          <p>HP: {item.card.hp || "N/A"}</p>
+                          {item.card.types && item.card.types.length > 0 && (
+                            <p>Types: {item.card.types.join(", ")}</p>
                           )}
-                          {card.evolves_from && <p>Evolves From: {card.evolves_from}</p>}
-                          {card.abilities && card.abilities.length > 0 && (
+                          {item.card.evolves_from && <p>Evolves From: {item.card.evolves_from}</p>}
+                          {item.card.abilities && item.card.abilities.length > 0 && (
                             <div>
                               Abilities:
                               <ul>
-                                {card.abilities.map((ability, index) => (
+                                {item.card.abilities.map((ability, index) => (
                                   <li key={index}>
                                     {ability.name}: {ability.text}
                                   </li>
@@ -196,11 +279,11 @@ const Marketplace = () => {
                               </ul>
                             </div>
                           )}
-                          {card.attacks && card.attacks.length > 0 && (
+                          {item.card.attacks && item.card.attacks.length > 0 && (
                             <div>
                               Attacks:
                               <ul>
-                                {card.attacks.map((attack, index) => (
+                                {item.card.attacks.map((attack, index) => (
                                   <li key={index}>
                                     {attack.name}: {attack.damage || "N/A"}
                                     {attack.cost && attack.cost.length > 0 && (
@@ -212,16 +295,16 @@ const Marketplace = () => {
                               </ul>
                             </div>
                           )}
-                          {card.weaknesses && card.weaknesses.length > 0 && (
-                            <p>Weaknesses: {card.weaknesses.map((weakness) => `${weakness.type} ${weakness.value}`).join(", ")}</p>
+                          {item.card.weaknesses && item.card.weaknesses.length > 0 && (
+                            <p>Weaknesses: {item.card.weaknesses.map((weakness) => `${weakness.type} ${weakness.value}`).join(", ")}</p>
                           )}
-                          {card.resistances && card.resistances.length > 0 && (
-                            <p>Resistances: {card.resistances.map((resistance) => `${resistance.type} ${resistance.value}`).join(", ")}</p>
+                          {item.card.resistances && item.card.resistances.length > 0 && (
+                            <p>Resistances: {item.card.resistances.map((resistance) => `${resistance.type} ${resistance.value}`).join(", ")}</p>
                           )}
-                          {card.set_data && <p>Set: {card.set_data.name} ({card.set_data.series})</p>}
-                          <p>Number: {card.number}</p>
-                          {card.rarity && <p>Rarity: {card.rarity}</p>}
-                          {card.artist && <p>Artist: {card.artist}</p>}
+                          {item.card.set_data && <p>Set: {item.card.set_data.name} ({item.card.set_data.series})</p>}
+                          <p>Number: {item.card.number}</p>
+                          {item.card.rarity && <p>Rarity: {item.card.rarity}</p>}
+                          {item.card.artist && <p>Artist: {item.card.artist}</p>}
                         </div>
                       </div>
                     )}
