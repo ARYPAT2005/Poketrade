@@ -4,7 +4,7 @@ import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
 import Card from "../types/Card";
 import LoginPrompt from "./LoginPrompt";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 interface MarketplaceItem {
   id: number;
@@ -26,34 +26,36 @@ const Marketplace = () => {
   const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
   const userId = useAtomValue(userIdAtom);
   const navigate = useNavigate();
-  const [bidAmount, setBidAmount] = useState('');
-  const [bidError, setBidError] = useState('');
+  const [bidAmount, setBidAmount] = useState("");
+  const [bidError, setBidError] = useState("");
   const [userCoins, setUserCoins] = useState(1500);
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 992);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleCardClick = (itemId: number) => {
-    setOverlayVisibility(prevId => prevId === itemId ? null : itemId);
-    setBidAmount('');
-    setBidError('');
+    setOverlayVisibility((prevId) => (prevId === itemId ? null : itemId));
+    setBidAmount("");
+    setBidError("");
   };
 
   const handleCloseOverlay = () => {
     setOverlayVisibility(null);
-    setBidAmount('');
-    setBidError('');
+    setBidAmount("");
+    setBidError("");
   };
 
   const handleRarityChange = (rarity: string) => {
-    setSelectedRarities((prev) =>
-      prev.includes(rarity)
-        ? prev.filter((r) => r !== rarity)
-        : [...prev, rarity]
-    );
+    setSelectedRarities((prev) => (prev.includes(rarity) ? prev.filter((r) => r !== rarity) : [...prev, rarity]));
   };
 
   const handClick = () => {
-    navigate('/sell');
+    navigate("/sell");
   };
-
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/marketplace/`)
@@ -69,9 +71,7 @@ const Marketplace = () => {
     const filtered = marketplaceItems.filter((item) => {
       const card = item.card;
       const matchesName = card.name.toLowerCase().startsWith(searchQuery.toLowerCase().trim());
-      const matchesRarity =
-        selectedRarities.length === 0 ||
-        (card.rarity && selectedRarities.includes(card.rarity));
+      const matchesRarity = selectedRarities.length === 0 || (card.rarity && selectedRarities.includes(card.rarity));
       const hp = parseInt(card.hp || "0", 10);
       const matchesHP = hp >= minPriceHP && hp <= maxPriceHP;
       const auctionPrice = parseFloat(item.auction_price);
@@ -85,7 +85,7 @@ const Marketplace = () => {
 
   const handleBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBidAmount(e.target.value);
-    setBidError('');
+    setBidError("");
   };
 
   const handlePlaceBid = (item: MarketplaceItem) => {
@@ -93,45 +93,73 @@ const Marketplace = () => {
     const auctionPrice = parseFloat(item.auction_price);
 
     if (isNaN(bid) || bid <= 0) {
-      setBidError('Please enter a valid bid amount.');
+      setBidError("Please enter a valid bid amount.");
       return;
     }
 
     if (bid <= auctionPrice) {
-      setBidError('Your bid must be higher than the current auction price.');
+      setBidError("Your bid must be higher than the current auction price.");
       return;
     }
 
     if (bid > userCoins) {
-      setBidError('You do not have enough coins to place this bid.');
+      setBidError("You do not have enough coins to place this bid.");
       return;
     }
 
     console.log(`Bid of ${bid} placed on item ${item.id}`);
-    setUserCoins(prevCoins => prevCoins - bid);
+    setUserCoins((prevCoins) => prevCoins - bid);
     handleCloseOverlay();
   };
 
   return (
     <div>
-
-<div className="sells">
-            <button onClick={handClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Sell</button>
-          </div>
       <h1>Marketplace</h1>
+
       {userId ? (
-        <>
-          <div className="filter">
-            <div className="filterWord">Filters</div>
-            <div className="buttonBox">
+        <div>
+          <div>
+            <div
+              className="float-end"
+              style={{
+                marginRight: "10px",
+              }}
+            >
+              <button
+                onClick={handClick}
+                type="button"
+                className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+              >
+                Sell
+              </button>
+            </div>
+            <div
+              style={{
+                width: "30%",
+                marginLeft: "10px",
+              }}
+            >
+              <input
+                className="form-control mr-sm-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+          <div
+            className={isMobile ? "filter-mobile" : "filter"}
+            style={{
+              border: "2px solid red",
+            }}
+          >
+            <div className={isMobile ? "filter-word-mobile" : "filter-word"}>Filters</div>
+            <div className={isMobile ? "" : "buttonBox"}>
               <div className="Rarity">Rarity</div>
-              <div className="categories">
-                {[
-                  "Uncommon",
-                  "Common",
-                  "Rare",
-                  "Legend"
-                ].map((rarity, i) => (
+              <div className={isMobile ? "" : "categories"}>
+                {["Uncommon", "Common", "Rare", "Legend"].map((rarity, i) => (
                   <div className="flex items-center w-48" key={i}>
                     <span className="text-lg font-bold me-2">{rarity}</span>
                     <input
@@ -145,10 +173,9 @@ const Marketplace = () => {
               </div>
             </div>
 
-
-            <div className="price-slider-container">
-              <div className="slider-track">
-                <div className="price-values">
+            <div className={isMobile ? "" : "price-slider-container"}>
+              <div className={isMobile ? "" : "slider-track"}>
+                <div className={isMobile ? "" : "price-values"}>
                   <span>Auction Price</span>
                 </div>
                 <input
@@ -164,8 +191,7 @@ const Marketplace = () => {
                 </div>
               </div>
             </div>
-            <div className="price-slider-container2">
-
+            <div className={isMobile ? "" : "price-slider-container2"}>
               <div className="price-values">
                 <span>HP</span>
               </div>
@@ -173,7 +199,7 @@ const Marketplace = () => {
                 type="range"
                 min="0"
                 max="1000"
-                value={1000 - maxPriceHP} 
+                value={1000 - maxPriceHP}
                 onChange={(e) => setMaxPriceHP(1000 - Number(e.target.value))}
                 className="thumb thumb-right"
               />
@@ -183,38 +209,14 @@ const Marketplace = () => {
             </div>
           </div>
 
-
-          <p style={{ textAlign: "center", color: "#DADADA" }}>
-            Buy and sell items here!
-          </p>
-
-          <div className="search">
-            <input
-              className="form-control mr-sm-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="sells">
-            <button onClick={handClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Sell</button>
-          </div>
+          <p style={{ textAlign: "center", color: "#DADADA" }}>Buy and sell items here!</p>
 
           <div className="container">
             <div className="marketplace-container">
               {filteredItems.map((item) => (
                 <a href="#" onClick={(e) => e.preventDefault()} key={item.id}>
-                  <div
-                    className="card"
-                    onClick={() => handleCardClick(item.id)}
-                  >
-                    <img
-                      src={item.card.image_url}
-                      className="card-img-top"
-                      alt={item.card.name}
-                    />
+                  <div className="card" onClick={() => handleCardClick(item.id)}>
+                    <img src={item.card.image_url} className="card-img-top" alt={item.card.name} />
                     <div className="card-body">
                       <h5 className="card-title">{item.card.name}</h5>
                       <p>Seller: {item.seller || "N/A"}</p>
@@ -252,20 +254,14 @@ const Marketplace = () => {
                             placeholder={`Min. Bid: ${parseFloat(item.auction_price) + 1}`}
                           />
                           {bidError && <p className="error-message">{bidError}</p>}
-                          <button
-                            type="button"
-                            className="btn btn-primary"
-                            onClick={() => handlePlaceBid(item)}
-                          >
+                          <button type="button" className="btn btn-primary" onClick={() => handlePlaceBid(item)}>
                             Place Bid
                           </button>
                         </div>
                         <div className="status">
                           Stats:
                           <p>HP: {item.card.hp || "N/A"}</p>
-                          {item.card.types && item.card.types.length > 0 && (
-                            <p>Types: {item.card.types.join(", ")}</p>
-                          )}
+                          {item.card.types && item.card.types.length > 0 && <p>Types: {item.card.types.join(", ")}</p>}
                           {item.card.evolves_from && <p>Evolves From: {item.card.evolves_from}</p>}
                           {item.card.abilities && item.card.abilities.length > 0 && (
                             <div>
@@ -296,12 +292,24 @@ const Marketplace = () => {
                             </div>
                           )}
                           {item.card.weaknesses && item.card.weaknesses.length > 0 && (
-                            <p>Weaknesses: {item.card.weaknesses.map((weakness) => `${weakness.type} ${weakness.value}`).join(", ")}</p>
+                            <p>
+                              Weaknesses:{" "}
+                              {item.card.weaknesses.map((weakness) => `${weakness.type} ${weakness.value}`).join(", ")}
+                            </p>
                           )}
                           {item.card.resistances && item.card.resistances.length > 0 && (
-                            <p>Resistances: {item.card.resistances.map((resistance) => `${resistance.type} ${resistance.value}`).join(", ")}</p>
+                            <p>
+                              Resistances:{" "}
+                              {item.card.resistances
+                                .map((resistance) => `${resistance.type} ${resistance.value}`)
+                                .join(", ")}
+                            </p>
                           )}
-                          {item.card.set_data && <p>Set: {item.card.set_data.name} ({item.card.set_data.series})</p>}
+                          {item.card.set_data && (
+                            <p>
+                              Set: {item.card.set_data.name} ({item.card.set_data.series})
+                            </p>
+                          )}
                           <p>Number: {item.card.number}</p>
                           {item.card.rarity && <p>Rarity: {item.card.rarity}</p>}
                           {item.card.artist && <p>Artist: {item.card.artist}</p>}
@@ -313,7 +321,7 @@ const Marketplace = () => {
               ))}
             </div>
           </div>
-        </>
+        </div>
       ) : (
         <LoginPrompt />
       )}
