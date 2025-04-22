@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 import userIdAtom from "../atoms/userIdAtom";
+import userAtom from "../atoms/userAtom";
 
-import { useAtomValue } from "jotai";
+import { useAtomValue, useAtom } from "jotai";
 
 import { Card, Alert } from "react-bootstrap";
 import "./OpenAnimation.css";
@@ -12,12 +13,12 @@ import LoginPrompt from "./LoginPrompt";
 
 const LoginRewards: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
-  // const [user, setUser] = useAtom(userAtom);
+  const [user, setUser] = useAtom(userAtom);
 
   const [earned, setEarned] = useState(0);
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:8000/user/${userId}`)
+      fetch(`${import.meta.env.VITE_API_URL}/user/${userId}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -30,7 +31,10 @@ const LoginRewards: React.FC = () => {
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);
-          alert("Error fetching user data");
+          // only alert if the user hasn't been loaded in yet
+          if (!user) {
+            alert("Error fetching user data");
+          }
         });
     }
   }, [userId]);
@@ -83,6 +87,7 @@ const LoginRewards: React.FC = () => {
           wallet_balance: data.wallet_balance,
           last_claim_date: new Date(data.last_claim_date),
         };
+
         setUser(newUser);
         setEarned(data.amount_claimed);
       })

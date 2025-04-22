@@ -1,5 +1,4 @@
 from django.db import models
-from accounts.models import User
 
 class Card(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
@@ -24,14 +23,6 @@ class Card(models.Model):
 
     def __str__(self):
         return self.name
-
-class Owns(models.Model):
-    user = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
-    card = models.ForeignKey(Card, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.card.name} ({self.quantity})"
 
 class Pack(models.Model):
     id = models.SlugField(primary_key=True)

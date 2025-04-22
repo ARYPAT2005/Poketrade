@@ -24,6 +24,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
   const handleLogout = () => {
     setUsername("");
+    setUser(null);
     navigate("/");
   };
 
@@ -60,7 +61,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
   useEffect(() => {
     if (username) {
-      fetch(`http://localhost:8000/user/${username}`)
+      fetch(`${import.meta.env.VITE_API_URL}/user/${username}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -77,6 +78,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
         });
     }
   }, [username]);
+  
 
   return (
     <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
@@ -86,7 +88,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-      <Navbar.Collapse id="basic-navbar-nav">
+      <Navbar.Collapse id="basic-navbar-nav" style={{ gap: "5px" }} >
         <Nav className="me-auto">
           <Nav.Link
             style={{
@@ -115,6 +117,24 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
           >
             Store
           </Nav.Link>
+          <Nav.Link
+            style={{
+              color: location.pathname === "/creator" ? "black" : "#513639",
+              textAlign: "center",
+            }}
+            href="/creator"
+          >
+            Creator
+          </Nav.Link>
+          <Nav.Link
+            style={{
+              color: location.pathname === "/battles" ? "black" : "#513639",
+              textAlign: "center",
+            }}
+            href="/battles"
+          >
+            Battles
+          </Nav.Link>
           {isMobile && (
             <Nav.Link
               style={{
@@ -127,19 +147,31 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
             </Nav.Link>
           )}
           {user?.can_claim && location.pathname != "/loginrewards" && username && (
-            <img
-              className="blinking-image"
-              src={pokeball}
-              onClick={() => navigate("/loginrewards")}
-              alt="Login Reward"
+            <Nav.Link
               style={{
-                cursor: "pointer",
-                width: "30px",
-                height: "30px",
-                marginLeft: "10px",
-                marginTop: "3px",
+                textAlign: "center",
+                padding: "0px",
+                margin: "0px",
               }}
-            />
+              href="/loginrewards"
+            >
+              <img
+                className="blinking-image"
+                src={pokeball}
+                onClick={() => navigate("/loginrewards")}
+                alt="Login Reward"
+                style={{
+                  cursor: "pointer",
+                  width: "30px",
+                  height: "30px",
+                  marginLeft: isMobile ? "0px" : "10px",
+                  marginTop: isMobile ? "0px" : "3px",
+                  marginRight: isMobile ? "10px" : "0px",
+                  marginBottom: isMobile ? "10px" : "0px",
+                }}
+              />
+              {isMobile && <>Login Rewards</>}
+            </Nav.Link>
           )}
         </Nav>
         {!isMobile && (
@@ -159,7 +191,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
         <div style={{ marginRight: isMobile ? "" : "12px", textAlign: "center" }}>
           {username && (
             <span className="welcome-message" style={{ fontWeight: "bold", textAlign: "center" }}>
-              {username} : <span className="text-muted">${user?.wallet_balance.toFixed(2)}</span>
+              {username} : <span className="text-muted">${user?.wallet_balance}</span>
             </span>
           )}
         </div>

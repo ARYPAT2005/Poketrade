@@ -80,7 +80,7 @@ const Messages: React.FC = () => {
   // };
 
   const handleMessageDelete = (messageId: number) => {
-    fetch(`http://127.0.0.1:8000/api/message/${messageId}/`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/message/${messageId}/`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -213,7 +213,7 @@ const Messages: React.FC = () => {
               defaultActiveKey="inbox"
               id="justify-tab-example"
               className="mb-3"
-              style={{ maxWidth: "min(1000px, 90%)", margin: "auto" }}
+              style={{ width: "100%", margin: "auto" }}
             >
               <Tab eventKey="inbox" title="Inbox">
                 {inboxMessages.length === 0 ? (

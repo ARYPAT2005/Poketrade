@@ -1,26 +1,26 @@
-.message-container {
+.workstation-container {
   display: flex;
   flex-direction: column;
 }
 
-.message-list {
+.workstation-options {
   width: 100%;
 }
 
-.message-inputs {
+.workstation-view {
   width: 100%;
 }
 
 @media (min-width: 800px) {
-  .message-container {
+  .workstation-container {
     flex-direction: row;
   }
 
-  .message-list {
+  .workstation-options{
     width: 25%;
   }
 
-  .message-inputs {
+  .workstation-view {
     width: 75%;
   }
 }

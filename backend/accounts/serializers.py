@@ -1,7 +1,10 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from accounts.models import User, SecurityQuestion, UserSecurityQuestions
+from accounts.models import User, SecurityQuestion, UserSecurityQuestions, OwnedCards
 from rest_framework.serializers import ModelSerializer
+from cards.models import Card
+from cards.serializers import CardSerializer
+from decimal import Decimal
 
 
 
@@ -51,6 +54,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+        from cards.models import Card  # Import here to avoid circular imports
+        import random
         # validated_data.pop('confirm_password')
         q1 = validated_data.pop('security_question_1')
         a1 = validated_data.pop('security_answer_1')
@@ -58,6 +63,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         a2 = validated_data.pop('security_answer_2')
 
         user = User.objects.create_user(**validated_data)
+        user.wallet_balance = Decimal('100.00')
         user.is_superuser = True
         user.is_staff = True
 
@@ -74,7 +80,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.securityQuestion2 = q2.question
         user.securityAnswer2 = a2
         print("Validated Data Before Creation:", validated_data)
-
+        all_cards = list(Card.objects.all())
+        if len(all_cards) >= 5:
+            starter_cards = random.sample(all_cards, 5)
+            for card in starter_cards:
+                OwnedCards.objects.create(user=user, card_info=card, quantity=1)
         user.save()
 
         return user
@@ -82,6 +92,30 @@ class RegisterSerializer(serializers.ModelSerializer):
     #     if data['password'] != data['confirm_password']:
     #         raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
     #     return data
+class OwnedCardsSerializer(serializers.ModelSerializer):
+    card_info = serializers.PrimaryKeyRelatedField(queryset=Card.objects.all(), write_only=True)
+    card_details = CardSerializer(source='card_info', read_only=True)
+    class Meta:
+        model = OwnedCards
+        fields = ['id', 'card_info', 'card_details', 'quantity']
+
+class UserSerializer(serializers.ModelSerializer):
+    owned_cards = OwnedCardsSerializer(many=True, read_only=True, source='ownedcards_set')
+    can_claim = serializers.SerializerMethodField()
+    unread_messages = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'wallet_balance', 'last_claim_date', 'can_claim', 'owned_cards', 'unread_messages']
+
+    def get_can_claim(self, obj):
+        from .views import canClaim
+        return canClaim(obj)
+
+    def get_unread_messages(self, obj):
+        from pokemessages.models import Message
+        return Message.objects.filter(recipient=obj, is_read=False).count()
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -111,4 +145,3 @@ class LoginSerializer(serializers.Serializer):
         print("Authentication successful!")
         data["user"] = user
         return data
-
