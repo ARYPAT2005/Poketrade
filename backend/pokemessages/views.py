@@ -115,12 +115,15 @@ class TradeList(APIView):
             )
         serializer_data = request.data.copy()
         serializer_data.get('sender_username')
+        print(serializer_data)
         serializer = TradeSerializer(data=serializer_data, context={' request': request})
 
         if serializer.is_valid():
             trade = serializer.save(sender=sender_user, status='pending')
+            print('trade saved, returning response')
             return Response(TradeSerializer(trade, context={'request': request}).data, status=status.HTTP_201_CREATED)
         else:
+            print('serializing failed', serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TradeDetail(APIView):
