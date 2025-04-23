@@ -12,6 +12,7 @@ import Trade from "./pages/Trade";
 import ReceivedOffer from "./pages/ReceivedOffer";
 import SentOffer from "./pages/SentOffer";
 import CompletedOffer from "./pages/CompletedOffer";
+import Trade2 from "./pages/Trade2";
 
 
 import Search from "./pages/Search";
@@ -47,6 +48,8 @@ const App: React.FC = () => {
           <Route path="/received-offer" element={<ReceivedOffer />} />
           <Route path="/sent-offer" element={<SentOffer />} />
           <Route path="/completed-offer" element={<CompletedOffer />} />
+          <Route path="/trade2" element={<Trade2 />} />
+
 
           <Route path="/about" element={<About />} />
           <Route path="/search" element={<Search />} />

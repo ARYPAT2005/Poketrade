@@ -178,6 +178,7 @@ const Trade: React.FC = () => {
           <Card.Body>
             <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k || 'received')} id="trade-tabs" className="mb-3" fill>
               <Tab eventKey="received" title="Received Offers">
+
                 {activeTab === 'received' && receivedTrades.length > 0 ? (
                   <ListGroup variant="flush">
                     {receivedTradeElements}
@@ -185,7 +186,10 @@ const Trade: React.FC = () => {
                 ) : (
                   <p className="text-center p-3">You have no incoming trade offers.</p>
                 )}
+                
               </Tab>
+
+
               <Tab eventKey="sent" title="Sent Offers">
                 {activeTab === 'sent' && sentTrades.length > 0 ? (
                   <ListGroup variant="flush">
