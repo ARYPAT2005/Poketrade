@@ -125,6 +125,30 @@ const Marketplace = () => {
     // You would also update your filtering logic here
   };
 
+  const buyItem = async(item: MarketplaceItem) => {
+      try {
+        console.log('Buying item.')
+        console.log(`${import.meta.env.VITE_API_URL}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({'id': item.id, 'buyer': userId}),
+        });
+
+        if (!response.ok) {
+            console.error("Failed to Buy Item - Error ");
+            console.log("Buyer: ", userId);
+            console.error("Item Payload:", JSON.stringify(item));
+        } else {
+            console.log("Bought item successfully");
+        }
+    } catch (error) {
+        console.error("Error buying item:", error);
+    }
+  }
+
   return (
     <div>
       <h1>Marketplace</h1>
@@ -234,7 +258,7 @@ const Marketplace = () => {
                       <h5 className="card-title">{item.card.name}</h5>
                       <p>Seller: {item.seller || "N/A"}</p>
 
-                      <button onClick={""}>Buy: {item.buy_price}</button>
+                      <button onClick={ () => buyItem(item) }>Buy: {item.buy_price}</button>
                     </div>
 
                     {overlayIsVisible === item.id && (
