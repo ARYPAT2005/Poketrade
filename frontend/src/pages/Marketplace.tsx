@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./Marketplace.css";
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
 import Card from "../types/Card";
 import LoginPrompt from "./LoginPrompt";
 import { useNavigate } from "react-router-dom";
+import RangeSlider from 'react-range-slider-input';
+import 'react-range-slider-input/dist/style.css';
+
+
 
 interface MarketplaceItem {
   id: number;
@@ -20,7 +24,7 @@ const Marketplace = () => {
   const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MarketplaceItem[]>([]);
   const [minPriceHP, setMinPriceHP] = useState(0);
-  const [maxPriceHP, setMaxPriceHP] = useState(1000);
+  const [maxPriceHP, setMaxPriceHP] = useState(1000); // Keeping maxHP in state, but not used for filtering
   const [minPriceAuction, setMinPriceAuction] = useState(0);
   const [maxPriceAuction, setMaxPriceAuction] = useState(1000);
   const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
@@ -38,13 +42,13 @@ const Marketplace = () => {
   }, []);
 
   const handleCardClick = (itemId: number) => {
-    setOverlayVisibility((prevId) => (prevId === itemId ? null : itemId));
+    // setOverlayVisibility((prevId) => (prevId === itemId ? null : itemId));
     setBidAmount("");
     setBidError("");
   };
 
   const handleCloseOverlay = () => {
-    setOverlayVisibility(null);
+    // ayVisibility(null);setOverl
     setBidAmount("");
     setBidError("");
   };
@@ -62,25 +66,28 @@ const Marketplace = () => {
       .then((response) => response.json())
       .then((data: MarketplaceItem[]) => {
         setMarketplaceItems(data);
-        console.log(data);
+        console.log("Fetched marketplace data:", data);
       })
       .catch((error) => console.error("Error fetching marketplace items:", error));
   }, []);
 
   useEffect(() => {
+    console.log("marketplaceItems before filter:", marketplaceItems);
     const filtered = marketplaceItems.filter((item) => {
       const card = item.card;
       const matchesName = card.name.toLowerCase().startsWith(searchQuery.toLowerCase().trim());
-      const matchesRarity = selectedRarities.length === 0 || (card.rarity && selectedRarities.includes(card.rarity));
+      const matchesRarity =
+        selectedRarities.length === 0 ||
+        (card.rarity && selectedRarities.some((selectedRarity) => card.rarity.startsWith(selectedRarity)));
       const hp = parseInt(card.hp || "0", 10);
-      const matchesHP = hp >= minPriceHP && hp <= maxPriceHP;
+      const matchesHP = hp >= minPriceHP; // Ensure we are filtering for HP greater than or equal to the minimum
       const auctionPrice = parseFloat(item.auction_price);
-      const matchesAuctionPrice = auctionPrice >= minPriceAuction && auctionPrice <= maxPriceAuction;
+      const matchesAuctionPrice = isNaN(auctionPrice) || (auctionPrice >= minPriceAuction && auctionPrice <= maxPriceAuction);
 
       return matchesName && matchesRarity && matchesHP && matchesAuctionPrice;
     });
-
     setFilteredItems(filtered);
+    console.log("filteredItems after filter:", filtered);
   }, [searchQuery, selectedRarities, marketplaceItems, minPriceHP, maxPriceHP, minPriceAuction, maxPriceAuction]);
 
   const handleBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,6 +117,13 @@ const Marketplace = () => {
     console.log(`Bid of ${bid} placed on item ${item.id}`);
     setUserCoins((prevCoins) => prevCoins - bid);
     handleCloseOverlay();
+  };
+  const [auctionPriceRange, setAuctionPriceRange] = useState<number[]>([0, 100]); // State for the range
+
+  const handleAuctionPriceChange = (values: number[]) => {
+    setAuctionPriceRange(values);
+    console.log('Auction Price Range:', values);
+    // You would also update your filtering logic here
   };
 
   return (
@@ -182,8 +196,8 @@ const Marketplace = () => {
                   type="range"
                   min="0"
                   max="1000"
-                  value={1000 - maxPriceAuction} // Adjust for reversed slider
-                  onChange={(e) => setMaxPriceAuction(1000 - Number(e.target.value))} // Adjust for reversed slider
+                  value={maxPriceAuction}
+                  onChange={(e) => setMaxPriceAuction(Number(e.target.value))}
                   className="thumb thumb-right"
                 />
                 <div className="price-values">
@@ -199,12 +213,12 @@ const Marketplace = () => {
                 type="range"
                 min="0"
                 max="1000"
-                value={1000 - maxPriceHP}
-                onChange={(e) => setMaxPriceHP(1000 - Number(e.target.value))}
-                className="thumb thumb-right"
+                value={minPriceHP}
+                onChange={(e) => setMinPriceHP(Number(e.target.value))}
+                className="thumb thumb-left"
               />
               <div className="price-values">
-                <span>{maxPriceHP} HP</span>
+                <span>{minPriceHP} HP</span>
               </div>
             </div>
           </div>
@@ -220,7 +234,7 @@ const Marketplace = () => {
                     <div className="card-body">
                       <h5 className="card-title">{item.card.name}</h5>
                       <p>Seller: {item.seller || "N/A"}</p>
-                      <p>Buy: {item.buy_price}</p>
+                      <button onClick={""}>Buy: {item.buy_price}</button>
                     </div>
 
                     {overlayIsVisible === item.id && (
