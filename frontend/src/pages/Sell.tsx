@@ -59,8 +59,8 @@ const Sell: React.FC = () => {
   const [sellMessage, setSellMessage] = useState<string | null>(null);
   const userId = useAtomValue(userIdAtom);
   const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-  const [sellingCardIds, setSellingCardIds] = useState<Set<string>>(new Set()); // Track IDs of cards being sold
-  const [listedCardIds, setListedCardIds] = useState<Set<string>>(new Set());       // Track IDs of cards listed
+  const [sellingCardIds, setSellingCardIds] = useState<Set<string>>(new Set()); 
+  const [listedCardIds, setListedCardIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (userId) {
@@ -95,7 +95,6 @@ const Sell: React.FC = () => {
     }
 
     if (sellingCardIds.has(selectedCardId) || listedCardIds.has(selectedCardId)) {
-      // Do nothing if the card is already being sold or listed
       return;
     }
 
@@ -111,7 +110,7 @@ const Sell: React.FC = () => {
     console.log("Payload being sent:", payload);
     const apiUrl = isLocalhost ? `${import.meta.env.VITE_API_URL}/api/sell/` : "/api/sell/";
 
-    setSellingCardIds((prev) => new Set(prev).add(selectedCardId)); // Mark as selling
+    setSellingCardIds((prev) => new Set(prev).add(selectedCardId));
 
     fetch(apiUrl, {
       method: "POST",
@@ -136,8 +135,8 @@ const Sell: React.FC = () => {
         setBuyNowPrice("");
         setSelectedCardId(null);
         setSelectedImage(null);
-        setListedCardIds(prev => new Set(prev).add(selectedCardId));  //keep track of listed card
-        setSellingCardIds((prev) => { // Remove from selling
+        setListedCardIds(prev => new Set(prev).add(selectedCardId));
+        setSellingCardIds((prev) => {
           const next = new Set(prev);
           next.delete(selectedCardId);
           return next;
@@ -146,7 +145,7 @@ const Sell: React.FC = () => {
       .catch((err) => {
         console.error(err);
         alert("Something went wrong");
-        setSellingCardIds((prev) => { // Remove from selling on error
+        setSellingCardIds((prev) => {
           const next = new Set(prev);
           next.delete(selectedCardId);
           return next;
