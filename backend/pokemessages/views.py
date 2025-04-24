@@ -115,12 +115,15 @@ class TradeList(APIView):
             )
         serializer_data = request.data.copy()
         serializer_data.get('sender_username')
+        print(serializer_data)
         serializer = TradeSerializer(data=serializer_data, context={' request': request})
 
         if serializer.is_valid():
             trade = serializer.save(sender=sender_user, status='pending')
+            print('trade saved, returning response')
             return Response(TradeSerializer(trade, context={'request': request}).data, status=status.HTTP_201_CREATED)
         else:
+            print('serializing failed', serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TradeDetail(APIView):
@@ -153,7 +156,7 @@ class TradeDetail(APIView):
             receivers_cards = []
             for card_detail in card_details.filter(direction='request'):
                 receivers_cards.append({'card': card_detail.card, 'quantity': card_detail.quantity})
-            coin_data = {'sender_coin_transfer': 0, 'receiver_coin_transfer': 0}
+            coin_data = {'sender_coin_transfer': trade.sender_coins, 'receiver_coin_transfer': trade.recipient_coins}
             transfer_response = transfer_cards_or_coins(sender, receiver, senders_cards, receivers_cards, coin_data)
             if not transfer_response[0]:
                 trade.status = 'pending'

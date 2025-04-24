@@ -81,7 +81,7 @@ def transfer_cards_or_coins(sender: User, recipient: User | None = None, senders
             sender_owned.quantity += quantity
             sender_owned.save(update_fields=['quantity'])
 
-        print(f"Simple transfer completed from {sender.username} to {recipient.username}.")
+        print(f"Transfer completed from {sender.username} to {recipient.username}.")
         return True, "Transfer successful."
 
     except Exception as e:

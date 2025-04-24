@@ -1,0 +1,44 @@
+.card-container {
+    padding: 1rem;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.card-image.selected {
+    border: 3px solid #ffc107;
+    box-shadow: 0 0 10px 4px rgba(255, 193, 7, 0.5);
+    transform: scale(1.08);
+}
+.card-img-top {
+    align-items: center;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.card-selected {
+    border: 3px solid gold;
+    box-shadow: 0 0 10px 5px gold;
+    transition: box-shadow 0.15s, border 0.15s;
+    border-radius: 10px;
+}
+
+.profile-card-colored {
+    background-color: rgba(234, 255, 0, 0.1);
+}
+
+.profile-card-colored .list-group-flush .list-group-item {
+    background-color: transparent; 
+}
+
+.profile-card-colored .carousel {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 15px;
+}
+
+.profile-deck-card {
+    max-width: 200px;
+    display: flex;
+    flex-direction: column;
+}
