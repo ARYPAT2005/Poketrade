@@ -107,7 +107,6 @@ const Trade: React.FC = () => {
           <h5>Trade Offer to: {trade.recipient_username}</h5>
         : <h5>Trade Offer from: {trade.sender_username}</h5>
         }
-        {trade.message && <p className="mb-1">Message: <em>{trade.message}</em></p>}
         <div className="d-flex justify-content-around flex-wrap">
           <div className="m-2">
             {isSender ?
