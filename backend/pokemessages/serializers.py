@@ -43,7 +43,7 @@ class TradeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trade
-        fields = ['id', 'sender_username', 'recipient_username', 'message', 'timestamp', 'status', 'card_details', 'sender_coins', 'recipient_coins']
+        fields = ['id', 'sender_username', 'recipient_username', 'timestamp', 'status', 'card_details', 'sender_coins', 'recipient_coins']
         read_only_fields = ['id', 'timestamp']
 
     def create(self, validated_data):
