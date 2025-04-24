@@ -11,7 +11,6 @@ import Card from './Card';
     id: number;
     sender_username: string;
     recipient_username: string;
-    message: string;
     timestamp: string;
     is_read: boolean;
     status: 'pending' | 'accepted' | 'rejected' | 'cancelled';

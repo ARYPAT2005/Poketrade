@@ -24,7 +24,6 @@ class Trade(models.Model):
     sender = models.ForeignKey(User, related_name='sent_trades', on_delete=models.CASCADE)
     recipient = models.ForeignKey(User, related_name='received_trades', on_delete=models.CASCADE)
     cards = models.ManyToManyField(Card, through='TradeCardDetail', related_name='trades_involved_in')
-    message = models.CharField(blank=True, max_length=150)
     timestamp = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='pending')
     sender_coins = models.DecimalField(

@@ -1,48 +1,44 @@
-.pokemon-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative; 
+.card-container {
+    padding: 1rem;
+    max-width: 1500px;
+    margin: 0 auto;
 }
 
-.pokemon-card.clickable {
-    cursor: pointer;
+.card-image.selected {
+    border: 3px solid #ffc107;
+    box-shadow: 0 0 10px 4px rgba(255, 193, 7, 0.5);
+    transform: scale(1.08);
 }
-
-.pokemon-card.clickable:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.pokemon-card.dimmed {
-    opacity: 0.6;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-}
-
-.pokemon-card .card-img-top {
-    width: 100%;
-    height: 150px;
+.card-img-top {
+    align-items: center;
+    max-width: 100%;
+    height: auto;
     object-fit: contain;
-    padding: 5px;
-    background-color: #f8f9fa;
+    border-radius: 8px;
 }
 
-.pokemon-card .card-body {
-    padding: 0.5rem;
-    flex-grow: 1;
+.card-selected {
+    border: 3px solid gold;
+    box-shadow: 0 0 10px 5px gold;
+    transition: box-shadow 0.15s, border 0.15s;
+    border-radius: 10px;
+}
+
+.profile-card-colored {
+    background-color: rgba(234, 255, 0, 0.1);
+}
+
+.profile-card-colored .list-group-flush .list-group-item {
+    background-color: transparent; 
+}
+
+.profile-card-colored .carousel {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 15px;
+}
+
+.profile-deck-card {
+    max-width: 200px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-}
-
-.pokemon-card .card-text {
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-bottom: 0.25rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
