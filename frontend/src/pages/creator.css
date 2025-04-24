@@ -1,0 +1,26 @@
+.workstation-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.workstation-options {
+  width: 100%;
+}
+
+.workstation-view {
+  width: 100%;
+}
+
+@media (min-width: 800px) {
+  .workstation-container {
+    flex-direction: row;
+  }
+
+  .workstation-options{
+    width: 25%;
+  }
+
+  .workstation-view {
+    width: 75%;
+  }
+}

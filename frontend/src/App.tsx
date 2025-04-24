@@ -9,13 +9,13 @@ import About from "./pages/About";
 import Store from "./pages/Store";
 import Trade from "./pages/Trade";
 import Search from "./pages/Search";
-import Cards from "./pages/Cards";
 import Messages from "./pages/Messages";
+import Creator from "./pages/Creator";
+import Battles from "./pages/Battles";
 
 import Profile from "./pages/Profile";
 import LoginRewards from "./pages/LoginRewards";
 import ForgotPassword from "./pages/ForgotPassword";
- 
 
 import CustomNavbar from "./components/CustomNavbar";
 import Footer from "./components/Footer";
@@ -28,7 +28,6 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container">
-
       <CustomNavbar setNavbarExpanded={setNavbarExpanded} />
       <div className={`content ${navbarExpanded ? "navbar-expanded" : ""}`}>
         <Routes>
@@ -40,13 +39,13 @@ const App: React.FC = () => {
           <Route path="/trade" element={<Trade />} />
           <Route path="/about" element={<About />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/cards" element={<Cards />} />
           <Route path="/messages" element={<Messages />} />
-
+          <Route path="/creator" element={<Creator />} />
 
           <Route path="/profile" element={<Profile />} />
           <Route path="/loginrewards" element={<LoginRewards />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/battles" element={<Battles />} />
           <Route path="/player/:playerName" element={<PlayerProfile />} />
         </Routes>
       </div>
