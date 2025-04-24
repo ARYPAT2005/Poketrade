@@ -24,7 +24,7 @@ const Marketplace = () => {
   const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MarketplaceItem[]>([]);
   const [minPriceHP, setMinPriceHP] = useState(0);
-  const [maxPriceHP, setMaxPriceHP] = useState(1000); // Keeping maxHP in state, but not used for filtering
+  const [maxPriceHP, setMaxPriceHP] = useState(1000);
   const [minPriceAuction, setMinPriceAuction] = useState(0);
   const [maxPriceAuction, setMaxPriceAuction] = useState(1000);
   const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
@@ -42,7 +42,6 @@ const Marketplace = () => {
   }, []);
 
   const handleCardClick = (itemId: number) => {
-    // setOverlayVisibility((prevId) => (prevId === itemId ? null : itemId));
     setBidAmount("");
     setBidError("");
   };
@@ -234,6 +233,7 @@ const Marketplace = () => {
                     <div className="card-body">
                       <h5 className="card-title">{item.card.name}</h5>
                       <p>Seller: {item.seller || "N/A"}</p>
+
                       <button onClick={""}>Buy: {item.buy_price}</button>
                     </div>
 

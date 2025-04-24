@@ -21,4 +21,5 @@ urlpatterns = [
     path('api/packs/<slug:pack_id>/', PackView.as_view(), name='pack-detail'),
     path('search/', card_views.search, name='search'),
     path('api/', include('pokemessages.urls')),
+    path('api/', include('marketplace.urls'))
 ]
