@@ -3,8 +3,9 @@ import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
 import { Button, Card, ListGroup, Alert, Carousel } from "react-bootstrap";
 import PokemonCard from "../types/Card";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Trades, { TradeCardDetail } from "../types/Trades";
+import CardDetails from "../components/CardDetails";
 import "./PlayerProfile.css";
 
 type OwnedCard = {
@@ -44,7 +45,16 @@ const PlayerProfile: React.FC = () => {
     const [player2Coins, setPlayer2Coins] = useState<number>(0);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [alertVariant, setAlertVariant] = useState< 'danger' | 'success' | 'warning' | 'info'>('danger'); 
+    const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null);
+    const navigate = useNavigate();
 
+    const handleCardEnlarge = (card: PokemonCard) => {
+        setSelectedCard(card);
+    };
+
+    const handleCloseOverlay = () => {
+        setSelectedCard(null);
+    };
 
     useEffect(() => {
     if (playerName) {
@@ -75,15 +85,15 @@ const PlayerProfile: React.FC = () => {
     }, [userId]);
 
     const handleCardClick = (
-    cardToTrade: PokemonCard,
-    player: "player1" | "player2",
-    uniqueInstanceKey: string
-    ) => {
-    const newCardDetail: TradeCardDetail = {
-        id: 0,
-        card_info: cardToTrade,
-        quantity: 1,
-        direction: player === "player1" ? "offer" : "request",
+        cardToTrade: PokemonCard,
+        player: "player1" | "player2",
+        uniqueInstanceKey: string
+        ) => {
+        const newCardDetail: TradeCardDetail = {
+            id: 0,
+            card_info: cardToTrade,
+            quantity: 1,
+            direction: player === "player1" ? "offer" : "request",
     };
 
     setSelectedCards((prev) => {
@@ -203,6 +213,7 @@ const PlayerProfile: React.FC = () => {
                 setPlayer1Coins(0);
                 setPlayer2Coins(0);
                 setTradeStatus(false);
+                navigate("/trade");
             }
         } catch (error) {
             console.error("Error sending trade:", error);
@@ -234,7 +245,7 @@ const PlayerProfile: React.FC = () => {
 
     const chunkedPlayer1Cards = chunkArray(allPlayer1CardInstances, CARDS_PER_PAGE);
     const chunkedPlayer2Cards = chunkArray(allPlayer2CardInstances, CARDS_PER_PAGE);
-    const PROFILE_CARDS_PER_PAGE = 10;
+    const PROFILE_CARDS_PER_PAGE = 8;
     const chunkedProfileCards = player2?.owned_cards
         ? chunkArray(player2.owned_cards, PROFILE_CARDS_PER_PAGE)
         : []; 
@@ -300,7 +311,9 @@ const PlayerProfile: React.FC = () => {
                                                         style={{
                                                             height: 'auto',
                                                             marginBottom: '5px',
+                                                            cursor: 'pointer',
                                                         }}
+                                                        onClick={() => handleCardEnlarge(owned_card.card_details)}
                                                         className="img-thumbnail"
                                                         loading="lazy"
                                                     />
@@ -484,6 +497,7 @@ const PlayerProfile: React.FC = () => {
                 </Card>
             </div>
             )}
+            {selectedCard && <CardDetails card={selectedCard} onClose={handleCloseOverlay} />}
         </>
     );
 };
