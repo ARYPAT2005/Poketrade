@@ -152,8 +152,6 @@ const Marketplace = () => {
   return (
     <div>
       <h1>Marketplace</h1>
-
-      {userId ? (
         <div>
           <div>
             <div
@@ -214,6 +212,7 @@ const Marketplace = () => {
               <div className={isMobile ? "" : "slider-track"}>
                 <div className={isMobile ? "" : "price-values"}>
                   <span>Auction Price</span>
+                  <RangeSlider></RangeSlider>
                 </div>
                 <input
                   type="range"
@@ -360,9 +359,6 @@ const Marketplace = () => {
             </div>
           </div>
         </div>
-      ) : (
-        <LoginPrompt />
-      )}
     </div>
   );
 };
