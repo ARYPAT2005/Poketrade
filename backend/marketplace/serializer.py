@@ -8,7 +8,7 @@ User = get_user_model()
 
 class MarketplaceSerializer(serializers.ModelSerializer):
     card = CardSerializer(read_only=True)
-    seller = serializers.CharField(read_only=True)  # Remove write_only=True
+    seller = serializers.CharField(read_only=True)
 
     class Meta:
         model = Marketplace

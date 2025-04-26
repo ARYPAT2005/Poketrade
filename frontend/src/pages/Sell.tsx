@@ -11,6 +11,7 @@ type OwnedCards = {
   card_details: PokemonCard;
   quantity: number;
   id: number;
+  is_selling: boolean;
 }
 
 const Sell: React.FC = () => {
@@ -54,12 +55,13 @@ const Sell: React.FC = () => {
   const [ownedCards, setOwnedCards] = useState<OwnedCards[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [selectedSell, setSelected] = useState<string | null>(null);
   const [auctionPrice, setAuctionPrice] = useState<string>("");
   const [buyNowPrice, setBuyNowPrice] = useState<string>("");
   const [sellMessage, setSellMessage] = useState<string | null>(null);
   const userId = useAtomValue(userIdAtom);
   const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-  const [sellingCardIds, setSellingCardIds] = useState<Set<string>>(new Set()); 
+  const [sellingCardIds, setSellingCardIds] = useState<Set<string>>(new Set());
   const [listedCardIds, setListedCardIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -86,6 +88,7 @@ const Sell: React.FC = () => {
     setSelectedImage(imageUrl);
     setSelectedCardId(cardId);
     setSellMessage(null);
+
   };
 
   const handleSell = () => {
@@ -153,6 +156,7 @@ const Sell: React.FC = () => {
       });
   };
 
+
   return (
     <>
       <h1>Sell</h1>
@@ -179,7 +183,7 @@ const Sell: React.FC = () => {
             <div>
               <button
                 type="button"
-                className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700"
                 onClick={handleSell}
                 disabled={sellingCardIds.has(selectedCardId) || listedCardIds.has(selectedCardId) || !selectedCardId}
               >
@@ -188,21 +192,24 @@ const Sell: React.FC = () => {
             </div>
           </div>
         </div>
-
         <Slider {...settings} className="slider">
-          {ownedCards.map((ownedCard) => (
-            <div key={ownedCard.id}>
-              <img
-                src={ownedCard.card_details.image_url}
-                alt={ownedCard.card_details.name}
-                className="card-img"
-                onClick={() => handleImageClick(ownedCard.card_details.image_url, ownedCard.card_details.id)}
-                
-              />
-            </div>
-          ))}
+        {ownedCards.filter(card => {
+          console.log(card.is_selling);
+          return card.is_selling;
+        }).map((ownedCard) => (
+          <div key={ownedCard.id}>
+            <img
+              src={ownedCard.card_details.image_url}
+              alt={ownedCard.card_details.name}
+              className="card-img"
+              onClick={() => handleImageClick(ownedCard.card_details.image_url, ownedCard.card_details.id)}
+            />
+          </div>
+        ))}
+
         </Slider>
       </div>
+        
     </>
   );
 };
