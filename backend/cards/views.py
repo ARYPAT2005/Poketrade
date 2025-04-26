@@ -71,5 +71,6 @@ def search(request):
     results = []
     if query:
         cards = Card.objects.filter(name__icontains=query)[:20]
-        results = [{'id': card.id, 'name': card.name, 'image': card.image_url} for card in cards]
+        results = cards
+    results = CardSerializer(results, many=True).data
     return JsonResponse({'results': results})

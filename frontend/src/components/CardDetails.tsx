@@ -52,7 +52,6 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onClose }) => {
         <p>Supertype: {card.supertype}</p>
         <p>HP: {card.hp}</p>
         <p>Rarity: {card.rarity ?? "Unknown"}</p>
-        {/* Add more card details as needed */}
       </div>
     </div>
   );

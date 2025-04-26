@@ -1,10 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import "./search.css";
+import CardDetails from "../components/CardDetails";
+import PokemonCard from "../types/Card";
 
 const Search = () => {
     const [allCards, setAllCards] = useState<any[]>([]); 
     const [filteredCards, setFilteredCards] = useState<any[]>([]);
     const searchRef = useRef<HTMLInputElement>(null);
+    const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null);
+
+
+    const handleCardEnlarge = (card: PokemonCard) => {
+        setSelectedCard(card);
+    };
+
+    const handleCloseOverlay = () => {
+        setSelectedCard(null);
+    };
 
     useEffect(() => {
         const searchBar = searchRef.current;
@@ -45,10 +57,17 @@ const Search = () => {
             <div className="card-Containers">
                 {
                     filteredCards.map((card) => (
-                        <img key={card.id} src={card.image} alt={card.name} width="300" />
+                        <img 
+                            key={card.id} 
+                            src={card.image_url} 
+                            style = {{cursor: 'pointer'}}
+                            onClick={() => handleCardEnlarge(card)}
+                            alt={card.name} width="300" 
+                        />
                     ))
                }
             </div>
+            {selectedCard && <CardDetails card={selectedCard} onClose={handleCloseOverlay} />}
         </>
     );
 };
