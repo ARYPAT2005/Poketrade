@@ -56,7 +56,8 @@ def transfer_cards_or_coins(sender: User, recipient: User | None = None, senders
             if sender_owned.quantity == 0:
                 sender_owned.delete()
             else:
-                sender_owned.save(update_fields=['quantity'])
+                sender_owned.is_selling = True
+                sender_owned.save(update_fields=['quantity', 'is_selling'])
 
             recipient_owned, created = OwnedCards.objects.get_or_create(user=recipient, card_info=card, defaults={'quantity': 1})
             if created:

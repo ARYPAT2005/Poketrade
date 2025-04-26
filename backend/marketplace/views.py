@@ -14,7 +14,10 @@ User = get_user_model()
 class SellItemView(APIView):
     def post(self, request):
         data = request.data.copy()
-
+        seller_username = data.get('seller')
+        seller = get_object_or_404(User, username=seller_username)
+        card_id = data.get('card')
+        seller_owned_card = get_object_or_404(seller.ownedcards_set, card_info__id=card_id)
         serializer = MarketplaceWriteSerializer(data=data)
 
         print("Validating Data with Write Serializer:", data)
@@ -26,6 +29,8 @@ class SellItemView(APIView):
                 print("Instance saved:", instance)
 
                 read_serializer = MarketplaceSerializer(instance)
+                seller_owned_card.is_selling = False
+                seller_owned_card.save(update_fields=['is_selling'])
                 return Response(read_serializer.data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 print(f"Error saving instance: {e}")

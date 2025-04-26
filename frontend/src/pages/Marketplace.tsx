@@ -152,6 +152,11 @@ const Marketplace = () => {
       setShowNoFundsAlert(true);
       return;
     }
+    if (userId === item.seller) {
+      setNoFundsMessage("Can't buy your own card.");
+      setShowNoFundsAlert(true);
+      return;
+    }
 
     try {
       console.log("Buying item.");
