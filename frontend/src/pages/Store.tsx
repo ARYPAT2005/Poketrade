@@ -41,7 +41,7 @@ const Store: React.FC = () => {
       })
       .then((data) => {
         if (data) {
-          // console.log(data);
+          console.log(data);
           setPacks(data);
         }
       })
