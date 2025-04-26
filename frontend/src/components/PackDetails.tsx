@@ -37,7 +37,16 @@ const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
       return;
     }
     console.log("pack", pack);
-    fetch(`${import.meta.env.VITE_API_URL}/api/packs/${pack.id}/`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/packs/${pack.id}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user: user.username,
+        cost: pack.cost,
+      }),
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -46,35 +55,6 @@ const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
       })
       .then((data) => {
         if (data) {
-          // console.log(`${import.meta.env.VITE_API_URL}/user/${user.username}/pay/${pack.cost}/`);
-          fetch(`${import.meta.env.VITE_API_URL}/user/${user.username}/pay/${pack.cost}/`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              pack_id: pack.id,
-            }),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              console.log("Pack opened, card won:", data);
-              const newUser = {
-                ...user,
-                wallet_balance: user.wallet_balance - pack.cost,
-              };
-              setUser(newUser);
-            })
-            .catch((error) => {
-              console.error("Error opening pack:", error);
-              alert("Failed to open the pack. Please try again later.");
-            });
-
           setCardWon(data);
         }
       })
