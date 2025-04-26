@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
-import { Card, ListGroup } from "react-bootstrap";
+import { Card, ListGroup, Carousel } from "react-bootstrap";
 import PokemonCard from "../types/Card";
 
 import LoginPrompt from "./LoginPrompt";
+
+import CardDetails from "../components/CardDetails";
 
 type OwnedCard = {
   card_details: PokemonCard;
@@ -21,11 +23,28 @@ type User = {
   can_claim: boolean;
   owned_cards: OwnedCard[];
 };
+const chunkArray = <T,>(array: T[], size: number): T[][] => {
+  const chunkedArr: T[][] = [];
+  let index = 0;
+  while (index < array.length) {
+    chunkedArr.push(array.slice(index, size + index));
+    index += size;
+  }
+  return chunkedArr;
+};
 
 const Profile: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
   const [user, setUser] = useState<User | null>(null);
+  const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null);
 
+    const handleCardEnlarge = (card: PokemonCard) => {
+        setSelectedCard(card);
+    };
+
+    const handleCloseOverlay = () => {
+        setSelectedCard(null);
+    };
   useEffect(() => {
     if (userId) {
       fetch(`${import.meta.env.VITE_API_URL}/user/${userId}`)
@@ -45,21 +64,35 @@ const Profile: React.FC = () => {
         });
     }
   }, [userId]);
+
+  const PROFILE_CARDS_PER_PAGE = 8;
+  const chunkedProfileCards = user?.owned_cards
+      ? chunkArray(user.owned_cards, PROFILE_CARDS_PER_PAGE)
+      : []; 
+
   return (
     <div>
-      <h1>Profile</h1>
-      {userId ? (
+      <h1>Your Profile</h1>
         <Card
-          style={{
-            maxWidth: "min(1000px, 90%)",
-            margin: "auto",
-            marginTop: "50px",
-          }}
+            className="profile-card-colored"
+            style={{
+                maxWidth: "min(1000px, 90%)",
+                margin: "auto",
+                marginTop: "50px",
+            }}
         >
-          <Card.Body>
-            <Card.Title>Profile Information</Card.Title>
+        <Card.Body>
+            <div
+            style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+            }}
+            >
+          <Card.Title>Your Profile</Card.Title>
+            </div>
             <ListGroup variant="flush">
-              <ListGroup.Item>
+            <ListGroup.Item>
                 <strong>Username:</strong> {user?.username}
               </ListGroup.Item>
               <ListGroup.Item>
@@ -82,36 +115,52 @@ const Profile: React.FC = () => {
                   <span style={{ color: "red" }}>Not Available</span>
                 )}
               </ListGroup.Item>
-              <ListGroup.Item>
+            <ListGroup.Item>
                 <strong>Deck:</strong>
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-                  gap: "16px",
-                  marginTop: "16px"
-                }}>
-                  {user?.owned_cards.map(owned_card => (
-                    <div key={owned_card.id} >
-                      <img src={owned_card.card_details.image_url} style={{ width: "100%"}}/> {"Quantity: " + owned_card.quantity}
-                    </div>
-                  ))}
-                </div>
-              </ListGroup.Item>
-              {/* <ListGroup.Item>
-                Deck:
-                {user?.owned_cards.map(owned_card => (
-                  <div key={owned_card.id}>
-                    <img src={owned_card.card_details.image_url}/>
-                    {owned_card.quantity}
-                  </div>
-                ))}
-              </ListGroup.Item> */}
+                {chunkedProfileCards?.length > 0 ? (
+                    <Carousel
+                        interval={null}
+                        indicators={chunkedProfileCards.length > 1}
+                        controls={chunkedProfileCards.length > 1}
+                    >
+                        {chunkedProfileCards.map((cardChunk, index) => (
+                            <Carousel.Item key={`profile-page-${index}`}>
+                                <div
+                                    className="d-flex flex-wrap justify-content-center justify-content-sm-start gap-3 p-2"
+                                    style={{ minHeight: '150px' }}
+                                >
+                                    {cardChunk.map((owned_card) => (
+                                        <div
+                                            key={`${user?.username}-profile-${owned_card.id}`}
+                                            className="d-flex flex-column align-items-center profile-deck-card"
+                                        >
+                                            <img
+                                                src={owned_card.card_details.image_url}
+                                                alt={owned_card.card_details.name}
+                                                style={{
+                                                    height: 'auto',
+                                                    marginBottom: '5px',
+                                                    cursor: 'pointer',
+                                                }}
+                                                onClick={() => handleCardEnlarge(owned_card.card_details)}
+                                                className="img-thumbnail"
+                                                loading="lazy"
+                                            />
+                                            <span className="badge bg-secondary">{owned_card.quantity}x</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Carousel.Item>
+                        ))}
+                    </Carousel>
+                ) : (
+                <p>No cards in deck.</p>
+                )}
+            </ListGroup.Item>
             </ListGroup>
-          </Card.Body>
+        </Card.Body>
         </Card>
-      ) : (
-        <LoginPrompt />
-      )}
+        {selectedCard && <CardDetails card={selectedCard} onClose={handleCloseOverlay} />}
     </div>
   );
 };
