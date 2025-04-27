@@ -13,6 +13,7 @@ from typing import Optional, Type, TypeVar
 
 UserType = TypeVar('UserType', bound='User')
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email: str, username: str, password: Optional[str] = None, **extra_fields) -> UserType:
         if not email:
@@ -35,6 +36,7 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self.create_user(email, username, password, **extra_fields)
+
 
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
@@ -62,12 +64,12 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.email
+
 
 class SecurityQuestion(models.Model):
     question = models.CharField(max_length=255)
@@ -83,7 +85,7 @@ class SecurityQuestion(models.Model):
 class UserSecurityQuestions(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     question1 = models.ForeignKey(SecurityQuestion, related_name='question1', on_delete=models.CASCADE)
-    answer1= models.CharField(max_length=255)
+    answer1 = models.CharField(max_length=255)
     question2 = models.ForeignKey(SecurityQuestion, related_name='question2', on_delete=models.CASCADE)
     answer2 = models.CharField(max_length=255)
 
@@ -94,6 +96,7 @@ class UserSecurityQuestions(models.Model):
         verbose_name = "User Security Question"
         verbose_name_plural = "User Security Questions"
 
+
 class OwnedCards(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ownedcards_set')
     card_info = models.ForeignKey(Card, on_delete=models.CASCADE)
@@ -101,3 +104,10 @@ class OwnedCards(models.Model):
 
     def __str__(self):
         return f"{self.card_info.name} ({self.quantity})"
+
+
+class Fee(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
+    amount = models.IntegerField(default=0)
+    description = models.TextField()

@@ -91,6 +91,15 @@ const Creator: React.FC = () => {
       }
     }
   };
+  const downloadGeneratedImage = async () => {
+    if (generatedImage) {
+      const link = document.createElement("a");
+      link.href = generatedImage;
+      link.download = `${title || "generated_image"}.png`;
+      document.body.appendChild(link);
+      link.click();
+    }
+  };
   type CardType = "grass" | "fire" | "water" | "lightning";
   const [cardType, setCardType] = useState<CardType>("grass");
 
@@ -333,7 +342,7 @@ const Creator: React.FC = () => {
                       <Button
                         disabled={!generatedImage}
                         variant="secondary"
-                        onClick={takeScreenshot}
+                        onClick={downloadGeneratedImage}
                         style={{
                           marginLeft: "10px",
                           cursor: generatedImage ? "pointer" : "not-allowed",

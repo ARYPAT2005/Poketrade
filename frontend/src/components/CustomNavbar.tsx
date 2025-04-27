@@ -78,7 +78,6 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
         });
     }
   }, [username]);
-  
 
   return (
     <Navbar bg="transparent" className="shadow-sm" expand="lg" onToggle={(expanded) => setNavbarExpanded(expanded)}>
@@ -88,7 +87,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
 
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-      <Navbar.Collapse id="basic-navbar-nav" style={{ gap: "5px" }} >
+      <Navbar.Collapse id="basic-navbar-nav" style={{ gap: "5px" }}>
         <Nav className="me-auto">
           <Nav.Link
             style={{
@@ -227,7 +226,6 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({ setNavbarExpanded }) => {
                   )}
                 </Dropdown.Item>
                 <Dropdown.Item href="/profile">Profile</Dropdown.Item>
-                <Dropdown.Item href="#">Settings</Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
               </>
             ) : (
