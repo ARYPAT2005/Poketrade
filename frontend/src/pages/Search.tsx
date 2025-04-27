@@ -68,7 +68,7 @@ const Search = () => {
         >
           <Navbar
             style={{
-              width: "80%",
+              width: "90%",
               height: "auto",
               margin: "auto",
               marginBottom: "20px",
@@ -94,7 +94,7 @@ const Search = () => {
             style={{
               margin: "auto",
               marginBottom: "30px",
-              width: "80%",
+              width: "90%",
               backgroundColor: "white",
               borderRadius: "20px",
               height: "auto",
@@ -106,9 +106,10 @@ const Search = () => {
               style={{
                 display: "flex",
                 flexWrap: "wrap",
-                justifyContent: "space-between",
+                justifyContent: "flex-start", // stick to left
+                gap: "10px",
+                padding: "10px",
                 maxHeight: "800px",
-                padding: "1px",
                 overflowY: "auto",
                 border: "1px solid #ccc",
                 borderRadius: "10px",
@@ -116,14 +117,34 @@ const Search = () => {
             >
               {filteredCards.length > 0 ? (
                 filteredCards.map((card) => (
-                  <img
-                    key={card.id}
-                    src={card.image_url}
-                    style={{ cursor: "pointer", margin: "10px" }}
-                    onClick={() => handleCardEnlarge(card)}
-                    alt={card.name}
-                    width="300"
-                  />
+                  <div
+                    style={{
+                      border: "1px solid black",
+                      borderRadius: "10px",
+                      padding: "10px",
+                      marginBottom: "10px",
+                      margin: "10px",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s",
+                      width: "195px",
+                      height: "300px",
+                    }}
+                    onClick={() => {
+                      handleCardEnlarge(card);
+                    }}
+                  >
+                    <h3>{card.name}</h3>
+                    <img
+                      src={card.image_url}
+                      alt={card.name}
+                      width="100px"
+                      style={{
+                        margin: "5px",
+                      }}
+                    />
+                    <p>Hp: {card.hp ? card.hp : "N/A"}</p>
+                    <p>Rarity: {card.rarity ? card.rarity : "N/A"}</p>
+                  </div>
                 ))
               ) : (
                 <div style={{ textAlign: "center", width: "100%" }}>
