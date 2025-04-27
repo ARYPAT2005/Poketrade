@@ -1,12 +1,12 @@
 from django.contrib import admin
 
-
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, UserAdmin
 from django.utils.translation import gettext_lazy as _
-from .models import User, SecurityQuestion, UserSecurityQuestions, OwnedCards
+from .models import User, SecurityQuestion, UserSecurityQuestions, OwnedCards, Fee
 
 admin.site.register(SecurityQuestion)
 admin.site.register(UserSecurityQuestions)
+
 
 # questions = [
 #     "What is your mother's maiden name?",
@@ -58,3 +58,6 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('username', 'email', 'wallet_balance')
     list_editable = ('wallet_balance',)
     search_fields = ('username', 'email')
+
+
+admin.site.register(Fee)

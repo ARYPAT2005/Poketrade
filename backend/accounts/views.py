@@ -12,7 +12,7 @@ from rest_framework import status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
 
-from accounts.models import UserSecurityQuestions, SecurityQuestion, OwnedCards
+from accounts.models import UserSecurityQuestions, SecurityQuestion, OwnedCards, Fee
 from cards.models import Card
 
 logger = logging.getLogger(__name__)
@@ -49,12 +49,12 @@ def get_user_security_questions(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
 @api_view(['GET'])
 def get_security_questions(request):
     questions = SecurityQuestion.objects.all().values('id', 'question')
     serializer = SecurityQuestionSerializer(questions, many=True)
     return Response(serializer.data)
-
 
 
 @api_view(['POST'])
@@ -75,6 +75,7 @@ def check_old_password(request):
         return Response({'error': 'User not found'}, status=404)
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+
 
 @api_view(['POST'])
 def reset_password(request):
@@ -97,6 +98,7 @@ def reset_password(request):
         return Response({'error': 'User not found'}, status=404)
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+
 
 @api_view(['POST'])
 def check_email(request):
@@ -126,25 +128,24 @@ def check_email(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-
-# @api_view(['POST'])
-# def display_security_questions(request):
-#     email = request.data.get('email', '').strip().lower()
-#
-#     if not email:
-#         return Response({'error': 'Email is required'}, status=400)
-#
-#     try:
-#         user = User.objects.get(email__iexact=email)
-#         security_questions = UserSecurityQuestions.objects.get(user=user)
-#         return Response({
-#             'question1': security_questions.question1.question,
-#             'question2': security_questions.question2.question
-#         })
-#     except User.DoesNotExist:
-#         return Response({'error': 'No account found with this email'}, status=404)
-#     except UserSecurityQuestions.DoesNotExist:
-#         return Response({'error': 'Security questions not set up for this user'}, status=404)
+    # @api_view(['POST'])
+    # def display_security_questions(request):
+    #     email = request.data.get('email', '').strip().lower()
+    #
+    #     if not email:
+    #         return Response({'error': 'Email is required'}, status=400)
+    #
+    #     try:
+    #         user = User.objects.get(email__iexact=email)
+    #         security_questions = UserSecurityQuestions.objects.get(user=user)
+    #         return Response({
+    #             'question1': security_questions.question1.question,
+    #             'question2': security_questions.question2.question
+    #         })
+    #     except User.DoesNotExist:
+    #         return Response({'error': 'No account found with this email'}, status=404)
+    #     except UserSecurityQuestions.DoesNotExist:
+    #         return Response({'error': 'Security questions not set up for this user'}, status=404)
 
     email = request.data.get('email', '').strip().lower()
 
@@ -227,6 +228,7 @@ def verify_security_answers(request):
     except UserSecurityQuestions.DoesNotExist:
         return Response({'error': 'Security questions not set up for this user'}, status=404)
 
+
 class RegisterView(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = User.objects.all()
@@ -249,6 +251,7 @@ class RegisterView(viewsets.ViewSet):
         else:
             print("Validation errors:", serializer.errors)  # Debugging
             return Response(serializer.errors, status=400)
+
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -267,12 +270,15 @@ class LoginView(viewsets.ViewSet):
         if serializer.is_valid():
             user = serializer.validated_data["user"]
             login(request, user)
-            return Response({"message": "Login successful", "user": user.username, "email": user.email}, status=status.HTTP_200_OK)
+            return Response({"message": "Login successful", "user": user.username, "email": user.email},
+                            status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 def logout(request):
     logout(request)
     return Response({'message': 'Logged out successfully.'})
+
 
 def canClaim(user):
     now = timezone.now()
@@ -280,6 +286,7 @@ def canClaim(user):
     if last_claim_date and (now - last_claim_date).total_seconds() < 86400:
         return False  # Cannot claim yet
     return True  # Can claim
+
 
 class UserView(APIView):
     def get(self, request, username):
@@ -290,6 +297,7 @@ class UserView(APIView):
 
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
 
 class DeckView(APIView):
     def get(self, request, username):
@@ -302,6 +310,19 @@ class DeckView(APIView):
         return Response(serializer.data)
 
 
+class FeeView(APIView):
+    def get(self, request, fee_id):
+        try:
+            fee = Fee.objects.get(id=fee_id)
+        except Fee.DoesNotExist:
+            return Response({"error": "Fee not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({
+            "id": fee.id,
+            "name": fee.name,
+            "amount": str(fee.amount),
+            "description": fee.description
+        }, status=status.HTTP_200_OK)
 
 
 class PaymentView(APIView):
@@ -328,6 +349,7 @@ class PaymentView(APIView):
             'wallet_balance': user.wallet_balance
         }, status=status.HTTP_200_OK)
 
+
 class EarnView(APIView):
     def put(self, request, username, amount):
         user = User.objects.get(username=username)
@@ -346,6 +368,7 @@ class EarnView(APIView):
             'wallet_balance': user.wallet_balance
         }, status=status.HTTP_200_OK)
 
+
 class WalletDetail(APIView):
     def get(self, request, username):
         user = User.objects.get(username=username)
@@ -356,7 +379,8 @@ class WalletDetail(APIView):
         return Response({
             'username': user.username,
             'wallet_balance': wallet_balance
-                         }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)
+
 
 class ClaimView(APIView):
     def get(self, request, username):
@@ -404,4 +428,3 @@ class ClaimView(APIView):
             'amount_claimed': 100.00,
             'last_claim_date': user.last_claim_date
         }, status=status.HTTP_200_OK)
-

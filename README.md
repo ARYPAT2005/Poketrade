@@ -36,6 +36,7 @@ Setup
     python manage.py fetch_cards
     python manage.py seed_packs
     python manage.py seed_security_questions
+    python manage.py seed_fees
     python manage.py runserver
     ```
 
@@ -74,6 +75,7 @@ python manage.py migrate
 python manage.py fetch_cards
 python manage.py seed_packs
 python manage.py seed_security_questions
+    python manage.py seed_fees
 python manage.py runserver
 ```
 
