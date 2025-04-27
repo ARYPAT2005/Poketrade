@@ -29,6 +29,7 @@ Setup
     cd backend
     python3 -m venv venv
     source venv/bin/activate
+    find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
     pip install -r requirements.txt
     python manage.py makemigrations
     python manage.py migrate
@@ -49,6 +50,7 @@ Setup
     ```bash
     cd frontend
     npm install
+    npm audit fix
     npm fund
     npm run dev
     ```
