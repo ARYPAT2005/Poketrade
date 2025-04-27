@@ -159,7 +159,7 @@ const Sell: React.FC = () => {
 
   return (
     <>
-      <h1 className="Sell">Sell</h1>
+      <h1>Sell</h1>
       <div className="Outline">
         <div className="cardSell">
           {selectedImage && (
