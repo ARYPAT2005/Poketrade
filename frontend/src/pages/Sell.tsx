@@ -5,10 +5,10 @@ import userIdAtom from "../atoms/userIdAtom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Card as PokemonCard } from "../types/Card";
+import Card from "../types/Card";
 
 type OwnedCards = {
-  card_details: PokemonCard;
+  card_details: Card;
   quantity: number;
   id: number;
   is_selling: boolean;
@@ -159,7 +159,7 @@ const Sell: React.FC = () => {
 
   return (
     <>
-      <h1>Sell</h1>
+      <h1 className="Sell">Sell</h1>
       <div className="Outline">
         <div className="cardSell">
           {selectedImage && (
