@@ -15,15 +15,16 @@ def transfer_cards_or_coins(sender: User, recipient: User | None = None, senders
     if recipient.wallet_balance < coin_data['receiver_coin_transfer']:
             return False, "Recipient has insufficient funds."
 
-    for item in senders_cards:
-        card = item.get('card')
-        quantity_needed = item.get('quantity')
-        try:
-            sender_owned = OwnedCards.objects.get(user=sender, card_info=card)
-            if sender_owned.quantity < quantity_needed:
-                return False, f"Sender does not have enough {card.name} (owns {sender_owned.quantity}, needs {quantity_needed})."
-        except OwnedCards.DoesNotExist:
-            return False, f"Sender does not own the card: {card.name}."
+    if sender:
+        for item in senders_cards:
+            card = item.get('card')
+            quantity_needed = item.get('quantity')
+            try:
+                sender_owned = OwnedCards.objects.get(user=sender, card_info=card)
+                if sender_owned.quantity < quantity_needed:
+                    return False, f"Sender does not have enough {card.name} (owns {sender_owned.quantity}, needs {quantity_needed})."
+            except OwnedCards.DoesNotExist:
+                return False, f"Sender does not own the card: {card.name}."
 
     for item in receivers_cards:
         card = item.get('card')
@@ -42,22 +43,24 @@ def transfer_cards_or_coins(sender: User, recipient: User | None = None, senders
             sender.save(update_fields=['wallet_balance'])
             recipient.save(update_fields=['wallet_balance'])
         if coin_data['receiver_coin_transfer'] > 0:
-            sender.wallet_balance += coin_data['receiver_coin_transfer']
+            if sender:
+                sender.wallet_balance += coin_data['receiver_coin_transfer']
+                sender.save(update_fields=['wallet_balance'])
             recipient.wallet_balance -= coin_data['receiver_coin_transfer']
-            sender.save(update_fields=['wallet_balance'])
             recipient.save(update_fields=['wallet_balance'])
 
         for item in senders_cards:
             card = item.get('card')
             quantity = item.get('quantity')
 
-            sender_owned = OwnedCards.objects.get(user=sender, card_info=card)
-            sender_owned.quantity -= quantity
-            if sender_owned.quantity == 0:
-                sender_owned.delete()
-            else:
-                sender_owned.is_selling = True
-                sender_owned.save(update_fields=['quantity', 'is_selling'])
+            if sender:
+                sender_owned = OwnedCards.objects.get(user=sender, card_info=card)
+                sender_owned.quantity -= quantity
+                if sender_owned.quantity == 0:
+                    sender_owned.delete()
+                else:
+                    sender_owned.is_selling = True
+                    sender_owned.save(update_fields=['quantity', 'is_selling'])
 
             recipient_owned, created = OwnedCards.objects.get_or_create(user=recipient, card_info=card, defaults={'quantity': 1})
             if created:
@@ -75,14 +78,14 @@ def transfer_cards_or_coins(sender: User, recipient: User | None = None, senders
                 receiver_owned.delete()
             else:
                 receiver_owned.save(update_fields=['quantity'])
+            if sender:
+                sender_owned, created = OwnedCards.objects.get_or_create(user=sender, card_info=card, defaults={'quantity': 1})
+                if created:
+                    quantity -= 1
+                sender_owned.quantity += quantity
+                sender_owned.save(update_fields=['quantity'])
 
-            sender_owned, created = OwnedCards.objects.get_or_create(user=sender, card_info=card, defaults={'quantity': 1})
-            if created:
-                quantity -= 1
-            sender_owned.quantity += quantity
-            sender_owned.save(update_fields=['quantity'])
-
-        print(f"Simple transfer completed from {sender.username} to {recipient.username}.")
+        print(f"Transfer completed from {sender.username if sender else ''} to {recipient.username}.")
         return True, "Transfer successful."
 
     except Exception as e:

@@ -7,7 +7,6 @@ urlpatterns = [
     path('messages/<str:username>/sent/', MessageSent.as_view(), name='message-sent'),
     path('messages/<str:username>/count/', MessageCount.as_view(), name='message-count'),
     path('message/<int:pk>/', MessageDetail.as_view()),
-    path('trades/received/<str:username>/', TradeList.as_view(), name='trade-list-received'),
     path('trades/<str:username>/', TradeList.as_view(), name='trade-list'),
     path('trades/', TradeList.as_view(), name='trade-create'),
     path('trades/id/<int:pk>/', TradeDetail.as_view(), name='trade-detail'),

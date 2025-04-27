@@ -1,12 +1,17 @@
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from accounts.utils import transfer_cards_or_coins
 from cards.models import Card, Pack, PackItem
 from cards.serializers import CardSerializer, PackSerializer
 from django.http import JsonResponse
 from .pagination import CustomPageNumberPagination
 from rest_framework.permissions import AllowAny
 import random
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class CardViewSet(viewsets.ModelViewSet):
     queryset = Card.objects.all()
@@ -16,7 +21,7 @@ class CardViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
 class PackView(APIView):
-    def get(self, request, pack_id):
+    def patch(self, request, pack_id):
         try:
             pack = Pack.objects.prefetch_related('items').get(pk=pack_id)
         except Pack.DoesNotExist:
@@ -49,6 +54,10 @@ class PackView(APIView):
             )
 
         serializer = CardSerializer(card)
+        receiver = User.objects.get(username=request.data.get('user'))
+        transfer_status = transfer_cards_or_coins(None, receiver, [{'card': card, 'quantity': 1}], [], {'sender_coin_transfer': 0, 'receiver_coin_transfer': request.data.get('cost')})
+        if not transfer_status[0]:
+            print("transfer failed", transfer_status[1])
         return Response(serializer.data)
 
 class PackListView(APIView):
@@ -62,5 +71,6 @@ def search(request):
     results = []
     if query:
         cards = Card.objects.filter(name__icontains=query)[:20]
-        results = [{'id': card.id, 'name': card.name, 'image': card.image_url} for card in cards]
+        results = cards
+    results = CardSerializer(results, many=True).data
     return JsonResponse({'results': results})

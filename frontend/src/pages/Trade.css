@@ -1,0 +1,205 @@
+  .trade-details-wrapper {
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+  }
+  
+  .trade-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+  
+  .trade-section {
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    padding: 0.75rem;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .trade-section-header {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .trade-carousel {
+    width: 100%;
+    flex-grow: 1;
+    align-content: center;
+  }
+  
+  .trade-carousel .carousel-inner {
+    min-height: 130px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .trade-carousel .carousel-control-prev-icon,
+  .trade-carousel .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    padding: 10px;
+    width: 20px;
+    height: 20px;
+    background-size: 60%;
+  }
+  
+  .trade-carousel .carousel-indicators {
+    bottom: -15px;
+  }
+  
+  .trade-carousel .carousel-indicators [data-bs-target] {
+    background-color: #adb5bd;
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+  }
+  
+  
+  
+  .carousel-inner-wrapper {
+    min-height: 130px;
+    justify-content: center;
+    align-content: flex-start;
+    display: flex;
+  }
+  
+  .trade-pokemon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    max-width: 85px;
+    min-width: 75px;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 8px 5px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #eee;
+  }
+  
+  .trade-pokemon-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .trade-card-image {
+    width: 100%;
+    height: auto;
+    margin-bottom: 5px;
+    border-radius: 4px;
+  }
+  
+  .trade-card-name-container {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    max-lines: 2;
+    overflow: hidden;
+    width: 100%;
+    color: #343a40;
+    font-weight: 500;
+  }
+  
+.card-name-text { 
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    max-height: calc(1.2em * 2);
+    margin-bottom: 2px;
+}
+  
+.trade-arrow-column {
+  padding: 10px 0;
+  min-height: 150px;
+  justify-content: center;
+}
+
+.trade-coins-display {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  width: 90%; /* Limit width */
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.coin-label {
+  font-size: 0.7rem;
+  margin-bottom: 1px;
+  line-height: 1.1;
+  color: #6c757d !important; /* Ensure muted color */
+}
+
+
+.trade-coins-display strong {
+  font-size: 0.95rem;
+  vertical-align: baseline;
+  color: #212529;
+}
+
+.trade-arrow-icon {
+   font-size: 1.8rem; /* Adjust size if needed */
+   color: #adb5bd;
+   font-weight: bold;
+   line-height: 1; /* Compact line height */
+}
+
+/* Spacers to prevent arrow jump when only one side has coins */
+.coin-spacer, .coin-placeholder {
+    height: 40px; /* Adjust height to roughly match .trade-coins-display */
+    width: 100%;
+}
+ 
+  @media (max-width: 767px) {
+    .trade-arrow-column {
+      order: 2;
+      width: 100%;
+      min-height: 40px;
+    }
+    .trade-section {
+      order: 2;
+      margin-bottom: 1rem;
+      min-height: 150px; 
+    }
+    .trade-carousel .carousel-inner, .carousel-inner-wrapper {
+      min-height: 110px;
+    }
+     .trade-pokemon-card {
+       max-width: 75px;
+       min-width: 65px;
+     }
+     .trade-card-image {
+       max-width: 45px;
+     }
+     .trade-card-name {
+       font-size: 0.7rem;
+     }
+  }
+  
+  @media (max-width: 576px) {
+    .trade-details-wrapper {
+      padding: 0.8rem;
+    }
+    .trade-nav-tabs .nav-link {
+      font-size: 0.9rem;
+      padding-top: 0.6rem;
+      padding-bottom: 0.6rem;
+    }
+    .tab-title {
+      font-size: 0.85rem;
+    }
+     .trade-nav-tabs .badge {
+      font-size: 0.7em;
+     }
+  }

@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
-import { Card, Tabs, Tab, ListGroup, Button } from "react-bootstrap";
+import { Card, Tabs, Tab, ListGroup, Button, Row, Col, Container, Badge, Carousel, Pagination } from "react-bootstrap";
 import LoginPrompt from "./LoginPrompt";
 import Trades, { TradeCardDetail } from "../types/Trades"; 
-import CardDetail from "../components/CardDetails";
+import CardDetails from "../components/CardDetails";
 import PokemonCard from "../types/Card";
+import "./Trade.css";
 
 const Trade: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
@@ -15,6 +16,8 @@ const Trade: React.FC = () => {
   const [completedTrades, setCompletedTrades] = useState<Trades[]>([]);
   const [activeTab, setActiveTab] = useState<string>('received');
   const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   const handleCardClick = (card: PokemonCard) => {
     setSelectedCard(card);
@@ -23,6 +26,16 @@ const Trade: React.FC = () => {
   const handleCloseOverlay = () => {
     setSelectedCard(null);
   };
+
+  const chunkArray = <T,>(array: T[], size: number): T[][] => {
+    const chunkedArr: T[][] = [];
+    let index = 0;
+    while (index < array.length) {
+      chunkedArr.push(array.slice(index, size + index));
+      index += size;
+    }
+    return chunkedArr;
+  };
   
   useEffect(() => {
     if (!userId) {
@@ -30,7 +43,7 @@ const Trade: React.FC = () => {
       return;
     }
 
-    fetch(`http://localhost:8000/api/trades/${userId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/trades/${userId}`)
       .then(response => {
         if (!response.ok) {
           throw new Error(`Network response was not ok (${response.status})`);
@@ -67,10 +80,11 @@ const Trade: React.FC = () => {
     setCompletedTrades(completed);
   }
 
+
   const handleTradeResponse = async (tradeId: number, status: string) => {
 
       try {
-          const response = await fetch(`http://localhost:8000/api/trades/id/${tradeId}/`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/trades/id/${tradeId}/`, {
               method: 'PATCH',
               headers: {
                   'Content-Type': 'application/json',
@@ -98,75 +112,168 @@ const Trade: React.FC = () => {
   };
 
   const renderTradeDetails = (trade: Trades) => {
-    const offers: TradeCardDetail[] = trade.card_details.filter(detail => detail.direction === 'offer');
-    const requests: TradeCardDetail[] = trade.card_details.filter(detail => detail.direction === 'request');
+    const offers: TradeCardDetail[][] = chunkArray(trade.card_details.filter(detail => detail.direction === 'offer'), 6);
+    const requests: TradeCardDetail[][] = chunkArray(trade.card_details.filter(detail => detail.direction === 'request'), 6);
     const isSender: boolean = trade.sender_username === userId;
-    return (
-      <ListGroup.Item key={trade.id} className="mb-3 border rounded p-3">
-        {isSender ? 
-          <h5>Trade Offer to: {trade.recipient_username}</h5>
-        : <h5>Trade Offer from: {trade.sender_username}</h5>
-        }
-        {trade.message && <p className="mb-1">Message: <em>{trade.message}</em></p>}
-        <div className="d-flex justify-content-around flex-wrap">
-          <div className="m-2">
-            {isSender ?
-              <strong>You offer</strong>
-              :<strong>{trade.sender_username} offers:</strong>
-            }
-            
-            {offers.length > 0 ? (
-                <ListGroup variant="flush" className="mt-1">
-                    {offers.map((detail: TradeCardDetail) => (
-                        <ListGroup.Item key={detail.id} className="d-flex align-items-center p-1">
-                          {detail.quantity}x {detail.card_info.name}
-                          {detail.card_info.image_url && <img src={detail.card_info.image_url} alt={detail.card_info.name} style={{maxWidth: '40px', height: 'auto', marginLeft: '10px', borderRadius: '4px'}} onClick={() => handleCardClick(detail.card_info)} />}
-                        </ListGroup.Item>
-                    ))}
-                </ListGroup>
-            ) : ( <p className="text-muted mt-1">Nothing</p> )}
-          </div>
-          <div className="m-2">
-            <strong>Requesting:</strong>
-            {requests.length > 0 ? (
-              <ListGroup variant="flush" className="mt-1">
-                {requests.map((detail: TradeCardDetail) => (
-                  <ListGroup.Item key={detail.id} className="d-flex align-items-center p-1">
-                  {detail.quantity}x {detail.card_info.name}
-                  {detail.card_info.image_url && <img src={detail.card_info.image_url} alt={detail.card_info.name} style={{maxWidth: '40px', height: 'auto', marginLeft: '10px', borderRadius: '4px'}} onClick={() => handleCardClick(detail.card_info)} />}
-                  </ListGroup.Item>
+
+    const renderCarousel = (items: TradeCardDetail[][]) => (
+      items.length > 0 ? (
+        <Carousel interval={null} indicators={items.length > 1} controls={items.length > 1} className="trade-carousel">
+          {items.map((group: TradeCardDetail[], index) => (
+            <Carousel.Item key={index}>
+              <div className="d-flex justify-content-center flex-wrap gap-2 p-2 carousel-inner-wrapper">
+                {group.map((detail) => (
+                  <div key={detail.id} className="trade-pokemon-card">
+                    {detail.card_info.image_url && <img src={detail.card_info.image_url} alt={detail.card_info.name} className="trade-card-image" onClick={() => handleCardClick(detail.card_info)} />}
+                    <div className="trade-card-name-container">
+                      <div className="card-name-text">
+                        {detail.card_info.name}
+                      </div>
+                      <div className="card-badge-line">
+                        <Badge pill bg="dark" className="me-1">{detail.quantity}x</Badge>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </ListGroup>
-            ) : ( <p className="text-muted mt-1">Nothing</p> )}
-            {selectedCard && <CardDetail card={selectedCard} onClose={handleCloseOverlay} />}
-          </div>
+              </div>
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      ) : (
+        <div className="text-muted text-center p-4 d-flex align-items-center justify-content-center h-100">
+            <small>Nothing</small>
         </div>
-          {trade.status === 'pending' && !isSender &&
-            <div className="mt-3 text-center">
-              <Button variant="success" size="sm" className="me-2" onClick={() => handleTradeResponse(trade.id, "accepted")}>Accept</Button>
-              <Button variant="danger" size="sm" onClick={() => handleTradeResponse(trade.id, "rejected")}>Reject</Button>
+      )
+    );
+
+
+    return (
+      <Container fluid key={trade.id} className="trade-details-wrapper mb-4">
+        <Row className="mb-2 trade-header">
+          <Col className="text-center">
+              {isSender ?
+                <h5>Trade Offer to <strong><a href={`/player/${trade.recipient_username}`}>{trade.recipient_username}</a></strong></h5>
+              : <h5>Trade Offer from <strong><a href={`/player/${trade.sender_username}`}>{trade.sender_username}</a></strong></h5>
+              }
+          </Col>
+        </Row>
+        <Row className="align-items-stretch">
+          <Col md={5} className="trade-section">
+            <div className="trade-section-header text-center mb-2">
+              {isSender && !completedTrades.includes(trade) && <strong>You Offer:</strong>}
+              {!isSender && !completedTrades.includes(trade) && <strong>{trade.sender_username} Offers:</strong>}
+              {!isSender && completedTrades.includes(trade) && <strong>{trade.sender_username} Gave:</strong>}
+              {isSender && completedTrades.includes(trade) && <strong>You Gave:</strong>}
             </div>
-          }
-          {trade.status === 'pending' && isSender &&
-            <div className="mt-3 text-center">
-              <Button variant="secondary" size="sm" className="me-2" onClick={() => handleTradeResponse(trade.id, "cancelled")}>Cancel</Button>
+            {renderCarousel(offers)}
+          </Col>
+
+          <Col md={2} className="d-flex flex-column align-items-center justify-content-center trade-arrow-column text-center px-0">
+              {trade.sender_coins >= 0 && (
+                  <div className="trade-coins-display mb-2">
+                      <small className="text-muted d-block coin-label">
+                          {isSender ? 'You Offer' : `${trade.sender_username} Offers`}
+                      </small>
+                      <div>
+                          <strong>${trade.sender_coins}</strong>
+                      </div>
+                  </div>
+              )}
+
+              {(trade.sender_coins > 0 && !(trade.sender_coins > 0)) && <div className="coin-spacer"></div>}
+              <span className="trade-arrow-icon my-1">⇄</span>
+              {(!(trade.sender_coins > 0) && trade.recipient_coins > 0) && <div className="coin-spacer"></div>}
+
+              {trade.recipient_coins >= 0 && (
+                  <div className="trade-coins-display mt-2">
+                      <small className="text-muted d-block coin-label">
+                          {isSender ? 'You Request' : `${trade.sender_username} Requests`}
+                      </small>
+                      <div>
+                          <strong>${trade.recipient_coins}</strong>
+                      </div>
+                  </div>
+              )}
+              {trade.sender_coins <= 0 && trade.recipient_coins <= 0 && (
+                  <div className="my-2 coin-placeholder"></div>
+              )}
+              </Col>
+
+          <Col md={5} className="trade-section">
+            <div className="trade-section-header text-center mb-2">
+              {!isSender && !completedTrades.includes(trade) && <strong>You Give: </strong>}
+              {isSender && !completedTrades.includes(trade) && <strong>You Request: </strong>}
+              {!isSender && completedTrades.includes(trade) && <strong>You Gave: </strong>}
+              {isSender && completedTrades.includes(trade) && <strong>{trade.recipient_username} Gave: </strong>}
             </div>
-          }
-      </ListGroup.Item>
+            {renderCarousel(requests)}
+          </Col>
+        </Row>
+
+        {trade.status === 'pending' &&
+          <Row className="mt-3">
+            <Col className="text-center">
+              {!isSender ? (
+                <>
+                  <Button variant="success" size="sm" className="me-2 shadow-sm" onClick={() => handleTradeResponse(trade.id, "accepted")}>Accept</Button>
+                  <Button variant="danger" size="sm" className="shadow-sm" onClick={() => handleTradeResponse(trade.id, "rejected")}>Reject</Button>
+                </>
+              ) : (
+                <Button variant="secondary" size="sm" className="shadow-sm" onClick={() => handleTradeResponse(trade.id, "cancelled")}>Cancel Trade</Button>
+              )}
+            </Col>
+          </Row>
+        }
+      </Container>
     );
   }
 
-  const receivedTradeElements = useMemo(() => {
-    return receivedTrades.map(trade => renderTradeDetails(trade))
-  }, [receivedTrades])
 
-  const sentTradeElements = useMemo(() => {
-    return sentTrades.map(trade => renderTradeDetails(trade))
-  }, [sentTrades])
+  const renderPaginatedTrades = (
+    trades: Trades[],          // The full list of trades for this tab
+    currentPage: number,       // The current page state for this tab
+    setCurrentPage: (page: number) => void // The state setter function
+  ) => {
+    const totalPages = Math.ceil(trades.length / 4);
+    const startIndex = (currentPage - 1) * 4;
+    const endIndex = startIndex + 4;
+    const currentTrades = trades.slice(startIndex, endIndex);
 
-  const completedTradeElements = useMemo(() => {
-    return completedTrades.map(trade => renderTradeDetails(trade))
-  }, [completedTrades])
+    const handlePageChange = (pageNumber: number) => {
+      setCurrentPage(pageNumber);
+      window.scrollTo(0, 0); // Optional: Scroll to top on page change
+    };
+
+    return (
+      <>
+        {currentTrades.length > 0 ? (
+          currentTrades.map(trade => renderTradeDetails(trade))
+        ) : (
+          <p className="text-center text-muted p-3">No trades found.</p>
+        )}
+        {totalPages > 1 && (
+          <div className="d-flex justify-content-center mt-4">
+            <Pagination>
+              <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
+              <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+              {[...Array(totalPages).keys()].map(page => (
+                <Pagination.Item
+                  key={page + 1}
+                  active={page + 1 === currentPage}
+                  onClick={() => handlePageChange(page + 1)}
+                >
+                  {page + 1}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+              <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+            </Pagination>
+          </div>
+        )}
+      </>
+    );
+  };
+
 
   return (
     <div>
@@ -177,29 +284,30 @@ const Trade: React.FC = () => {
         <Card style={{maxWidth: "min(1000px, 90%)", margin: "auto", marginTop: "50px",}}>
           <Card.Body>
             <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k || 'received')} id="trade-tabs" className="mb-3" fill>
-              <Tab eventKey="received" title="Received Offers">
+              <Tab eventKey="received" title={<span>Received Offers <Badge pill bg="secondary">{receivedTrades.length}</Badge></span>}>
+
                 {activeTab === 'received' && receivedTrades.length > 0 ? (
-                  <ListGroup variant="flush">
-                    {receivedTradeElements}
-                  </ListGroup>
+                  <Container>
+                    {renderPaginatedTrades(receivedTrades, currentPage, setCurrentPage)}
+                  </Container>
                 ) : (
                   <p className="text-center p-3">You have no incoming trade offers.</p>
                 )}
               </Tab>
-              <Tab eventKey="sent" title="Sent Offers">
+              <Tab eventKey="sent" title={<span>Sent Offers <Badge pill bg="secondary">{sentTrades.length}</Badge></span>}>
                 {activeTab === 'sent' && sentTrades.length > 0 ? (
-                  <ListGroup variant="flush">
-                    {sentTradeElements}
-                  </ListGroup>
+                  <Container>
+                    {renderPaginatedTrades(sentTrades, currentPage, setCurrentPage)}
+                  </Container>
                 ) : (
                   <p className="text-center p-3">You have no incoming trade offers.</p>
                 )}
               </Tab>
-              <Tab eventKey="completed" title="Completed Trades">
+              <Tab eventKey="completed" title={<span>Completed Trades<Badge pill bg="secondary">{completedTrades.length}</Badge></span>}>
                 {activeTab === 'completed' && completedTrades.length > 0 ? (
-                  <ListGroup variant="flush">
-                    {completedTradeElements}
-                  </ListGroup>
+                  <Container>
+                    {renderPaginatedTrades(completedTrades, currentPage, setCurrentPage)}
+                  </Container>
                 ) : (
                   <p className="text-center p-3">You have no incoming trade offers.</p>
                 )}
@@ -208,6 +316,7 @@ const Trade: React.FC = () => {
           </Card.Body>
         </Card>
       )}
+      {selectedCard && <CardDetails card={selectedCard} onClose={handleCloseOverlay} />}
     </div>
   );
 };

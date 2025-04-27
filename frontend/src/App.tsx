@@ -8,6 +8,13 @@ import Register from "./pages/Register";
 import About from "./pages/About";
 import Store from "./pages/Store";
 import Trade from "./pages/Trade";
+
+import ReceivedOffer from "./pages/ReceivedOffer";
+import SentOffer from "./pages/SentOffer";
+import CompletedOffer from "./pages/CompletedOffer";
+import Trade2 from "./pages/Trade2";
+
+
 import Search from "./pages/Search";
 import Messages from "./pages/Messages";
 import Creator from "./pages/Creator";
@@ -22,6 +29,7 @@ import Footer from "./components/Footer";
 import Sell from "./pages/Sell";
 
 import "./App.css";
+import PlayerProfile from "./pages/PlayerProfile";
 
 const App: React.FC = () => {
   const [navbarExpanded, setNavbarExpanded] = useState(false);
@@ -37,6 +45,14 @@ const App: React.FC = () => {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/store" element={<Store />} />
           <Route path="/trade" element={<Trade />} />
+
+           {/* Trading offer pages – temporary use */}
+          <Route path="/received-offer" element={<ReceivedOffer />} />
+          <Route path="/sent-offer" element={<SentOffer />} />
+          <Route path="/completed-offer" element={<CompletedOffer />} />
+          <Route path="/trade2" element={<Trade2 />} />
+
+
           <Route path="/about" element={<About />} />
           <Route path="/search" element={<Search />} />
           <Route path="/messages" element={<Messages />} />
@@ -47,6 +63,7 @@ const App: React.FC = () => {
           <Route path="/loginrewards" element={<LoginRewards />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/battles" element={<Battles />} />
+          <Route path="/player/:playerName" element={<PlayerProfile />} />
         </Routes>
       </div>
       <Footer />
