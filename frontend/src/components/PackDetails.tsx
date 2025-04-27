@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Card from "../types/Card";
-import userAtom from "../atoms/userAtom";
-import { useAtom } from "jotai";
+import useratom from "../atoms/userAtom";
+import { useAtomValue } from "jotai";
 
 import pokeball from "../assets/individual_pokeball.svg";
 import Pack from "../types/Pack";
@@ -11,7 +11,7 @@ interface CardDetailProps {
 }
 
 const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
-  const [user, setUser] = useAtom(userAtom);
+  const user = useAtomValue(useratom);
   const [cardWon, setCardWon] = useState<Card | null>(null);
   const cardDetailRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
