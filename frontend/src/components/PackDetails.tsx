@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Card from "../types/Card";
-import userAtom from "../atoms/userAtom";
+import useratom from "../atoms/userAtom";
 import { useAtom } from "jotai";
 
 import pokeball from "../assets/individual_pokeball.svg";
@@ -11,7 +11,7 @@ interface CardDetailProps {
 }
 
 const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
-  const [user, setUser] = useAtom(userAtom);
+  const [user, setUser] = useAtom(useratom);
   const [cardWon, setCardWon] = useState<Card | null>(null);
   const cardDetailRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -56,6 +56,11 @@ const PackDetails: React.FC<CardDetailProps> = ({ pack, onClose }) => {
       .then((data) => {
         if (data) {
           setCardWon(data);
+          const newUser = {
+            ...user,
+            wallet_balance: user.wallet_balance - pack.cost,
+          };
+          setUser(newUser);
         }
       })
       .catch((error) => {

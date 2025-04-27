@@ -396,9 +396,10 @@ const Battles: React.FC = () => {
                 style={{
                   display: "flex",
                   flexWrap: "wrap",
-                  justifyContent: "space-between",
+                  justifyContent: "flex-start", // stick to left
+                  gap: "10px",
+                  padding: "10px",
                   maxHeight: "800px",
-                  padding: "1px",
                   overflowY: "auto",
                   border: "1px solid #ccc",
                   borderRadius: "10px",
