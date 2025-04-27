@@ -101,7 +101,7 @@ class OwnedCards(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ownedcards_set')
     card_info = models.ForeignKey(Card, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-
+    is_selling = models.BooleanField(default=True)
     def __str__(self):
         return f"{self.card_info.name} ({self.quantity})"
 

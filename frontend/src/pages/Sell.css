@@ -1,0 +1,223 @@
+h1.Sell {
+  position: absolute;
+  top:10%;
+  left:50%;
+}
+.Outline {
+ background: #e3a9a9;
+ position: absolute;
+ top:50%;
+ left:50%;
+ transform:translate(-50%, -50%);
+ height:60%;
+ width:60%;
+}
+.slider {
+ background-color: #e3a9a9;
+ position: absolute;
+ top: 84.5%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ width: 100%;
+ padding-left: 10%;
+}
+
+
+.slick-slide {
+ display: flex;
+ justify-content: center; 
+ align-items: center;
+ }
+
+
+.card-img {
+ max-width: 50%;
+ height: auto;
+ display: block;
+}
+
+
+.cardSell {
+ position: absolute;
+ height: 50%;
+ top: 7%;
+ left: 20%;
+ width: 20%;
+ outline: 5px dotted #000;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ padding: 8px;
+ box-sizing: border-box;
+ overflow: hidden;
+}
+
+
+.image {
+ max-width: 100%;
+ height: auto;
+ display: block;
+ box-sizing: border-box;
+ margin: 0;
+ padding: 0;
+ outline-offset: 0;
+ }
+
+
+/* Removes out of place outline around card */
+.slick-slide * {
+ outline: none !important;
+}
+
+
+.sell {
+ position: absolute;
+ height:52%;
+ width: 50%;
+ top:10%;
+ left:45%;
+}
+.Price {
+ position: absolute;
+ top: 10%;
+ height:10%;
+ width:60%;
+}
+.inputBox {
+ background-color: white;
+ color: black;
+
+
+}
+.Buy {
+ position: absolute;
+ height:52%;
+ width: 50%;
+ top:10%;
+  font-size:100%;
+}
+.BuyNow {
+ font-size:20%;
+}
+
+
+
+
+.flex-container {
+ display: flex;
+ flex-direction: column;
+ height:52%;
+ width: 50%;
+ gap: 5px;
+
+
+}
+.flex-container p {
+ margin: 0;
+}
+.flex-container button {
+ margin: 10px;
+}
+
+
+
+
+@media (max-width: 600px) {
+ /* hamburger menu */
+ .navbar-toggler {
+   margin-left: 50px;
+ }
+
+
+ /* card within holder */
+ .image {
+   margin: 0 auto;
+ }
+
+
+
+
+ /* card within slider */
+ .card-img {
+   margin: 0 auto;
+   width: 90%;
+ }
+
+
+ /* holder outline */
+ .cardSell {
+   top: auto;
+   left: auto;
+   transform: none;
+   position: static;
+   width: 100%;
+   min-height: 220px;
+   margin-bottom: 20px;
+   text-align: center;
+   outline: 5px dotted #000;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+ }
+
+
+
+
+ .dropdown {
+   margin-left: 50px
+ }
+
+
+ .Outline {
+   position: static;
+   top: auto;
+   left: auto;
+   transform: none;
+   height: auto;
+   min-height: 100vh;
+   margin: 20px auto;
+   width: 90%;
+   overflow-y: visible;
+ }
+
+
+ .sell {
+   top: auto;
+   left: auto;
+   transform: none;
+   position: static;
+   width: 100%;
+   height: auto;
+   margin-top: 10px;
+ }
+
+
+ .flex-container {
+   flex-direction: column;
+   align-items: center;
+   width: 100%;
+ }
+
+
+ .inputBox {
+   width: 90%;
+   max-width: 300px;
+ }
+
+
+ .slider {
+   top: auto;
+   left: auto;
+   transform: none;
+   position: static;
+   margin-top: 20px;
+   width: 100%;
+   padding-left: 0;
+ }
+
+
+ button {
+   width: 90%;
+   max-width: 300px;
+ }
+}

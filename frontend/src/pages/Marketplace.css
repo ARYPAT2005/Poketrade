@@ -1,26 +1,270 @@
 .marketplace-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-    padding: 1rem;
-    max-width: 1500px;
-    margin: 0 auto;
-}
-.card {
-  background: #e3a9a9;
-  border-radius: 20px;
-  border-width: thick;
-  height: 100%;
-  width: 100%;
-  max-width: 250px;
-  border-style: black solid;
-}
-.card-img-top {
-  border-radius: 20px 20px 0 0;
-}
-.overlay{
-  position: fixed;
-  width:25%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 1rem;
+  max-width: 1500px;
+  margin: 0 auto;
+ }
+ .search {
+ width: 100%;
+ margin-top: 20px;
+ margin-bottom: 20px;
+ }
+ .card {
+ background: #e3a9a9;
+ border-radius: 20px;
+ border-width: thick;
+ height: 100%;
+ width: 100%;
+ max-width: 250px;
+ border-style: black solid;
+ }
+ .card-img-top {
+ border-radius: 20px 20px 0 0;
+ }
+ .overlays {
+ position: fixed;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ width: 80%;
+ height: 80%;
+ background:#e3a9a9;
+ display: flex;
+ z-index: 1000;
+ }
+ 
+ 
+ .Buy {
+ position: relative;
+ width: 100%;
+ height: 16%;
+ font-size: 70px;
+ padding: 25px;
+ 
+ 
+ }
+ 
+ 
+ /* Buy Text */
+ .Buy > div:first-child {
+ position: absolute;
+ top: 50%;
+ transform: translate(-50%, -50%);
+ left: 6%;
+ font-size: 60px;
+ padding: 10px;
+ 
+ 
+ }
+ 
+ 
+ 
+ 
+ /* Coins Div */
+ .Coins {
+ position: absolute;
+ right: 5%;
+ top: 50%;
+ transform: translate(-50%, -50%);
+ padding: 10px;
+ font-size: 40px; /* Adjust as necessary */
+ 
+ 
+ }
+ .X {
+ position: absolute;
+ right: 0%;
+ top: 50%;
+ transform: translate(-50%, -50%);
+ padding: 10px;
+ font-size: 40px; /* Adjust as necessary */
+ }
+ 
+ 
+ .buycard {
+ background: #e3a9a9;
+ border-radius: 20px;
+ border-width: thick;
+ height: 580px;
+ width: 300px;
+ align-items: center;
+ border-style: black solid;
+ top: 100px;
+ position: relative;
+ 
+ 
+ }
+ .buycard-img-top {
+ border-radius: 20px 20px 0 0;
+ }
+ .timer {
+ background: #e3a9a9;
+ border-radius: 20px;
+ border-width: thick;
+ height: 100px;
+ width: 300px;
+ align-items: center;
+ text-align: center;
+ border-style: black solid;
+ top: 10px;
+ position: relative;
+ font-size: 50px;
+ }
+ .BidAmount {
+ background: #e3a9a9;
+ border-radius: 20px;
+ border-width: thick;
+ height: 100px;
+ width: 900px;
+ border-style: black solid;
+ top: 500px;
+ left:400px;
+ position: absolute;
+ font-size: 30px;
+ padding:10px;
+ }
+ .search {
+ 
+ 
+ border-radius: 20px;
+ border-width: thick;
+ height: 50px;
+ width: 30%;
+ border-style: black solid;
+ font-size: 30px;
+ padding:10px;
+ }
+ .filter {
+ position: absolute;
+ top: 32.5%;
+ left: 0%;
+ height: 50%;
+ width: 10%;
+ background-color: #D9D9D9;
+ margin:8px;
+ 
+ 
+ }
+ .filter-mobile {
+  width: 90%;
+  height: 340px;
+  margin: 20px auto;
+  padding: 10px;
+ background-color: #D9D9D9;
+ }
+ .filter-word {
+ width: 100%;
+ height:10%;
+ text-align: center;
+ padding-top: 5%;
+ border-bottom: 1px solid black;
+ }
+ .filter-word-mobile {
+ width: 100%;
+ height:10%;
+ text-align: center;
+ border-bottom: 1px solid black;
+ }
+ .Rarity {
+ width: 100%;
+ top:10%;
+ height:90%;
+ text-align: left;
+ padding-left: 2%;
+ }
+ .typeOfRarity {
+ position: absolute;
+ display: flex;
+ flex-direction: column;
+ gap: 2%;
+ width: 80%;
+ top:20%;
+ left:9%;
+ height:44%;
+ }
+ 
+ 
+ .rarityRow {
+ position: absolute;
+ }
+ 
+ 
+ .item {
+ position: relative;
+ width: 70%;
+ height: 5%;
+ background-color: white;
+ font-size: 15px;
+ padding:5%;
+ padding-bottom: 10%;
+ }
+ 
+ 
+ 
+ 
+ .checkbox {
+ position: absolute;
+ width: 3.5vh;
+ height: 5%;
+ left:70%;
+ background-color: white;
+ font-size: 15px;
+ border: 2px solid black;
+ padding-left: 10%;
+ }
+ .buttonBox {
+  position: absolute;
+  top:10%;
+  left: 0%;
+  height:90%;
+  width:100%;
+ }
+ .Rarity {
+  font-size: 20px;
+ }
+ .categories {
+  position: absolute;
+  top: 8%;
+  left:10%;
+  height: 20%;
+  width: 80%;
+ }
+ .price-slider-container {
+  position: absolute;
+  top: 40%;
+  padding-left:2%;
+ 
+ 
+ }
+ 
+ 
+ .price-slider-container2 {
+  position: absolute;
+  top: 55%;
+  padding-left:2%;
+  height:20%;
+  width:90%;
+  margin-top:10%;
+  margin-left: 2%;
+ }
+ .status {
+  position: absolute;
+  top: 17.5%;
+  left: 28%;
   height: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
+  width: 40%;
+  font-size:10px;
+ }
+ .sell {
+  position: absolute;
+  top: 30%;
+  left: 28%;
+ }
+ @media (max-width: 600px) {
+  .card {
+    margin: 0 auto;
+  }
+ }
+ 

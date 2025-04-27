@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'accounts',
     'pokemessages',
     'corsheaders',
+    'marketplace',
 ]
 AUTH_USER_MODEL = 'accounts.User'
 

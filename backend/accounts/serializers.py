@@ -97,7 +97,7 @@ class OwnedCardsSerializer(serializers.ModelSerializer):
     card_details = CardSerializer(source='card_info', read_only=True)
     class Meta:
         model = OwnedCards
-        fields = ['id', 'card_info', 'card_details', 'quantity']
+        fields = ['id', 'card_info', 'card_details', 'quantity','is_selling']
 
 class UserSerializer(serializers.ModelSerializer):
     owned_cards = OwnedCardsSerializer(many=True, read_only=True, source='ownedcards_set')
