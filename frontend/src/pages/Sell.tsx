@@ -160,7 +160,6 @@ const Sell: React.FC = () => {
 
   return (
     <>
-      <h1>Sell</h1>
       <div className="Outline">
         <div className="cardSell">
           {selectedImage && (
