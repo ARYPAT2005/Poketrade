@@ -128,12 +128,12 @@ const buyItem = async (item: MarketplaceItem) => {
   try {
     console.log("Buying item.");
     console.log(`${import.meta.env.VITE_API_URL}`);
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/buy/`, {
-      method: "POST",
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/`, {
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ item_id: item.id, buyer_id: userId }),
+      body: JSON.stringify({ id: item.id, buyer: userId }),
     });
 
 
