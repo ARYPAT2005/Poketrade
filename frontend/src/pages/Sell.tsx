@@ -112,7 +112,7 @@ const Sell: React.FC = () => {
       buy_price: buyNowPriceValue,
     };
     console.log("Payload being sent:", payload);
-    const apiUrl = isLocalhost ? `${import.meta.env.VITE_API_URL}/api/sell/` : "/api/sell/";
+    const apiUrl = `${import.meta.env.VITE_API_URL}/api/sell/`;
 
     setSellingCardIds((prev) => new Set(prev).add(selectedCardId));
 
