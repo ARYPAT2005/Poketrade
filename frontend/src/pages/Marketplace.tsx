@@ -280,7 +280,7 @@ const buyItem = async (item: MarketplaceItem) => {
                 <img src={item.card.image_url} className="card-img-top" alt={item.card.name} />
                 <div className="card-body">
                   <h5 className="card-title">{item.card.name}</h5>
-                  <p>Seller: {item.seller || "N/A"}</p>
+                  <p>Seller: <a href={`/player/${item.seller}`}>{item.seller || "N/A"}</a></p>
                   {item.buy_price !== null && item.buy_price !== undefined && (
                       <div>
                           <p>Price: {item.buy_price} Coins</p>
