@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./Marketplace.css";
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue, useAtom } from "jotai";
@@ -46,6 +46,8 @@ const Marketplace = () => {
     setShowNoFundsAlert(false);
     setNoFundsMessage("");
   };
+  // handleCloseOverlay wasn't being used
+  console.log(handleCloseOverlay);
 
   const handleRarityChange = (rarity: string) => {
     setSelectedRarities((prev) =>
