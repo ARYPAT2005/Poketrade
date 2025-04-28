@@ -49,7 +49,7 @@ const Register = () => {
 
   // Regular expressions for validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email validation
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@$!#%*?&]{8,}$/;
   const [securityQuestions, setSecurityQuestions] = useState<{id: number, text: string}[]>([]);
   const fetchSecurityQuestions = async () => {
     try {
