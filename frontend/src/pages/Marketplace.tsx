@@ -60,7 +60,7 @@ const Marketplace = () => {
   };
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/marketplace/`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/`)
       .then((response) => response.json())
       .then((data: MarketplaceItem[]) => {
         setMarketplaceItems(data);
