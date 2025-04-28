@@ -126,9 +126,17 @@ const Sell: React.FC = () => {
       .then((res) => {
         if (!res.ok) {
           console.log("Response is not okay.");
-          throw new Error("Failed to sell card");
+           throw new Error("Failed to sell card");
         }
-        return res.json();
+        
+        const contentType = res.headers.get("content-type");
+        const contentLength = res.headers.get("content-length");
+        
+        if (res.status === 204 || contentLength === '0' || !contentType || !contentType.includes("application/json")) {
+            return null; 
+        } else {
+            return res.json();
+        }
       })
       .then((data) => {
         console.log("Sell success:", data);
