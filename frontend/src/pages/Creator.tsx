@@ -91,6 +91,7 @@ const Creator: React.FC = () => {
       }
     }
   };
+  // takeScreenshot wasn't being used so:
   console.log(takeScreenshot);
   const downloadGeneratedImage = async () => {
     if (generatedImage) {
