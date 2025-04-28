@@ -55,7 +55,7 @@ const Sell: React.FC = () => {
   const [ownedCards, setOwnedCards] = useState<OwnedCards[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
-  const [selectedSell, setSelected] = useState<string | null>(null);
+  // const [selectedSell, setSelected] = useState<string | null>(null);
   const [auctionPrice, setAuctionPrice] = useState<string>("");
   const [buyNowPrice, setBuyNowPrice] = useState<string>("");
   const [sellMessage, setSellMessage] = useState<string | null>(null);

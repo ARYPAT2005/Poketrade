@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./Marketplace.css";
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue, useAtom } from "jotai";
@@ -46,6 +46,8 @@ const Marketplace = () => {
     setShowNoFundsAlert(false);
     setNoFundsMessage("");
   };
+  // handleCloseOverlay wasn't being used
+  console.log(handleCloseOverlay);
 
   const handleRarityChange = (rarity: string) => {
     setSelectedRarities((prev) =>
@@ -66,7 +68,7 @@ const Marketplace = () => {
         let maxBuy = 0;
         data.forEach((item) => {
           const itemHP = parseInt(item.card.hp || "0", 10);
-          const buyPrice = parseFloat(item.buy_price || "0"); 
+          const buyPrice = parseFloat(item.buy_price || "0");
           if (itemHP > maxHP) maxHP = itemHP;
           if (!isNaN(buyPrice) && buyPrice > maxBuy) maxBuy = buyPrice;
         });
@@ -87,7 +89,7 @@ const Marketplace = () => {
       const matchesRarity =
         selectedRarities.length === 0 ||
         (card.rarity && selectedRarities.some((selectedRarity) =>
-          card.rarity.startsWith(selectedRarity)
+          card.rarity?.startsWith(selectedRarity)
         ));
       const hp = parseInt(card.hp || "0", 10);
       const matchesHP = hp <= maxPriceHP;
@@ -99,9 +101,9 @@ const Marketplace = () => {
     console.log("filteredItems after filter:", filtered);
   }, [searchQuery, selectedRarities, marketplaceItems, maxPriceHP, maxBuyPrice]);
 
-    
+
 const buyItem = async (item: MarketplaceItem) => {
-  const itemPrice = parseFloat(item.buy_price);
+  const itemPrice = parseFloat(item.buy_price as string);
 
 
   if (isNaN(itemPrice)) {
@@ -109,9 +111,9 @@ const buyItem = async (item: MarketplaceItem) => {
     setShowNoFundsAlert(true);
     return;
   }
-  if (user?.wallet_balance < itemPrice) {
+  if (user?.wallet_balance === undefined || user.wallet_balance < itemPrice) {
     setNoFundsMessage(
-      `You do not have enough coins to buy this item.  You have ${user?.wallet_balance}.`
+      `You do not have enough coins to buy this item. You have ${user?.wallet_balance ?? 0}.`
     );
     setShowNoFundsAlert(true);
     return;
@@ -126,20 +128,21 @@ const buyItem = async (item: MarketplaceItem) => {
   try {
     console.log("Buying item.");
     console.log(`${import.meta.env.VITE_API_URL}`);
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/`, {
-      method: "DELETE",
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/buy/`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id: item.id, buyer: userId }),
+      body: JSON.stringify({ item_id: item.id, buyer_id: userId }),
     });
 
 
     if (!response.ok) {
-      console.error("Failed to Buy Item - Error ");
-      console.log("Buyer: ", userId);
-      console.error("Item Payload:", JSON.stringify(item));
-      setNoFundsMessage("Failed to complete purchase.");
+      const errorData = await response.json();
+      console.error("Failed to Buy Item - Error:", errorData);
+      console.log("Buyer ID:", userId);
+      console.error("Item ID:", item.id);
+      setNoFundsMessage(errorData.message || "Failed to complete purchase.");
       setShowNoFundsAlert(true);
     } else {
       console.log("Bought item successfully");
@@ -226,7 +229,7 @@ const buyItem = async (item: MarketplaceItem) => {
                   type="checkbox"
                   checked={selectedRarities.includes(rarity)}
                   onChange={() => handleRarityChange(rarity)}
-                  className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded-sm focus:ring-blue-500"
+                  className="w-4 h-4 text-600 bg-white border-gray-300 rounded-sm focus:ring-500"
                   style={{ marginRight: "8px" }}
                 />
                 {rarity}
@@ -242,8 +245,8 @@ const buyItem = async (item: MarketplaceItem) => {
                 value={maxBuyPrice}
                 onChange={(e) => setMaxBuyPrice(Number(e.target.value))}
                 className="thumb thumb-right"
-                onInput={(e) => setMaxBuyPrice(Number(e.target.value))}
-              />
+                onInput={(e) => setMaxBuyPrice(Number((e.target as HTMLInputElement).value))}
+                />
               <div className="price-values">
                 <span>{maxBuyPrice} Coins</span>
               </div>
@@ -285,17 +288,16 @@ const buyItem = async (item: MarketplaceItem) => {
                       <div>
                           <p>Price: {item.buy_price} Coins</p>
                             <button
-                              onClick={(e) => { 
+                              onClick={(e) => {
                                 e.stopPropagation();
                                 buyItem(item);
                               }}
-                              
                             >
                               Buy: {item.buy_price}
                             </button>
                       </div>
                   )}
-                  
+
                    {item.buy_price === null && item.auction_price !== null && item.auction_price !== undefined && (
                        <div>
                            <p>Current Bid: {item.auction_price} Coins</p>

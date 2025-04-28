@@ -91,6 +91,7 @@ const Creator: React.FC = () => {
       }
     }
   };
+  console.log(takeScreenshot);
   const downloadGeneratedImage = async () => {
     if (generatedImage) {
       const link = document.createElement("a");
