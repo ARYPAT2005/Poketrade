@@ -21,6 +21,7 @@ import Trades, { TradeCardDetail } from "../types/Trades";
 import CardDetails from "../components/CardDetails";
 import PokemonCard from "../types/Card";
 import "./Trade.css";
+import ApiService from "../services/ApiService";
 
 type User = {
   id: number;
@@ -40,6 +41,7 @@ const Trade: React.FC = () => {
 
   const [searchString, setSearchString] = useState("");
   const [users, setUsers] = useState<User[]>([]);
+  const apiService = ApiService.getInstance();
 
   const handleCardClick = (card: PokemonCard) => {
     setSelectedCard(card);
@@ -64,25 +66,12 @@ const Trade: React.FC = () => {
       setTrades([]);
       return;
     }
-
-    fetch(`${import.meta.env.VITE_API_URL}/api/trades/${userId}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok (${response.status})`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data)) {
-          console.log("Setting trades.");
-          setTrades(data);
-        } else {
-          console.log("Data isn't an array.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching received trades:", error);
-      });
+    const fetchData = async () => {
+      const fetchTrades = await apiService.fetchUserTrades(userId);
+      setTrades(fetchTrades);
+    }
+    fetchData();
+    
   }, [userId]);
 
   useEffect(() => {
@@ -105,20 +94,9 @@ const Trade: React.FC = () => {
 
   const handleTradeResponse = async (tradeId: number, status: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/trades/id/${tradeId}/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: status }),
-      });
+      const response = await apiService.updateTradeStatus(tradeId, status);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Failed to update trade (${response.status})`);
-      }
-
-      const updatedTrade: Trades = await response.json();
+      const updatedTrade: Trades = response;
 
       setTrades((prevTrades) => prevTrades.map((trade) => (trade.id === tradeId ? updatedTrade : trade)));
       sortTrades();

@@ -17,11 +17,14 @@ import pokeball from "../assets/individual_pokeball.svg";
 
 import PackDetails from "../components/PackDetails";
 
+import ApiService from "../services/ApiService";
+
 const Store: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
   const [selectedPack, setSelectedPack] = React.useState<Pack | null>(null);
 
   const [packs, setPacks] = React.useState<Pack[]>([]);
+  const apiService = ApiService.getInstance();
 
   const handlePackSelect = (pack: Pack) => {
     setSelectedPack(pack);
@@ -32,20 +35,17 @@ const Store: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/packs/`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data) {
-          console.log(data);
-          setPacks(data);
-        }
-      })
-      .catch((error) => console.error("Error fetching card:", error));
+    const fetchData = async() => {
+      try{
+        const fetchPacks = await apiService.fetchPacks();
+        setPacks(fetchPacks);
+        console.log(packs);
+      } catch(error){
+        console.log("failed to fetch packs", error);
+      }
+    }
+
+    fetchData();
   }, []);
 
   return (

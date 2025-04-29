@@ -6,6 +6,7 @@ import Card from "../types/Card";
 import { useNavigate } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert';
 import userAtom from "../atoms/userAtom";
+import ApiService from "../services/ApiService";
 
 interface MarketplaceItem {
   id: number;
@@ -30,6 +31,7 @@ const Marketplace = () => {
   const [noFundsMessage, setNoFundsMessage] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [user, setUser] = useAtom(userAtom);
+  const apiService = ApiService.getInstance();
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
@@ -60,8 +62,7 @@ const Marketplace = () => {
   };
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/`)
-      .then((response) => response.json())
+    apiService.getMarketplaceItems()
       .then((data: MarketplaceItem[]) => {
         setMarketplaceItems(data);
         let maxHP = 0;
@@ -79,7 +80,7 @@ const Marketplace = () => {
         console.log("Fetched marketplace data:", data);
       })
       .catch((error) => console.error("Error fetching marketplace items:", error));
-  }, []);
+  }, [apiService]);
 
   useEffect(() => {
     console.log("marketplaceItems before filter:", marketplaceItems);
@@ -128,38 +129,20 @@ const buyItem = async (item: MarketplaceItem) => {
   try {
     console.log("Buying item.");
     console.log(`${import.meta.env.VITE_API_URL}`);
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/marketplace/`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: item.id, buyer: userId }),
+    await apiService.buyMarketplaceItem(item.id, userId);
+    console.log("Bought item successfully");
+    setUser((prevUser) => {
+      if (prevUser) {
+        return { ...prevUser, wallet_balance: prevUser.wallet_balance - itemPrice };
+      }
+      return null;
     });
-
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Failed to Buy Item - Error:", errorData);
-      console.log("Buyer ID:", userId);
-      console.error("Item ID:", item.id);
-      setNoFundsMessage(errorData.message || "Failed to complete purchase.");
-      setShowNoFundsAlert(true);
-    } else {
-      console.log("Bought item successfully");
-      setUser((prevUser) => {
-        if (prevUser) {
-          return { ...prevUser, wallet_balance: prevUser.wallet_balance - itemPrice };
-        }
-        return null;
-      });
-
-
-      setMarketplaceItems((prevItems) =>
-        prevItems.filter((marketItem) => marketItem.id !== item.id)
-      );
-      setShowNoFundsAlert(false);
-      setNoFundsMessage("");
-    }
+    setMarketplaceItems((prevItems) =>
+      prevItems.filter((marketItem) => marketItem.id !== item.id)
+    );
+    setShowNoFundsAlert(false);
+    setNoFundsMessage("");
+    
   } catch (error) {
     console.error("Error buying item:", error);
     setNoFundsMessage("An error occurred during purchase. Please try again.");

@@ -4,17 +4,16 @@ import { Button, Form, Card, Alert } from "react-bootstrap";
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
 import userIdAtom from "../atoms/userIdAtom";
+import ApiService from "../services/ApiService";
+import LoginResponse from "../types/LoginResponse";
 
 const Login = () => {
   const [, setUserId] = useAtom(userIdAtom);
   const [loginFailed, setLoginFailed] = React.useState(false);
   const [, setError] = React.useState("");
   const navigate = useNavigate();
-  interface LoginResponse {
-    message: string;
-    user: string;
-    email: string;
-  }
+  const apiService = ApiService.getInstance();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
@@ -29,22 +28,10 @@ const Login = () => {
     console.log("Password:", data.password);
 
     try {
-      const response: Response = await fetch(`${import.meta.env.VITE_API_URL}/login/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response: LoginResponse = await apiService.login(data);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Login failed.");
-      }
-      const responseData: LoginResponse = await response.json();
-
-      console.log("Login successful!", responseData);
-      setUserId(responseData.user);
+      console.log("Login successful!", response.message);
+      setUserId(response.user);
       setLoginFailed(false);
       setError("");
       navigate("/");

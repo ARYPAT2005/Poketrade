@@ -1,53 +1,47 @@
 import React, { useEffect, useState } from "react";
 import Card from "../types/Card";
 import CardDetail from "../components/CardDetails";
+import ApiService from "../services/ApiService";
 const About: React.FC = () => {
   const [cards, setCards] = useState<Card[]>([]);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-  console.log("VITE url:" + `${import.meta.env.VITE_API_URL}`);
-  fetch(`${import.meta.env.VITE_API_URL}`)
-    .then(response => response.json())
-    .then(data => {
-      console.log('Fetched data:', data); // Debug log
-      // Handle data here
-    })
-    .catch(error => console.error('Fetch error:', error));
+  const apiService = ApiService.getInstance();
+ 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/cards/?page=1`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.results) {
-          console.log(data);
-          const card = data.results.map((cardData: any) => {
-            return {
-              id: cardData.id,
-              name: cardData.name,
-              image_url: cardData.image_url,
-              supertype: cardData.supertype || "",
-              subtypes: cardData.subtypes || [],
-              hp: cardData.hp || null,
-              types: cardData.types || null,
-              evolves_from: cardData.evolves_from || null,
-              abilities: cardData.abilities || null,
-              attacks: cardData.attacks || null,
-              weaknesses: cardData.weaknesses || null,
-              resistances: cardData.resistances || null,
-              set_data: cardData.set_data || {},
-              number: cardData.number || "",
-              rarity: cardData.rarity || null,
-              legalities: cardData.legalities || null,
-              artist: cardData.artist || null,
-              updated_at: cardData.updated_at || new Date().toISOString(),
-              tcgplayer_url: cardData.tcgplayer_url || null,
-            } as Card;
-          });
-
-          setCards(card);
-        } else {
-          console.error("No card data found in the response");
-        }
-      })
-      .catch((error) => console.error("Error fetching card:", error));
+    const fetchData = async() => {
+      try {
+        const fetchCards = await apiService.fetchCards();
+        const cardList = fetchCards.results.map((cardData: any) => {
+          return {
+            id: cardData.id,
+            name: cardData.name,
+            image_url: cardData.image_url,
+            supertype: cardData.supertype || "",
+            subtypes: cardData.subtypes || [],
+            hp: cardData.hp || null,
+            types: cardData.types || null,
+            evolves_from: cardData.evolves_from || null,
+            abilities: cardData.abilities || null,
+            attacks: cardData.attacks || null,
+            weaknesses: cardData.weaknesses || null,
+            resistances: cardData.resistances || null,
+            set_data: cardData.set_data || {},
+            number: cardData.number || "",
+            rarity: cardData.rarity || null,
+            legalities: cardData.legalities || null,
+            artist: cardData.artist || null,
+            updated_at: cardData.updated_at || new Date().toISOString(),
+            tcgplayer_url: cardData.tcgplayer_url || null,
+          } as Card;
+        });
+        setCards(cardList);
+      } catch (error) {
+        console.log(error);
+      }
+      
+    }
+     
+    fetchData();
   }, []);
 
   const handleCardClick = (card: Card) => {
