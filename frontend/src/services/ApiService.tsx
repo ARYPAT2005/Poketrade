@@ -102,6 +102,11 @@ class ApiService {
         return this.request<Pack[]>(endpoint);
      }
 
+     public async fetchCards(): Promise<{results: PokemonCard[]}> {
+        const endpoint = `api/cards/?page=1`;
+        return this.request<{ results: PokemonCard[]}>(endpoint);
+     }
+
 
     
 }
