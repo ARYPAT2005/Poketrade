@@ -356,7 +356,7 @@ const Messages: React.FC = () => {
                         }}
                         variant="flush"
                       >
-                        {inboxMessages.map((message) => (
+                        {sentMessages.map((message) => (
                           <ListGroup.Item
                             style={{ cursor: "pointer" }}
                             key={message.id}
