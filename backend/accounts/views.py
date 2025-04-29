@@ -57,6 +57,17 @@ def get_security_questions(request):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+def get_users(request, username):
+    try:
+        users = User.objects.filter(username__icontains=username)
+
+        user_data = [{'id': user.id, 'username': user.username, 'email': user.email} for user in users]
+        return JsonResponse(user_data, safe=False, status=200)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+
 @api_view(['POST'])
 def check_old_password(request):
     try:
