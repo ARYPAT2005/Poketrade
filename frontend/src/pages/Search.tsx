@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import { Form, Navbar } from "react-bootstrap";
+import { Form, Navbar, Card, Tabs, Tab, ListGroup } from "react-bootstrap";
 import "./search.css";
 import CardDetails from "../components/CardDetails";
 import PokemonCard from "../types/Card";
 
 const Search = () => {
-  const [allCards, setAllCards] = useState<any[]>([]);
   const [filteredCards, setFilteredCards] = useState<any[]>([]);
+  const [filteredPlayers, setFilteredPlayers] = useState<any[]>([]);
   const searchRef = useRef<HTMLInputElement>(null);
   const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null);
   const [inputText, setInputText] = useState<string>("");
+  const [activeTab, setActiveTab] = useState("all");
 
   const handleCardEnlarge = (card: PokemonCard) => {
     setSelectedCard(card);
@@ -30,8 +31,12 @@ const Search = () => {
         fetch(`${import.meta.env.VITE_API_URL}/search/?q=` + searchText)
           .then((response) => response.json())
           .then((data) => {
-            setAllCards(data.results);
             setFilteredCards(data.results);
+          });
+          fetch(`${import.meta.env.VITE_API_URL}/api/card-owners?q=` + searchText)
+          .then((response) => response.json())
+          .then((data) => {
+            setFilteredPlayers(data.results);
           });
       };
 
@@ -41,7 +46,7 @@ const Search = () => {
         searchBar.removeEventListener("keyup", handleKeyUp);
       };
     }
-  }, [allCards]);
+  }, [filteredCards, filteredPlayers, activeTab]);
 
   return (
     <div>
@@ -80,6 +85,7 @@ const Search = () => {
             <Form
               className="d-flex"
               style={{
+                backgroundColor: "white",
                 width: "100%",
                 display: "flex",
                 justifyContent: "space-between",
@@ -89,75 +95,133 @@ const Search = () => {
               <Form.Control type="search" placeholder="Search" className="me-2" aria-label="Search" ref={searchRef} />
             </Form>
           </Navbar>
-
+          
           <div
             style={{
               margin: "auto",
               marginBottom: "30px",
               width: "90%",
-              backgroundColor: "white",
               borderRadius: "20px",
               height: "auto",
               padding: "20px",
             }}
           >
             <h2>Search Results</h2>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "flex-start", // stick to left
-                gap: "10px",
-                padding: "10px",
-                maxHeight: "800px",
-                overflowY: "auto",
-                border: "1px solid #ccc",
-                borderRadius: "10px",
-              }}
-            >
-              {filteredCards.length > 0 ? (
-                filteredCards.map((card) => (
+
+          <Card style={{ maxWidth: "min(1000px, 90%)", margin: "auto", marginTop: "50px" }}>
+            <Card.Body>
+              <Tabs
+                activeKey={activeTab}
+                onSelect={(k) => setActiveTab(k || "all")}
+                id="card-tabs"
+                className="mb-3"
+                fill
+              >
+                <Tab
+                  eventKey="all"
+                  title={
+                    <span>
+                      All Cards
+                    </span>
+                  }
+                >
                   <div
                     style={{
-                      border: "1px solid black",
-                      borderRadius: "10px",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "flex-start", // stick to left
+                      gap: "10px",
                       padding: "10px",
-                      marginBottom: "10px",
-                      margin: "10px",
-                      cursor: "pointer",
-                      transition: "background-color 0.3s",
-                      width: "195px",
-                      height: "300px",
-                    }}
-                    onClick={() => {
-                      handleCardEnlarge(card);
+                      maxHeight: "800px",
+                      overflowY: "auto",
+                      border: "1px solid #ccc",
+                      borderRadius: "10px",
                     }}
                   >
-                    <h3>{card.name}</h3>
-                    <img
-                      src={card.image_url}
-                      alt={card.name}
-                      width="100px"
-                      style={{
-                        margin: "5px",
-                      }}
-                    />
-                    <p>Hp: {card.hp ? card.hp : "N/A"}</p>
-                    <p>Rarity: {card.rarity ? card.rarity : "N/A"}</p>
+                    {filteredCards.length > 0 ? (
+                      filteredCards.map((card) => (
+                        <div
+                          style={{
+                            border: "1px solid black",
+                            borderRadius: "10px",
+                            padding: "10px",
+                            marginBottom: "10px",
+                            margin: "10px",
+                            cursor: "pointer",
+                            transition: "background-color 0.3s",
+                            width: "195px",
+                            height: "300px",
+                          }}
+                          onClick={() => {
+                            handleCardEnlarge(card);
+                          }}
+                        >
+                          <h3>{card.name}</h3>
+                          <img
+                            src={card.image_url}
+                            alt={card.name}
+                            width="100px"
+                            style={{
+                              margin: "5px",
+                            }}
+                          />
+                          <p>Hp: {card.hp ? card.hp : "N/A"}</p>
+                          <p>Rarity: {card.rarity ? card.rarity : "N/A"}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ textAlign: "center", width: "100%" }}>
+                        {
+                          <p>
+                            {inputText.length > 0
+                              ? `No results found for "${inputText}"`
+                              : "Please enter a search term to see results."}
+                          </p>
+                        }
+                      </div>
+                    )}
                   </div>
-                ))
-              ) : (
-                <div style={{ textAlign: "center", width: "100%" }}>
-                  {
-                    <p>
-                      {inputText.length > 0
-                        ? `No results found for "${inputText}"`
-                        : "Please enter a search term to see results."}
-                    </p>
+                </Tab>
+                <Tab
+                  eventKey="player"
+                  title={
+                    <span>
+                      Player's Cards
+                    </span>
                   }
-                </div>
-              )}
-            </div>
+                >
+                  {filteredPlayers.length > 0 ? (
+                    <ListGroup>
+                      {filteredPlayers.map(player => (
+                        <ListGroup.Item
+                          key={player.username}
+                          action
+                          href={`/player/${player.username}`}
+                          className="d-flex justify-content-between align-items-center"
+                        >
+                          {player.username}
+                        </ListGroup.Item>
+                      ))}
+                    </ListGroup>
+                  )
+                : (
+                  <div style={{ textAlign: "center", width: "100%" }}>
+                        {
+                          <p>
+                            {inputText.length > 0
+                              ? `No results found for "${inputText}"`
+                              : "Please enter a search term to see results."}
+                          </p>
+                        }
+                      </div>
+                  )}                  
+              </Tab>
+              </Tabs>
+            </Card.Body>
+          </Card>
+
+          
+            
           </div>
         </div>
       </div>

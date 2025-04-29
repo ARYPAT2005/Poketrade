@@ -28,6 +28,7 @@ urlpatterns = [
                   path('user/<str:username>/earn/<int:amount>/', views.EarnView.as_view(), name='earn'),
                   path('fees/<str:fee_id>/', views.FeeView.as_view(), name='fee-detail'),
                   path('users/list/<str:username>/', get_users, name='user-list'),
+                  path('api/card-owners/', views.get_users_by_card, name='card-owners'),
 
               ] + router.urls
 from django.conf import settings
