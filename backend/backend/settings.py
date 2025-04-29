@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ext28=lp@wnw582@4+3f1*a4lk!!o(uzv+9rx9m&z$38u(wk6g'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['poketrade-k3sharma.pythonanywhere.com', 'localhost', '127.0.0.1']
 

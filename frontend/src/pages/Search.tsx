@@ -3,6 +3,7 @@ import { Form, Navbar, Card, Tabs, Tab, ListGroup } from "react-bootstrap";
 import "./search.css";
 import CardDetails from "../components/CardDetails";
 import PokemonCard from "../types/Card";
+import ApiService from "../services/ApiService";
 
 const Search = () => {
   const [filteredCards, setFilteredCards] = useState<any[]>([]);
@@ -11,6 +12,7 @@ const Search = () => {
   const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null);
   const [inputText, setInputText] = useState<string>("");
   const [activeTab, setActiveTab] = useState("all");
+  const apiService = ApiService.getInstance();
 
   const handleCardEnlarge = (card: PokemonCard) => {
     setSelectedCard(card);
@@ -24,20 +26,14 @@ const Search = () => {
     const searchBar = searchRef.current;
 
     if (searchBar) {
-      const handleKeyUp = (e: KeyboardEvent) => {
+      const handleKeyUp = async(e: KeyboardEvent) => {
         const searchText = (e.target as HTMLInputElement).value.toLowerCase();
         setInputText(searchText);
 
-        fetch(`${import.meta.env.VITE_API_URL}/search/?q=` + searchText)
-          .then((response) => response.json())
-          .then((data) => {
-            setFilteredCards(data.results);
-          });
-          fetch(`${import.meta.env.VITE_API_URL}/api/card-owners?q=` + searchText)
-          .then((response) => response.json())
-          .then((data) => {
-            setFilteredPlayers(data.results);
-          });
+        const fetchCards = await apiService.searchCards(searchText);
+        setFilteredCards(fetchCards.results);
+        const fetchUsers = await apiService.searchCardOwners(searchText);
+        setFilteredPlayers(fetchUsers.results);
       };
 
       searchBar.addEventListener("keyup", handleKeyUp);
