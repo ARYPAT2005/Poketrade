@@ -10,6 +10,9 @@ class ApiService {
 
     private constructor() {
         this.baseUrl = import.meta.env.VITE_API_URL;
+        if (!this.baseUrl.endsWith('/')) {
+            this.baseUrl += '/';
+        }
         console.log("ApiService Initialized with base URL:", this.baseUrl);
     }
 
