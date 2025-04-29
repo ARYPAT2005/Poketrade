@@ -1,4 +1,3 @@
-import userAtom from "../atoms/userAtom";
 import PokemonCard from '../types/Card';
 import Trades from '../types/Trades';
 import LoginResponse from '../types/LoginResponse';
