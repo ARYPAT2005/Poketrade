@@ -439,3 +439,12 @@ class ClaimView(APIView):
             'amount_claimed': 100.00,
             'last_claim_date': user.last_claim_date
         }, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_users_by_card(request):
+    query = request.GET.get('q', '')
+    owners = OwnedCards.objects.filter(card_info__name__icontains=query).select_related('user')[:20]
+    unique_users = set(owners.values_list('user_id', flat=True))
+    users = User.objects.filter(id__in=unique_users)
+    serializer = UserSerializer(users, many=True)
+    return JsonResponse({'results': serializer.data})
