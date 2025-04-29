@@ -1,12 +1,32 @@
 import React, { useState, useEffect } from "react";
 import userIdAtom from "../atoms/userIdAtom";
 import { useAtomValue } from "jotai";
-import { Card, Tabs, Tab, Button, Row, Col, Container, Badge, Carousel, Pagination } from "react-bootstrap";
+import {
+  Card,
+  Tabs,
+  Tab,
+  Button,
+  Row,
+  Col,
+  Container,
+  Badge,
+  Carousel,
+  Pagination,
+  InputGroup,
+  ListGroup,
+  Form,
+} from "react-bootstrap";
 import LoginPrompt from "./LoginPrompt";
 import Trades, { TradeCardDetail } from "../types/Trades";
 import CardDetails from "../components/CardDetails";
 import PokemonCard from "../types/Card";
 import "./Trade.css";
+
+type User = {
+  id: number;
+  username: string;
+  email: string;
+};
 
 const Trade: React.FC = () => {
   const userId = useAtomValue(userIdAtom);
@@ -17,6 +37,9 @@ const Trade: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("received");
   const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [searchString, setSearchString] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
 
   const handleCardClick = (card: PokemonCard) => {
     setSelectedCard(card);
@@ -150,7 +173,6 @@ const Trade: React.FC = () => {
           <small>Nothing</small>
         </div>
       );
-
     return (
       <Container fluid key={trade.id} className="trade-details-wrapper mb-4">
         <Row className="mb-2 trade-header">
@@ -313,6 +335,43 @@ const Trade: React.FC = () => {
     );
   };
 
+  useEffect(() => {
+    if (searchString) {
+      console.log("Searching for users:", searchString);
+      try {
+        fetch(`${import.meta.env.VITE_API_URL}/users/list/${searchString}/`)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Network response was not ok (${response.status})`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data);
+            if (data.error || data.errors) {
+              // No users
+              setUsers([]);
+              return;
+            }
+            if (Array.isArray(data)) {
+              console.log("Setting users.");
+              setUsers(data);
+            } else {
+              console.log("Data isn't an array.");
+              setUsers([]);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching users:", error);
+          });
+      } catch (err) {
+        console.error("Error getting users:", err);
+      }
+    } else {
+      setUsers([]);
+    }
+  }, [searchString]);
+
   return (
     <div>
       <h1>Trade Center</h1>
@@ -321,6 +380,48 @@ const Trade: React.FC = () => {
       ) : (
         <Card style={{ maxWidth: "min(1000px, 90%)", margin: "auto", marginTop: "50px" }}>
           <Card.Body>
+            <div
+              style={{
+                maxWidth: "min(1000px, 90%)",
+                margin: "auto",
+                backgroundColor: "white",
+                padding: "10px",
+                borderRadius: "5px",
+                marginBottom: "20px",
+              }}
+            >
+              <InputGroup>
+                <Form.Control
+                  placeholder="Search by player name"
+                  value={searchString}
+                  onChange={(e) => setSearchString(e.target.value)}
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setSearchString("")}
+                  style={{
+                    width: "80px",
+                  }}
+                >
+                  Clear
+                </Button>
+              </InputGroup>
+              <ListGroup style={{ maxHeight: "200px" }}>
+                {users.map((user) => (
+                  <a href={`/player/${user.username}`}>
+                    <ListGroup.Item
+                      key={user.id}
+                      href="/player/${user.username}"
+                      style={{
+                        cursor: "pointer",
+                      }}
+                    >
+                      <strong>{user.username}</strong>
+                    </ListGroup.Item>
+                  </a>
+                ))}
+              </ListGroup>
+            </div>
             <Tabs
               activeKey={activeTab}
               onSelect={(k) => setActiveTab(k || "received")}
