@@ -60,6 +60,8 @@ User Stories
 25. As a system administrator, I want to be able to modify the “drop rate” of various cards in packs so that their rarity in-game corresponds to their rarity in real life.
 
 26. As a system administrator, I want to be able to host the website on a reliable server so that users can access it seamlessly without downtime.
+
+
 Authors
 -------
 
