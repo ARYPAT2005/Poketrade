@@ -65,6 +65,10 @@ Planning Docs
 -------
 https://docs.google.com/document/d/1bBzKQSC4lHw8_FFsDarLKz5z6mZE_0S0__uHrns1PkA/edit?usp=sharing
 
+Team Website
+-------
+https://sites.google.com/view/project2teamwebsite?usp=sharing
+
 Authors
 -------
 
