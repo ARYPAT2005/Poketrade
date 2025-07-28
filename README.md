@@ -61,6 +61,9 @@ User Stories
 
 26. As a system administrator, I want to be able to host the website on a reliable server so that users can access it seamlessly without downtime.
 
+Planning Docs
+-------
+https://docs.google.com/document/d/1bBzKQSC4lHw8_FFsDarLKz5z6mZE_0S0__uHrns1PkA/edit?usp=sharing
 
 Authors
 -------
