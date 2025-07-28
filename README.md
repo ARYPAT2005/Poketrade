@@ -47,7 +47,6 @@ User Stories
 
 19. As a guest user, I want the ability to view the marketplace without having to log in to the system.
 
-Administrator Stories
 20. As a system administrator, I want to be able to update, manage, and delete users from the app to keep the web application up to date.
 
 21. As a system administrator, I want to be able to update, manage, and delete fees associated with various transactions, such as the marketplace fee and the trading fee, in order to maximize profit for the application owner.
